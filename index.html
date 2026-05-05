@@ -1039,6 +1039,162 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
     radial-gradient(ellipse 30% 100% at 20% 50%,rgba(201,168,76,.06),transparent 60%),
     radial-gradient(ellipse 30% 100% at 80% 50%,rgba(201,168,76,.06),transparent 60%);
 }
+
+/* ====================================================== */
+/* ============ SCROLL-DRIVEN ANIMATIONS ================= */
+/* (Modern CSS scroll/view timelines — Framer-style scroll-bound effects, */
+/*  zero JS for the animation itself. Falls back gracefully via @supports.) */
+/* ====================================================== */
+@supports (animation-timeline: view()){
+
+  /* Hero fades + scales out as you scroll past it */
+  .hero-inner{
+    animation:heroOut linear both;
+    animation-timeline:scroll(root);
+    animation-range:0 100vh;
+  }
+  @keyframes heroOut{
+    0%{opacity:1;scale:1;filter:blur(0)}
+    100%{opacity:.15;scale:.92;filter:blur(2px)}
+  }
+
+  /* Float cards drift up + fade with scroll */
+  .fcard{
+    animation:fcardOut linear both;
+    animation-timeline:scroll(root);
+    animation-range:0 80vh;
+  }
+  @keyframes fcardOut{
+    to{opacity:0;translate:0 -120px}
+  }
+
+  /* Hero canvas + grid recede slower (true depth parallax) */
+  .hero-canvas,.hero-chart{
+    animation:bgPara linear both;
+    animation-timeline:scroll(root);
+    animation-range:0 100vh;
+  }
+  @keyframes bgPara{
+    to{translate:0 -60px;opacity:.35}
+  }
+
+  /* Reveals — scroll-bound (smoother than IntersectionObserver) */
+  .reveal{
+    animation:revealIn linear both;
+    animation-timeline:view();
+    animation-range:entry 0% cover 25%;
+    opacity:1;
+  }
+  @keyframes revealIn{
+    from{opacity:0;translate:0 32px}
+    to{opacity:1;translate:0 0}
+  }
+  /* Don't double-up the JS-triggered animation */
+  .reveal.in{animation:revealIn linear both;animation-timeline:view()}
+
+  /* Cards: scroll-bound rise + scale */
+  .card,.acct,.testi,.course,.article,.team,.office,.award,.tl-item,.edu-pillar{
+    animation:cardIn linear both;
+    animation-timeline:view();
+    animation-range:entry 5% cover 30%;
+  }
+  @keyframes cardIn{
+    from{opacity:0;translate:0 50px;scale:.96}
+    to{opacity:1;translate:0 0;scale:1}
+  }
+
+  /* Section heads gently parallax across the viewport */
+  .sec-head{
+    animation:secHeadShift linear both;
+    animation-timeline:view();
+    animation-range:cover 0% cover 100%;
+  }
+  @keyframes secHeadShift{
+    from{translate:0 24px}
+    to{translate:0 -24px}
+  }
+
+  /* Mockup chart line draws as the card enters */
+  .mock-chart svg path[stroke]{
+    stroke-dasharray:600;
+    animation:drawLineScroll linear both;
+    animation-timeline:view();
+    animation-range:entry 10% cover 50%;
+  }
+  @keyframes drawLineScroll{
+    from{stroke-dashoffset:600}
+    to{stroke-dashoffset:0}
+  }
+
+  /* Sparkline draws on scroll (overrides the time-based version) */
+  .instr svg.spark polyline{
+    stroke-dasharray:200;
+    animation:drawLineScroll linear both;
+    animation-timeline:view();
+    animation-range:entry 0% cover 40%;
+  }
+
+  /* Stats counters subtly rise with scroll */
+  .stats-grid > div{
+    animation:statRise linear both;
+    animation-timeline:view();
+    animation-range:entry 0% cover 50%;
+  }
+  @keyframes statRise{
+    from{opacity:0;translate:0 24px}
+    to{opacity:1;translate:0 0}
+  }
+
+  /* Footer columns stagger via per-column delay range tricks (depth feel) */
+  .foot-col{
+    animation:footIn linear both;
+    animation-timeline:view();
+    animation-range:entry 0% cover 30%;
+  }
+  @keyframes footIn{
+    from{opacity:0;translate:0 30px}
+    to{opacity:1;translate:0 0}
+  }
+
+  /* Aurora blobs drift faster while scrolling through hero — adds liveness */
+  .aurora-blob{
+    animation:blobScrollLift linear;
+    animation-timeline:scroll(root);
+    animation-range:0 100vh;
+    animation-composition:add;
+  }
+  @keyframes blobScrollLift{
+    to{translate:0 -80px}
+  }
+}
+
+/* ====================================================== */
+/* ============ VIEW TRANSITIONS (SPA) =================== */
+/* ====================================================== */
+@supports (view-transition-name: a){
+  /* Default page cross-fade — slower, eased to match brand */
+  ::view-transition-old(root),
+  ::view-transition-new(root){
+    animation-duration:380ms;
+    animation-timing-function:cubic-bezier(0.16,1,0.3,1);
+  }
+  ::view-transition-old(root){
+    animation-name:vtFadeOut;
+  }
+  ::view-transition-new(root){
+    animation-name:vtFadeIn;
+  }
+  @keyframes vtFadeOut{
+    to{opacity:0;transform:translateY(-8px) scale(.99)}
+  }
+  @keyframes vtFadeIn{
+    from{opacity:0;transform:translateY(8px) scale(.995)}
+  }
+  /* Persist nav, ticker, drawer across transitions (don't fade them) */
+  .nav,.ticker,.drawer,.scroll-progress,.cursor-dot,.cursor-ring,.grain{
+    view-transition-name:none;
+  }
+}
 </style>
 </head>
 <body>
@@ -2363,20 +2519,27 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
   const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile=window.matchMedia('(max-width: 1024px)').matches;
+  const SCROLL_TL=CSS.supports('animation-timeline: view()');
+  const VT=typeof document.startViewTransition==='function';
 
-  /* ---------- SPA ROUTING ---------- */
+  /* ---------- SPA ROUTING (with View Transitions) ---------- */
   const pages=$$('.page');
   function go(id){
-    pages.forEach(p=>p.classList.toggle('active',p.dataset.page===id));
-    $$('.nav-link').forEach((b,i)=>{
-      const map=['trading','platforms','accounts','trading','education','company']; // matches order
-      b.classList.toggle('active',map[i]===id);
-    });
-    document.body.scrollTop=0;document.documentElement.scrollTop=0;
-    // re-trigger reveal on visible elements
-    requestAnimationFrame(()=>observeReveals());
-    // close drawer
-    drawer.classList.remove('open');hb.classList.remove('open');hb.setAttribute('aria-expanded','false');document.body.style.overflow='';
+    const apply=()=>{
+      pages.forEach(p=>p.classList.toggle('active',p.dataset.page===id));
+      $$('.nav-link').forEach((b,i)=>{
+        const map=['trading','platforms','accounts','trading','education','company']; // matches order
+        b.classList.toggle('active',map[i]===id);
+      });
+      document.body.scrollTop=0;document.documentElement.scrollTop=0;
+      requestAnimationFrame(()=>observeReveals());
+      drawer.classList.remove('open');hb.classList.remove('open');hb.setAttribute('aria-expanded','false');document.body.style.overflow='';
+    };
+    if(VT && !reduceMotion){
+      document.startViewTransition(apply);
+    }else{
+      apply();
+    }
   }
   document.addEventListener('click',e=>{
     const t=e.target.closest('[data-page]');
@@ -2425,6 +2588,9 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
   /* ---------- REVEAL ON SCROLL ---------- */
   let revIO;
   function observeReveals(){
+    // If browser supports scroll-timeline, the @supports CSS handles reveals
+    // natively and we skip the IntersectionObserver path (no double trigger).
+    if(SCROLL_TL)return;
     const items=$$('.reveal:not(.in)');
     if(!revIO){
       revIO=new IntersectionObserver((entries)=>{
@@ -2866,7 +3032,15 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
         }
         node.parentNode.replaceChild(frag,node);
       }else if(node.nodeType===1 && node.tagName!=='BR'){
-        // recurse into children, including <span class="gold">
+        // Treat .gold as a single cascade unit — splitting chars inside
+        // breaks background-clip:text (the parent has no glyphs to clip to
+        // once each letter is wrapped in a separate inline-block child).
+        if(node.classList && node.classList.contains('gold')){
+          node.classList.add('ch');
+          node.style.animationDelay=(charIdx*30)+'ms';
+          charIdx+=node.textContent.length;
+          return;
+        }
         Array.from(node.childNodes).forEach(splitNode);
       }
     };
