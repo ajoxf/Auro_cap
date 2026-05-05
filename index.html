@@ -863,6 +863,182 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
 /* CTA buttons icon arrow slide */
 .btn svg{transition:transform 250ms var(--ease)}
 .btn:hover svg{transform:translateX(3px)}
+
+/* ====================================================== */
+/* ============ STUNNING ATMOSPHERE LAYER ================ */
+/* ====================================================== */
+
+/* Aurora mesh blobs */
+.aurora{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.aurora-blob{
+  position:absolute;border-radius:50%;
+  filter:blur(80px);will-change:transform;
+}
+.aurora-blob.b1{
+  width:55vw;height:55vw;max-width:780px;max-height:780px;
+  background:radial-gradient(circle,rgba(201,168,76,.55) 0%,transparent 65%);
+  top:-12%;left:-15%;opacity:.55;
+  animation:blobFloat1 28s ease-in-out infinite;
+}
+.aurora-blob.b2{
+  width:48vw;height:48vw;max-width:640px;max-height:640px;
+  background:radial-gradient(circle,rgba(232,201,122,.4) 0%,transparent 70%);
+  top:25%;right:-18%;opacity:.5;
+  animation:blobFloat2 34s ease-in-out infinite;
+}
+.aurora-blob.b3{
+  width:65vw;height:65vw;max-width:900px;max-height:900px;
+  background:radial-gradient(circle,rgba(201,168,76,.35) 0%,transparent 70%);
+  bottom:-30%;left:25%;opacity:.4;
+  animation:blobFloat3 42s ease-in-out infinite;
+}
+@keyframes blobFloat1{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(15vw,8vh) scale(1.15)}
+  66%{transform:translate(35vw,4vh) scale(.92)}
+}
+@keyframes blobFloat2{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-25vw,18vh) scale(1.12)}
+}
+@keyframes blobFloat3{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(12vw,-12vh) scale(1.18)}
+}
+
+/* Perspective trading-floor grid */
+.persp-grid{
+  position:absolute;inset:0;pointer-events:none;
+  perspective:900px;perspective-origin:50% 100%;
+  opacity:.18;z-index:1;
+  -webkit-mask-image:radial-gradient(ellipse 60% 80% at 50% 100%,black 0%,transparent 75%);
+  mask-image:radial-gradient(ellipse 60% 80% at 50% 100%,black 0%,transparent 75%);
+}
+.persp-grid-inner{
+  position:absolute;left:-50%;right:-50%;top:0;bottom:-50%;
+  transform:rotateX(72deg);transform-origin:50% 100%;
+  background-image:
+    linear-gradient(rgba(201,168,76,.55) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,168,76,.55) 1px,transparent 1px);
+  background-size:60px 60px;background-position:0 0;
+  animation:gridScroll 14s linear infinite;
+}
+@keyframes gridScroll{to{background-position:0 60px}}
+
+/* Floating glass price cards */
+.float-cards{position:absolute;inset:0;pointer-events:none;z-index:2}
+.fcard{
+  position:absolute;
+  background:linear-gradient(160deg,rgba(22,22,26,.7),rgba(17,17,20,.55));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(201,168,76,.22);
+  border-radius:10px;padding:14px 18px;
+  font-family:'DM Mono',monospace;
+  box-shadow:0 30px 60px -25px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.05);
+  min-width:170px;
+  will-change:transform;
+}
+.fcard .fc-sym{font-size:11px;color:var(--muted-2);letter-spacing:.14em;text-transform:uppercase}
+.fcard .fc-px{font-size:22px;color:var(--off);margin:6px 0 4px;font-weight:500;letter-spacing:-.01em}
+.fcard .fc-chg{font-size:11.5px;display:inline-flex;align-items:center;gap:5px}
+.fcard .fc-chg svg{width:10px;height:10px}
+.fcard .fc-spark{margin-top:8px;width:100%;height:24px}
+
+.fc-1{top:14%;right:7%;animation:fcDrift1 9s ease-in-out infinite}
+.fc-2{top:54%;left:4%;animation:fcDrift2 11s ease-in-out infinite}
+.fc-3{bottom:18%;right:14%;animation:fcDrift3 13s ease-in-out infinite}
+@keyframes fcDrift1{0%,100%{transform:translate(0,0) rotate(-3deg)}50%{transform:translate(-8px,-14px) rotate(2deg)}}
+@keyframes fcDrift2{0%,100%{transform:translate(0,0) rotate(3deg)}50%{transform:translate(10px,-16px) rotate(-2deg)}}
+@keyframes fcDrift3{0%,100%{transform:translate(0,0) rotate(-2deg)}50%{transform:translate(-6px,12px) rotate(3deg)}}
+
+/* Hero content 3D tilt context */
+.hero-inner{
+  transform-style:preserve-3d;
+  transform:perspective(1200px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg)) translate3d(0,calc(var(--hero-py,0px) * .35),0);
+  transition:transform 200ms var(--ease);
+}
+
+/* Hide float cards & heavy effects on small screens */
+@media(max-width:900px){
+  .fcard{display:none}
+  .persp-grid{opacity:.1}
+  .aurora-blob{filter:blur(60px)}
+}
+
+/* Film grain overlay (global) */
+.grain{
+  position:fixed;inset:-50%;width:200%;height:200%;
+  z-index:5;pointer-events:none;opacity:.05;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  animation:grainShift .8s steps(3) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}
+  33%{transform:translate(-2%,1%)}
+  66%{transform:translate(1%,-2%)}
+  100%{transform:translate(0,0)}
+}
+
+/* ============ MARQUEE WATERMARK (CTA) ============ */
+.marquee-watermark{
+  position:absolute;left:0;right:0;top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;z-index:0;overflow:hidden;
+  user-select:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,black 15%,black 85%,transparent);
+  mask-image:linear-gradient(90deg,transparent,black 15%,black 85%,transparent);
+}
+.marquee-track-bg{
+  display:inline-flex;white-space:nowrap;
+  animation:marqueeBg 32s linear infinite;
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(120px,18vw,240px);
+  font-weight:500;letter-spacing:-0.03em;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(201,168,76,.18);
+  line-height:1;
+}
+.marquee-track-bg span{padding:0 30px;display:inline-block}
+.marquee-track-bg span:nth-child(even){-webkit-text-stroke-color:rgba(201,168,76,.08)}
+@keyframes marqueeBg{to{transform:translateX(-50%)}}
+
+/* ============ SECTION-LEVEL ATMOSPHERE ============ */
+.atmos{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.atmos::before{
+  content:"";position:absolute;
+  width:50vw;height:50vw;max-width:700px;max-height:700px;
+  background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%);
+  border-radius:50%;filter:blur(60px);
+  top:-15%;left:-15%;
+  animation:blobFloat1 36s ease-in-out infinite;
+}
+.atmos.right::before{left:auto;right:-15%;animation-name:blobFloat2}
+.atmos.center::before{left:25%;top:30%;animation-name:blobFloat3}
+
+/* Lift content above atmosphere */
+.section > .wrap,.cta-band-inner{position:relative;z-index:2}
+
+/* Stats section: animated horizon line */
+.stats{position:relative;overflow:hidden}
+.stats-horizon{
+  position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold) 50%,transparent);
+  opacity:.5;
+  animation:horizonShift 8s ease-in-out infinite;
+}
+@keyframes horizonShift{
+  0%,100%{opacity:.3;transform:scaleX(.6)}
+  50%{opacity:.7;transform:scaleX(1)}
+}
+
+/* CTA band: enhance with vertical light beams */
+.cta-band::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 30% 100% at 20% 50%,rgba(201,168,76,.06),transparent 60%),
+    radial-gradient(ellipse 30% 100% at 80% 50%,rgba(201,168,76,.06),transparent 60%);
+}
 </style>
 </head>
 <body>
@@ -871,6 +1047,7 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
 <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
 
 <!-- ========== NAVBAR ========== -->
 <header class="nav" id="nav">
@@ -1061,6 +1238,12 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
   <!-- HERO -->
   <section class="hero">
     <div class="hero-bg" aria-hidden="true">
+      <div class="aurora">
+        <div class="aurora-blob b1"></div>
+        <div class="aurora-blob b2"></div>
+        <div class="aurora-blob b3"></div>
+      </div>
+      <div class="persp-grid"><div class="persp-grid-inner"></div></div>
       <canvas class="hero-canvas" id="heroCanvas"></canvas>
       <svg class="hero-chart" viewBox="0 0 1200 600" preserveAspectRatio="none">
         <defs>
@@ -1087,6 +1270,33 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
       <div class="hero-accent"></div>
     </div>
 
+    <div class="float-cards" aria-hidden="true">
+      <div class="fcard fc-1" data-depth="0.6">
+        <div class="fc-sym">EUR / USD</div>
+        <div class="fc-px">1.0865</div>
+        <div class="fc-chg pos"><svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 1l4 5H1z"/></svg>+0.42%</div>
+        <svg class="fc-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+          <polyline points="0,22 10,18 20,20 30,14 40,16 50,10 60,12 70,6 80,8 90,4 100,2" fill="none" stroke="#00E87A" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="fcard fc-2" data-depth="0.4">
+        <div class="fc-sym">XAU / USD</div>
+        <div class="fc-px">2,384.50</div>
+        <div class="fc-chg pos"><svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 1l4 5H1z"/></svg>+1.08%</div>
+        <svg class="fc-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+          <polyline points="0,24 10,20 20,22 30,16 40,18 50,12 60,8 70,10 80,6 90,4 100,2" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="fcard fc-3" data-depth="0.8">
+        <div class="fc-sym">BTC / USD</div>
+        <div class="fc-px">68,420</div>
+        <div class="fc-chg neg"><svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 9l4-5H1z"/></svg>−0.84%</div>
+        <svg class="fc-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+          <polyline points="0,4 10,8 20,6 30,12 40,10 50,16 60,14 70,20 80,18 90,22 100,24" fill="none" stroke="#FF3A2F" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+
     <div class="wrap hero-inner">
       <div class="reveal"><span class="eyebrow">EST. 2002 · LICENSED IN 170 COUNTRIES</span></div>
       <h1 class="reveal h-display serif">Trade The World's<br><span class="gold">Markets.</span></h1>
@@ -1110,6 +1320,7 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
 
   <!-- STATS -->
   <section class="stats" id="statsSection">
+    <div class="stats-horizon" aria-hidden="true"></div>
     <div class="wrap">
       <div class="stats-grid">
         <div><div class="stat-num"><span data-count="2100" data-suffix="+">0</span></div><div class="stat-lab">Instruments</div></div>
@@ -1124,6 +1335,7 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
 
   <!-- WHY -->
   <section class="section">
+    <div class="atmos" aria-hidden="true"></div>
     <div class="wrap">
       <header class="sec-head reveal">
         <span class="eyebrow">WHY AURO</span>
@@ -1355,6 +1567,7 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
 
   <!-- AWARDS & REGULATION -->
   <section class="section">
+    <div class="atmos right" aria-hidden="true"></div>
     <div class="wrap">
       <header class="sec-head center reveal">
         <span class="eyebrow">REGULATION · TRUST · RECOGNITION</span>
@@ -1455,6 +1668,9 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
 
   <!-- OPEN ACCOUNT CTA -->
   <section class="section cta-band">
+    <div class="marquee-watermark" aria-hidden="true">
+      <div class="marquee-track-bg" id="marqueeTrack"></div>
+    </div>
     <div class="wrap cta-band-inner">
       <span class="eyebrow" style="justify-content:center">GET STARTED</span>
       <h2 class="h2 serif" style="margin:14px 0 8px">Start trading in three steps.</h2>
@@ -2251,38 +2467,119 @@ h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
   },{threshold:.4});
   counters.forEach(c=>cIO.observe(c));
 
-  /* ---------- HERO PARTICLES ---------- */
+  /* ---------- HERO PARTICLE NETWORK ---------- */
   const canvas=$('#heroCanvas');
   if(canvas && !reduceMotion){
     const ctx=canvas.getContext('2d');
     const dpr=Math.min(window.devicePixelRatio||1,2);
     let w,h,parts;
-    const N=isMobile?20:40;
+    const N=isMobile?28:64;
+    const LINK=isMobile?100:140;     // px distance to draw link
+    const MOUSE_LINK=isMobile?0:180; // px distance for mouse-to-particle
+    const mouse={x:-9999,y:-9999,active:false};
     const init=()=>{
       const r=canvas.getBoundingClientRect();
       w=canvas.width=r.width*dpr;h=canvas.height=r.height*dpr;
       canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';
       parts=Array.from({length:N},()=>({
         x:Math.random()*w,y:Math.random()*h,
-        r:(Math.random()*1.6+.4)*dpr,
-        vx:(Math.random()-.5)*.15*dpr,vy:(Math.random()-.5)*.12*dpr,
-        a:Math.random()*.5+.2
+        r:(Math.random()*1.4+.5)*dpr,
+        vx:(Math.random()-.5)*.18*dpr,vy:(Math.random()-.5)*.14*dpr,
+        a:Math.random()*.45+.25
       }));
     };
     init();
     window.addEventListener('resize',init);
+    const heroRect=()=>$('.hero').getBoundingClientRect();
+    window.addEventListener('mousemove',e=>{
+      const r=heroRect();
+      if(e.clientY<r.bottom && e.clientX>=r.left && e.clientX<=r.right){
+        mouse.active=true;
+        mouse.x=(e.clientX-r.left)*dpr;
+        mouse.y=(e.clientY-r.top)*dpr;
+      }else{mouse.active=false}
+    });
     const draw=()=>{
       ctx.clearRect(0,0,w,h);
+      // particles
       for(const p of parts){
         p.x+=p.vx;p.y+=p.vy;
         if(p.x<0)p.x=w;if(p.x>w)p.x=0;
         if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      }
+      // links between particles
+      ctx.lineWidth=dpr;
+      for(let i=0;i<parts.length;i++){
+        const p=parts[i];
+        for(let j=i+1;j<parts.length;j++){
+          const q=parts[j];
+          const dx=p.x-q.x,dy=p.y-q.y;
+          const d=Math.hypot(dx,dy);
+          const lim=LINK*dpr;
+          if(d<lim){
+            const a=(1-d/lim)*.18;
+            ctx.strokeStyle=`rgba(201,168,76,${a})`;
+            ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+          }
+        }
+        // mouse link
+        if(mouse.active){
+          const dx=p.x-mouse.x,dy=p.y-mouse.y;
+          const d=Math.hypot(dx,dy);
+          const lim=MOUSE_LINK*dpr;
+          if(d<lim){
+            const a=(1-d/lim)*.5;
+            ctx.strokeStyle=`rgba(232,201,122,${a})`;
+            ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();
+            // gentle attraction
+            p.vx+=(mouse.x-p.x)*0.000004*dpr;
+            p.vy+=(mouse.y-p.y)*0.000004*dpr;
+          }
+        }
+        // dot
         ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
         ctx.fillStyle=`rgba(201,168,76,${p.a})`;ctx.fill();
+      }
+      // velocity damping
+      for(const p of parts){p.vx*=.99;p.vy*=.99;
+        if(Math.abs(p.vx)<.05*dpr)p.vx+=(Math.random()-.5)*.04*dpr;
+        if(Math.abs(p.vy)<.05*dpr)p.vy+=(Math.random()-.5)*.04*dpr;
       }
       requestAnimationFrame(draw);
     };
     draw();
+  }
+
+  /* ---------- HERO 3D TILT + FLOAT-CARD PARALLAX ---------- */
+  const heroSec=$('.hero');
+  if(heroSec && !isMobile && !reduceMotion){
+    const fcs=$$('.fcard');
+    heroSec.addEventListener('mousemove',e=>{
+      const r=heroSec.getBoundingClientRect();
+      const cx=(e.clientX-r.left)/r.width-.5;   // -0.5 .. 0.5
+      const cy=(e.clientY-r.top)/r.height-.5;
+      // subtle 3D tilt on hero content
+      document.documentElement.style.setProperty('--tilt-x',(cy*-2.5)+'deg');
+      document.documentElement.style.setProperty('--tilt-y',(cx*3)+'deg');
+      // parallax float cards by depth
+      fcs.forEach(c=>{
+        const d=parseFloat(c.dataset.depth||0.5);
+        c.style.translate=`${cx*-30*d}px ${cy*-22*d}px`;
+      });
+    });
+    heroSec.addEventListener('mouseleave',()=>{
+      document.documentElement.style.setProperty('--tilt-x','0deg');
+      document.documentElement.style.setProperty('--tilt-y','0deg');
+      fcs.forEach(c=>{c.style.translate='0 0';});
+    });
+  }
+
+  /* ---------- MARQUEE WATERMARK BUILD ---------- */
+  const mqt=$('#marqueeTrack');
+  if(mqt){
+    const word=' AURO BROKERS · ';
+    const segment=Array(8).fill(0).map((_,i)=>`<span>${word}</span>`).join('');
+    mqt.innerHTML=segment+segment;  // doubled for seamless loop
   }
 
   /* ---------- TICKER ---------- */
