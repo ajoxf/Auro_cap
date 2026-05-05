@@ -1,0 +1,2415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0C">
+<title>Auro Brokers — Trade The World's Markets</title>
+<meta name="description" content="Auro Brokers — premium FX & CFD brokerage. 2,100+ instruments, institutional-grade spreads, four elite platforms. FCA · CySEC · FSCA regulated.">
+<meta property="og:title" content="Auro Brokers — Trade The World's Markets">
+<meta property="og:description" content="2,100+ instruments. Institutional-grade spreads. Four elite platforms.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ========== TOKENS ========== */
+:root{
+  --void:#0A0A0C;
+  --ink:#111114;
+  --ink-2:#16161A;
+  --line:#1F1F24;
+  --line-2:#2A2A30;
+  --gold:#C9A84C;
+  --gold-light:#E8C97A;
+  --gold-dim:#8A7434;
+  --off:#F0ECE4;
+  --muted:#6B6761;
+  --muted-2:#8E8A82;
+  --pos:#00E87A;
+  --neg:#FF3A2F;
+  --r-card:6px;
+  --r-input:4px;
+  --r-pill:100px;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --t:200ms;
+  --shadow:0 20px 60px -20px rgba(0,0,0,.8);
+  --shadow-gold:0 10px 30px -10px rgba(201,168,76,.35);
+  --pad-x:24px;
+  --max:1280px;
+}
+@media(min-width:1024px){:root{--pad-x:56px;}}
+
+/* ========== RESET ========== */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:'DM Sans',system-ui,sans-serif;
+  font-weight:400;
+  font-size:16px;
+  line-height:1.55;
+  color:var(--off);
+  background:var(--void);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+img,svg,video{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4,h5,h6{margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:-0.01em;line-height:1.05}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+table{border-collapse:collapse;width:100%}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+
+/* ========== UTIL ========== */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad-x)}
+.serif{font-family:'Cormorant Garamond',serif}
+.mono{font-family:'DM Mono',monospace;letter-spacing:0.02em}
+.eyebrow{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.22em;color:var(--gold);
+  display:inline-flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:24px;height:1px;background:var(--gold)}
+.muted{color:var(--muted-2)}
+.gold{color:var(--gold)}
+.pos{color:var(--pos)}
+.neg{color:var(--neg)}
+.center{text-align:center}
+.hide-mobile{display:none}
+@media(min-width:768px){.hide-mobile{display:initial}.hide-tablet{display:none}}
+@media(min-width:1024px){.hide-desktop{display:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ========== BUTTONS ========== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:14px 26px;min-height:48px;
+  border-radius:var(--r-pill);
+  font-weight:500;font-size:14px;letter-spacing:0.01em;
+  cursor:pointer;
+  transition:transform var(--t) var(--ease),background var(--t) var(--ease),color var(--t) var(--ease),border-color var(--t) var(--ease),box-shadow var(--t) var(--ease);
+  white-space:nowrap;border:1px solid transparent;
+  position:relative;overflow:hidden;
+}
+.btn:active{transform:scale(0.98)}
+.btn-gold{background:linear-gradient(180deg,var(--gold-light),var(--gold));color:#1A1606;box-shadow:var(--shadow-gold)}
+.btn-gold::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);
+  transform:translateX(-100%);transition:transform 800ms var(--ease);
+}
+.btn-gold:hover::after{transform:translateX(100%)}
+.btn-gold:hover{box-shadow:0 14px 40px -10px rgba(201,168,76,.55)}
+.btn-outline{background:transparent;color:var(--gold);border-color:var(--gold)}
+.btn-outline:hover{background:rgba(201,168,76,.08)}
+.btn-ghost{background:transparent;color:var(--off);border-color:var(--line-2)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{padding:10px 18px;min-height:40px;font-size:13px}
+.btn-block{width:100%}
+@media(max-width:767px){.btn-stack-mobile{width:100%}}
+
+/* ========== SCROLL PROGRESS ========== */
+.scroll-progress{
+  position:fixed;top:0;left:0;height:2px;width:0;z-index:1000;
+  background:linear-gradient(90deg,var(--gold-dim),var(--gold-light));
+  pointer-events:none;
+}
+
+/* ========== CUSTOM CURSOR ========== */
+.cursor-dot,.cursor-ring{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+  border-radius:50%;mix-blend-mode:difference;
+  transition:width var(--t) var(--ease),height var(--t) var(--ease),opacity var(--t) var(--ease);
+}
+.cursor-dot{width:6px;height:6px;background:var(--gold);transform:translate(-50%,-50%)}
+.cursor-ring{width:28px;height:28px;border:1px solid var(--gold);transform:translate(-50%,-50%);opacity:.7}
+.cursor-ring.hover{width:48px;height:48px;opacity:1}
+@media(hover:none),(max-width:1024px){.cursor-dot,.cursor-ring{display:none}}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.4)}50%{box-shadow:0 0 0 14px rgba(201,168,76,0)}}
+@keyframes flashUp{0%{background:rgba(0,232,122,.25)}100%{background:transparent}}
+@keyframes flashDown{0%{background:rgba(255,58,47,.25)}100%{background:transparent}}
+@keyframes scrollX{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes goldSweep{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+
+.reveal{opacity:0}
+.reveal.in{animation:fadeUp 700ms var(--ease) forwards}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}
+  .reveal{opacity:1!important}
+}
+
+/* ========== SECTION SHELL ========== */
+section{position:relative}
+.section{padding:96px 0}
+.section-sm{padding:64px 0}
+@media(max-width:767px){.section{padding:64px 0}.section-sm{padding:48px 0}}
+
+.h-display{font-size:clamp(48px,8vw,120px);font-weight:500;letter-spacing:-0.02em}
+.h1{font-size:clamp(40px,5vw,68px);font-weight:500;letter-spacing:-0.015em}
+.h2{font-size:clamp(32px,3.6vw,48px);font-weight:500;letter-spacing:-0.01em}
+.h3{font-size:clamp(22px,2vw,28px);font-weight:600;font-family:'DM Sans',sans-serif;letter-spacing:-0.005em}
+.lead{font-size:clamp(16px,1.3vw,19px);color:var(--muted-2);max-width:62ch;line-height:1.6}
+
+/* ========== PAGE TRANSITIONS (SPA) ========== */
+.page{display:none;opacity:0;transition:opacity 200ms var(--ease)}
+.page.active{display:block;opacity:1}
+
+/* ========== TICKER ========== */
+.ticker{
+  position:sticky;top:0;z-index:60;
+  background:#08080A;border-bottom:1px solid var(--line);
+  overflow:hidden;height:36px;display:flex;align-items:center;
+}
+.ticker-track{display:flex;gap:0;animation:scrollX 60s linear infinite;white-space:nowrap;will-change:transform}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 22px;font-size:12px;font-family:'DM Mono',monospace;border-right:1px solid var(--line)}
+.ticker-sym{color:var(--off);font-weight:500}
+.ticker-px{color:var(--muted-2)}
+.ticker-chg{font-weight:500;padding:2px 6px;border-radius:3px;transition:background 400ms var(--ease)}
+.ticker-chg.flash-up{animation:flashUp 600ms var(--ease)}
+.ticker-chg.flash-down{animation:flashDown 600ms var(--ease)}
+@media(max-width:767px){.ticker-item{font-size:11px;padding:0 14px}.ticker{height:32px}}
+
+/* ========== NAVBAR ========== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:80;
+  transition:background 300ms var(--ease),backdrop-filter 300ms var(--ease),border-color 300ms var(--ease);
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled{
+  background:rgba(10,10,12,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom-color:var(--line);
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  height:72px;padding:0 var(--pad-x);max-width:var(--max);margin:0 auto;
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.logo-mark{width:30px;height:30px;flex:none}
+.logo-text{display:flex;align-items:baseline;gap:6px}
+.logo-text .a{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:24px;color:var(--off);letter-spacing:-0.01em}
+.logo-text .b{font-family:'DM Sans',sans-serif;font-weight:300;font-size:14px;color:var(--muted-2);letter-spacing:0.18em;text-transform:uppercase}
+
+.nav-links{display:none;align-items:center;gap:4px}
+@media(min-width:1024px){.nav-links{display:flex}}
+.nav-link{
+  position:relative;padding:24px 14px;font-size:14px;font-weight:500;color:var(--off);
+  display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  transition:color var(--t) var(--ease);
+}
+.nav-link:hover,.nav-link.active{color:var(--gold)}
+.nav-link svg{transition:transform var(--t) var(--ease)}
+.nav-link[aria-expanded="true"] svg{transform:rotate(180deg)}
+
+.mega{
+  position:absolute;left:50%;top:calc(100% + 6px);
+  transform:translateX(-50%) translateY(8px);
+  background:rgba(17,17,20,0.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--line-2);border-radius:var(--r-card);
+  padding:24px;min-width:280px;
+  opacity:0;pointer-events:none;
+  transition:opacity 200ms var(--ease),transform 200ms var(--ease);
+  box-shadow:var(--shadow);
+}
+.nav-item{position:relative}
+.nav-item:hover .mega,.nav-item:focus-within .mega{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.mega-grid{display:grid;grid-template-columns:1fr;gap:4px;min-width:240px}
+.mega-link{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-input);
+  font-size:13.5px;color:var(--off);transition:background var(--t) var(--ease),color var(--t) var(--ease);cursor:pointer;
+}
+.mega-link:hover{background:rgba(201,168,76,0.08);color:var(--gold)}
+.mega-link svg{width:16px;height:16px;color:var(--gold);flex:none}
+
+.nav-cta{display:flex;align-items:center;gap:8px}
+.nav-cta .text-link{display:none;font-size:13.5px;color:var(--muted-2);padding:0 12px;cursor:pointer;transition:color var(--t) var(--ease)}
+.nav-cta .text-link:hover{color:var(--off)}
+@media(min-width:1024px){.nav-cta .text-link{display:inline-flex}}
+
+.hamburger{
+  display:inline-flex;flex-direction:column;justify-content:center;gap:5px;
+  width:44px;height:44px;align-items:center;
+}
+@media(min-width:1024px){.hamburger{display:none}}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--off);transition:transform 300ms var(--ease),opacity 200ms var(--ease)}
+.hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+/* ========== MOBILE DRAWER ========== */
+.drawer{
+  position:fixed;inset:0;z-index:90;
+  background:var(--void);
+  transform:translateX(100%);
+  transition:transform 300ms var(--ease);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 var(--pad-x);border-bottom:1px solid var(--line)}
+.drawer-body{padding:24px var(--pad-x);flex:1}
+.drawer-section{border-bottom:1px solid var(--line);padding:8px 0}
+.drawer-section summary{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 4px;font-size:18px;color:var(--off);cursor:pointer;list-style:none;
+  font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:-0.005em;
+}
+.drawer-section summary::-webkit-details-marker{display:none}
+.drawer-section svg{transition:transform 300ms var(--ease);color:var(--gold)}
+.drawer-section[open] svg{transform:rotate(180deg)}
+.drawer-sub{display:flex;flex-direction:column;gap:2px;padding:4px 0 16px 4px}
+.drawer-sub a{padding:10px 0;color:var(--muted-2);font-size:14.5px;cursor:pointer;transition:color var(--t) var(--ease)}
+.drawer-sub a:hover{color:var(--gold)}
+.drawer-foot{padding:24px var(--pad-x) 32px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+@media(min-width:1024px){.drawer{display:none}}
+
+/* ========== HERO ========== */
+.hero{
+  position:relative;min-height:100vh;display:flex;align-items:center;
+  padding:120px 0 80px;overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,.08), transparent 60%), var(--void);
+}
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero-chart{position:absolute;inset:0;width:100%;height:100%;opacity:0.06}
+.hero-accent{
+  position:absolute;top:-100px;right:-150px;width:600px;height:600px;
+  background:linear-gradient(135deg,rgba(201,168,76,.18),transparent 60%);
+  transform:rotate(35deg);pointer-events:none;
+  filter:blur(40px);
+}
+.hero-inner{position:relative;z-index:2}
+.hero h1{margin:18px 0 22px}
+.hero .lead{margin-bottom:36px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:48px}
+@media(max-width:600px){.hero-ctas{flex-direction:column}.hero-ctas .btn{width:100%}}
+.trust-row{
+  display:flex;flex-wrap:wrap;gap:14px 28px;
+  font-size:13px;color:var(--muted-2);
+  align-items:center;
+}
+.trust-row span{display:inline-flex;align-items:center;gap:8px}
+.trust-row svg{color:var(--gold);flex:none}
+
+/* ========== STATS ========== */
+.stats{
+  background:linear-gradient(180deg,var(--ink),var(--void));
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:48px 0;
+}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:32px 24px;text-align:center;
+}
+@media(min-width:768px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.stats-grid{grid-template-columns:repeat(6,1fr)}}
+.stat-num{
+  font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(32px,4vw,46px);
+  color:var(--gold);letter-spacing:-0.01em;line-height:1;margin-bottom:6px;
+}
+.stat-lab{font-size:11.5px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted-2);font-family:'DM Mono',monospace}
+
+/* ========== SECTION HEAD ========== */
+.sec-head{margin-bottom:48px;max-width:760px}
+.sec-head .h2{margin:14px 0 16px}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+
+/* ========== FEATURE CARDS ========== */
+.bento{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.bento{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.bento{grid-template-columns:repeat(3,1fr);gap:20px}}
+.card{
+  position:relative;background:var(--ink);border:1px solid var(--line);
+  border-radius:var(--r-card);padding:28px;
+  transition:transform var(--t) var(--ease),border-color var(--t) var(--ease),box-shadow var(--t) var(--ease);
+}
+.card::before{
+  content:"";position:absolute;left:0;top:0;height:1px;width:0;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  transition:width 400ms var(--ease);
+}
+.card:hover{transform:translateY(-6px);border-color:rgba(201,168,76,.4);box-shadow:var(--shadow-gold)}
+.card:hover::before{width:100%}
+.card-icon{
+  width:44px;height:44px;border-radius:var(--r-input);
+  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);
+  display:inline-flex;align-items:center;justify-content:center;color:var(--gold);
+  margin-bottom:18px;
+}
+.card h3{font-size:18px;font-weight:600;color:var(--off);margin-bottom:10px}
+.card p{font-size:14px;color:var(--muted-2);line-height:1.6}
+
+/* ========== MARKETS ========== */
+.market-pills{
+  display:flex;gap:10px;overflow-x:auto;padding:4px 0 14px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.market-pills::-webkit-scrollbar{display:none}
+.pill{
+  flex:none;scroll-snap-align:start;
+  padding:10px 20px;border-radius:var(--r-pill);
+  background:transparent;border:1px solid var(--line-2);
+  font-size:13px;color:var(--off);cursor:pointer;
+  transition:all var(--t) var(--ease);min-height:40px;
+}
+.pill:hover{border-color:var(--gold);color:var(--gold)}
+.pill.active{background:var(--gold);color:#1A1606;border-color:var(--gold);font-weight:500}
+
+.instr-grid{
+  display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px;
+}
+@media(min-width:640px){.instr-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.instr-grid{grid-template-columns:repeat(4,1fr)}}
+.instr{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:18px;display:flex;flex-direction:column;gap:10px;
+  transition:border-color var(--t) var(--ease),transform var(--t) var(--ease);
+  cursor:pointer;
+}
+.instr:hover{border-color:var(--gold);transform:translateY(-3px)}
+.instr-top{display:flex;justify-content:space-between;align-items:flex-start}
+.instr-name{font-weight:600;font-size:14px;font-family:'DM Mono',monospace}
+.instr-px{font-family:'DM Mono',monospace;font-size:14px;color:var(--off)}
+.instr-mid{display:flex;justify-content:space-between;align-items:center;font-size:11px}
+.instr-spread{color:var(--muted-2);font-family:'DM Mono',monospace}
+.instr-chg{font-family:'DM Mono',monospace;font-weight:500;padding:2px 6px;border-radius:3px;background:rgba(0,232,122,.08)}
+.instr-chg.neg{background:rgba(255,58,47,.1)}
+.instr svg.spark{width:100%;height:36px}
+
+/* ========== PLATFORMS SHOWCASE ========== */
+.split{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+@media(min-width:1024px){.split{grid-template-columns:1fr 1fr;gap:80px}}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:14px 18px;font-size:13.5px;color:var(--muted-2);
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:color var(--t) var(--ease),border-color var(--t) var(--ease);
+  white-space:nowrap;background:transparent;
+}
+.tab:hover{color:var(--off)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:fadeUp 400ms var(--ease)}
+.tabpane h3{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;margin-bottom:14px}
+.tabpane ul{display:flex;flex-direction:column;gap:10px;margin:18px 0 24px}
+.tabpane ul li{display:flex;gap:10px;color:var(--muted-2);font-size:14.5px}
+.tabpane ul li svg{color:var(--gold);flex:none;margin-top:4px}
+.dl-row{display:flex;flex-wrap:wrap;gap:10px}
+.platform-mockup{
+  position:relative;background:linear-gradient(160deg,var(--ink-2),var(--ink));
+  border:1px solid var(--line-2);border-radius:var(--r-card);
+  padding:18px;aspect-ratio:4/3;animation:float 6s var(--ease) infinite;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:14px;
+}
+.mock-bar{display:flex;gap:6px}
+.mock-bar span{width:10px;height:10px;border-radius:50%;background:var(--line-2)}
+.mock-bar span:nth-child(1){background:#FF5F56}
+.mock-bar span:nth-child(2){background:#FFBD2E}
+.mock-bar span:nth-child(3){background:#27C93F}
+.mock-grid{display:grid;grid-template-columns:1fr 2fr;gap:12px;flex:1;min-height:0}
+.mock-side{background:var(--void);border-radius:var(--r-input);padding:10px;display:flex;flex-direction:column;gap:6px}
+.mock-side-row{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--muted-2)}
+.mock-side-row b{color:var(--gold);font-weight:500}
+.mock-chart{background:var(--void);border-radius:var(--r-input);padding:10px;position:relative;overflow:hidden}
+.mock-chart svg{width:100%;height:100%;display:block}
+
+/* ========== ACCOUNT CARDS ========== */
+.acct-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:768px){.acct-grid{grid-template-columns:repeat(3,1fr);gap:20px}}
+.acct{
+  position:relative;background:var(--ink);border:1px solid var(--line);
+  border-radius:var(--r-card);padding:32px 28px;
+  display:flex;flex-direction:column;gap:16px;
+  transition:transform var(--t) var(--ease),border-color var(--t) var(--ease);
+}
+.acct:hover{transform:translateY(-4px);border-color:var(--gold)}
+.acct.featured{
+  order:-1;
+  border-color:var(--gold);
+  background:linear-gradient(180deg,rgba(201,168,76,.06),var(--ink));
+}
+@media(min-width:768px){.acct.featured{order:0}}
+.acct.featured::before{
+  content:"";position:absolute;inset:-1px;border-radius:var(--r-card);padding:1px;
+  background:linear-gradient(110deg,transparent 30%,rgba(201,168,76,.6) 50%,transparent 70%);
+  background-size:200% 100%;
+  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;animation:goldSweep 4s linear infinite;
+}
+.acct-badge{
+  align-self:flex-start;font-family:'DM Mono',monospace;font-size:10.5px;
+  letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);
+  border:1px solid rgba(201,168,76,.4);padding:5px 10px;border-radius:var(--r-pill);
+}
+.acct.featured .acct-badge{background:var(--gold);color:#1A1606;border-color:var(--gold)}
+.acct h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:34px}
+.acct-deposit{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted-2)}
+.acct-deposit b{color:var(--off);font-size:18px}
+.acct-feats{display:flex;flex-direction:column;gap:10px;margin:8px 0;flex:1}
+.acct-feats li{display:flex;justify-content:space-between;font-size:13.5px;padding:10px 0;border-bottom:1px solid var(--line)}
+.acct-feats li:last-child{border-bottom:0}
+.acct-feats span:first-child{color:var(--muted-2)}
+.acct-feats span:last-child{color:var(--off);font-family:'DM Mono',monospace;font-weight:500}
+
+/* ========== AWARDS / TESTIMONIALS ========== */
+.regs-row{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:24px 48px;
+  padding:24px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  margin-bottom:48px;
+}
+.reg-badge{display:flex;align-items:center;gap:12px;color:var(--muted-2)}
+.reg-badge svg{flex:none;color:var(--gold)}
+.reg-badge b{color:var(--off);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;display:block;line-height:1}
+.reg-badge small{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--muted-2)}
+
+.awards-row{
+  display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:56px;
+}
+@media(min-width:640px){.awards-row{grid-template-columns:repeat(3,1fr)}}
+.award{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:22px;display:flex;align-items:flex-start;gap:14px;
+}
+.award svg{color:var(--gold);flex:none;margin-top:2px}
+.award b{display:block;color:var(--off);font-size:14.5px;margin-bottom:4px}
+.award small{color:var(--muted-2);font-size:12.5px;font-family:'DM Mono',monospace;letter-spacing:0.04em}
+
+.testi-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:768px){.testi-grid{grid-template-columns:repeat(3,1fr)}}
+.testi{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:28px;display:flex;flex-direction:column;gap:16px;
+  transition:border-color var(--t) var(--ease);
+}
+.testi:hover{border-color:rgba(201,168,76,.4)}
+.stars{display:inline-flex;gap:2px;color:var(--gold)}
+.testi blockquote{
+  margin:0;font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:18px;line-height:1.4;color:var(--off);
+}
+.testi-meta{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted-2);font-family:'DM Mono',monospace;letter-spacing:0.04em;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+
+/* ========== EDUCATION STRIP ========== */
+.edu-strip{
+  background:linear-gradient(180deg,var(--ink),var(--void)),radial-gradient(ellipse at 50% 50%,rgba(201,168,76,.12),transparent 60%);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  position:relative;
+}
+.edu-strip::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 40% at 50% 100%,rgba(201,168,76,.08),transparent 60%);
+  pointer-events:none;
+}
+.edu-pillars{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:48px 0 32px;
+}
+@media(min-width:768px){.edu-pillars{grid-template-columns:repeat(4,1fr)}}
+.edu-pillar{
+  background:rgba(17,17,20,.5);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:22px;text-align:center;transition:all var(--t) var(--ease);cursor:pointer;
+}
+.edu-pillar:hover{border-color:var(--gold);transform:translateY(-4px)}
+.edu-pillar svg{color:var(--gold);margin-bottom:14px}
+.edu-pillar b{display:block;color:var(--off);font-size:14.5px;font-weight:600}
+
+/* ========== OPEN ACCOUNT CTA ========== */
+.cta-band{
+  position:relative;
+  background:linear-gradient(135deg,var(--ink-2),var(--void));
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  overflow:hidden;
+}
+.cta-band::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(201,168,76,.08) 50%,transparent 70%);
+  background-size:200% 100%;animation:goldSweep 6s linear infinite;pointer-events:none;
+}
+.cta-band-inner{position:relative;z-index:1;text-align:center}
+.steps{
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px;
+  margin:40px 0 36px;
+}
+.step{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:14px 24px;border:1px solid var(--line-2);border-radius:var(--r-pill);
+  background:rgba(17,17,20,.6);color:var(--off);font-size:14px;
+}
+.step b{
+  width:28px;height:28px;border-radius:50%;background:var(--gold);color:#1A1606;
+  display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-family:'DM Mono',monospace;font-size:13px;
+}
+.step-arr{color:var(--muted)}
+@media(max-width:640px){.steps{flex-direction:column}.step-arr{transform:rotate(90deg)}}
+.cta-buttons{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+@media(max-width:600px){.cta-buttons{flex-direction:column}.cta-buttons .btn{width:100%}}
+
+/* ========== FOOTER ========== */
+footer{background:#08080A;border-top:1px solid var(--line);padding:64px 0 32px}
+.foot-grid{
+  display:grid;grid-template-columns:1fr;gap:40px;
+}
+@media(min-width:640px){.foot-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.foot-grid{grid-template-columns:1.4fr repeat(4,1fr);gap:48px}}
+.foot-col h5{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-family:'DM Mono',monospace;font-weight:500;margin-bottom:18px}
+.foot-col ul{display:flex;flex-direction:column;gap:10px}
+.foot-col li a{color:var(--muted-2);font-size:13.5px;cursor:pointer;transition:color var(--t) var(--ease)}
+.foot-col li a:hover{color:var(--gold)}
+.foot-tag{font-size:13.5px;color:var(--muted-2);max-width:34ch;margin:14px 0 22px}
+.socials{display:flex;gap:10px;margin-bottom:24px}
+.socials a{
+  width:38px;height:38px;border:1px solid var(--line-2);border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;color:var(--muted-2);
+  transition:all var(--t) var(--ease);cursor:pointer;
+}
+.socials a:hover{border-color:var(--gold);color:var(--gold)}
+.foot-regs{display:flex;flex-wrap:wrap;gap:8px;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase}
+.foot-regs span{padding:4px 8px;border:1px solid var(--line);border-radius:3px}
+.risk{
+  margin-top:48px;padding:24px;border:1px solid var(--line);border-radius:var(--r-card);
+  font-size:11.5px;color:var(--muted);line-height:1.7;background:rgba(17,17,20,.4);
+}
+.copy{
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;
+  margin-top:24px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--muted);
+}
+.copy ul{display:flex;flex-wrap:wrap;gap:18px}
+.copy a{cursor:pointer;transition:color var(--t) var(--ease)}
+.copy a:hover{color:var(--gold)}
+
+/* ========== TABLE ========== */
+.table-wrap{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border:1px solid var(--line);border-radius:var(--r-card);
+  background:var(--ink);
+}
+table.dt{font-size:13.5px;min-width:680px}
+table.dt th{
+  text-align:left;padding:16px 18px;background:var(--ink-2);
+  font-weight:500;color:var(--muted-2);font-size:11px;letter-spacing:0.14em;
+  text-transform:uppercase;font-family:'DM Mono',monospace;border-bottom:1px solid var(--line);
+  cursor:pointer;user-select:none;
+}
+table.dt th:hover{color:var(--gold)}
+table.dt td{padding:16px 18px;border-bottom:1px solid var(--line);font-family:'DM Mono',monospace}
+table.dt tr:last-child td{border-bottom:0}
+table.dt tr{transition:background var(--t) var(--ease)}
+table.dt tbody tr:hover{background:rgba(201,168,76,.04)}
+table.dt td:first-child{color:var(--off);font-weight:500;position:sticky;left:0;background:var(--ink)}
+table.dt tbody tr:hover td:first-child{background:#191920}
+.row-cta{
+  opacity:0;transition:opacity var(--t) var(--ease);
+  font-size:11.5px;color:var(--gold);font-family:'DM Sans',sans-serif;letter-spacing:0.04em;
+}
+table.dt tbody tr:hover .row-cta{opacity:1}
+
+/* ========== TIMELINE ========== */
+.timeline{
+  display:grid;grid-template-columns:1fr;gap:24px;position:relative;
+}
+@media(min-width:768px){.timeline{grid-template-columns:repeat(4,1fr)}}
+.tl-item{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:24px;position:relative;
+}
+.tl-year{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--gold);font-weight:500;margin-bottom:8px}
+.tl-item h4{font-size:15px;font-weight:600;color:var(--off);margin-bottom:6px}
+.tl-item p{font-size:13px;color:var(--muted-2);line-height:1.5}
+
+/* ========== FAQ ========== */
+.faq{display:flex;flex-direction:column;gap:8px}
+.faq details{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  transition:border-color var(--t) var(--ease);
+}
+.faq details[open]{border-color:rgba(201,168,76,.4)}
+.faq summary{
+  padding:20px 24px;cursor:pointer;list-style:none;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  font-size:15px;font-weight:500;color:var(--off);
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary svg{color:var(--gold);transition:transform 300ms var(--ease);flex:none}
+.faq details[open] summary svg{transform:rotate(45deg)}
+.faq-body{padding:0 24px 22px;color:var(--muted-2);font-size:14px;line-height:1.65}
+
+/* ========== COURSE / ARTICLE / WEBINAR ========== */
+.course-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.course-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.course-grid{grid-template-columns:repeat(3,1fr)}}
+.course{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:24px;display:flex;flex-direction:column;gap:14px;
+  transition:transform var(--t) var(--ease),border-color var(--t) var(--ease);cursor:pointer;
+}
+.course:hover{transform:translateY(-4px);border-color:var(--gold)}
+.level{
+  align-self:flex-start;font-family:'DM Mono',monospace;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:0.16em;padding:4px 10px;
+  border:1px solid var(--line-2);border-radius:var(--r-pill);color:var(--muted-2);
+}
+.level.beg{color:var(--pos);border-color:rgba(0,232,122,.3)}
+.level.int{color:var(--gold);border-color:rgba(201,168,76,.4)}
+.level.adv{color:var(--neg);border-color:rgba(255,58,47,.3)}
+.course h4{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;line-height:1.2;color:var(--off)}
+.course-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted-2);font-family:'DM Mono',monospace;letter-spacing:0.04em;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+
+.article-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:768px){.article-grid{grid-template-columns:repeat(3,1fr)}}
+.article{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:24px;cursor:pointer;transition:all var(--t) var(--ease);
+}
+.article:hover{transform:translateY(-3px);border-color:var(--gold)}
+.article-tag{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px}
+.article h4{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;line-height:1.25;color:var(--off);margin-bottom:10px}
+.article-date{font-size:12px;color:var(--muted-2);font-family:'DM Mono',monospace}
+
+.webinars{display:flex;flex-direction:column;gap:10px}
+.webinar{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:22px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;
+  transition:border-color var(--t) var(--ease);
+}
+.webinar:hover{border-color:rgba(201,168,76,.4)}
+.web-date{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:0.1em;display:block;margin-bottom:6px}
+.webinar h4{font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:var(--off)}
+
+/* ========== GLOSSARY ========== */
+.gloss-alpha{
+  display:flex;flex-wrap:wrap;gap:6px;margin-bottom:32px;
+  padding:14px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--ink);
+}
+.gloss-alpha button{
+  width:32px;height:32px;border-radius:var(--r-input);
+  font-family:'DM Mono',monospace;font-size:12px;color:var(--muted-2);
+  transition:all var(--t) var(--ease);
+}
+.gloss-alpha button:hover{background:var(--gold);color:#1A1606}
+.gloss-defs{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:768px){.gloss-defs{grid-template-columns:repeat(2,1fr)}}
+.gdef{background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);padding:20px}
+.gdef b{display:block;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--gold);margin-bottom:6px}
+.gdef p{font-size:13.5px;color:var(--muted-2);line-height:1.6}
+
+/* ========== TEAM / OFFICES ========== */
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(min-width:768px){.team-grid{grid-template-columns:repeat(4,1fr)}}
+.team{
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:28px 22px;text-align:center;transition:all var(--t) var(--ease);
+}
+.team:hover{border-color:var(--gold);transform:translateY(-4px)}
+.avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold-dim));
+  color:#1A1606;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+}
+.team b{display:block;font-size:14.5px;color:var(--off);margin-bottom:4px}
+.team small{font-size:12px;color:var(--muted-2);font-family:'DM Mono',monospace;letter-spacing:0.04em}
+
+.office-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.office-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.office-grid{grid-template-columns:repeat(4,1fr)}}
+.office{background:var(--ink);border:1px solid var(--line);border-radius:var(--r-card);padding:24px}
+.office h4{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--gold);margin-bottom:10px}
+.office p{font-size:13px;color:var(--muted-2);line-height:1.6}
+
+/* ========== PAGE HERO (sub-pages) ========== */
+.page-hero{
+  padding:140px 0 64px;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,.08),transparent 60%),var(--void);
+  border-bottom:1px solid var(--line);
+}
+.page-hero h1{margin:14px 0 18px}
+.page-hero .lead{margin-bottom:0}
+</style>
+</head>
+<body>
+
+<!-- scaffolding only — components added in subsequent parts -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- ========== NAVBAR ========== -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="logo" data-page="home" aria-label="Auro Brokers home">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E8C97A"/>
+            <stop offset="100%" stop-color="#C9A84C"/>
+          </linearGradient>
+        </defs>
+        <path d="M20 3 L34 20 L20 37 L13 28 L24 20 L13 12 Z" fill="url(#lg1)"/>
+        <path d="M6 20 L20 3 L20 14 L13 20 L20 26 L20 37 Z" fill="#C9A84C" opacity=".55"/>
+      </svg>
+      <span class="logo-text"><span class="a">Auro</span><span class="b">Brokers</span></span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      <div class="nav-item">
+        <button class="nav-link" aria-expanded="false">Trading
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega"><div class="mega-grid">
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M2 12 L6 7 L9 9 L14 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Forex</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="6" width="3" height="8" stroke="currentColor" stroke-width="1.4"/><rect x="6.5" y="3" width="3" height="11" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="8" width="3" height="6" stroke="currentColor" stroke-width="1.4"/></svg>Indices</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 8h6M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Commodities</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M3 13V5l5-2 5 2v8" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Shares</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M4 11l4-7 4 7-4-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Crypto</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10l-2 8H5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>ETFs</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l2 4 4 .5-3 3 1 4-4-2-4 2 1-4-3-3 4-.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Precious Metals</a>
+        </div></div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-link" aria-expanded="false">Platforms
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega"><div class="mega-grid">
+          <a class="mega-link" data-page="platforms"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" stroke="currentColor" stroke-width="1.4"/><path d="M2 12h12" stroke="currentColor" stroke-width="1.4"/></svg>MetaTrader 4</a>
+          <a class="mega-link" data-page="platforms"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>MetaTrader 5</a>
+          <a class="mega-link" data-page="platforms"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 8l2 2 3-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>cTrader</a>
+          <a class="mega-link" data-page="platforms"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 8h11M8 2.5c2 1.6 2 9.4 0 11M8 2.5c-2 1.6-2 9.4 0 11" stroke="currentColor" stroke-width="1.4"/></svg>Auro WebTrader</a>
+          <a class="mega-link" data-page="platforms"><svg viewBox="0 0 16 16" fill="none"><rect x="5" y="2" width="6" height="12" stroke="currentColor" stroke-width="1.4" rx="1"/><circle cx="8" cy="12" r=".7" fill="currentColor"/></svg>Mobile App</a>
+        </div></div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-link" aria-expanded="false">Accounts
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega"><div class="mega-grid">
+          <a class="mega-link" data-page="accounts"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 14c1-2.5 3-3.5 5-3.5s4 1 5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Standard</a>
+          <a class="mega-link" data-page="accounts"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l2 4 4 .5-3 3 1 4-4-2-4 2 1-4-3-3 4-.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Raw+</a>
+          <a class="mega-link" data-page="accounts"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8l-1 8H5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 4V2h4v2" stroke="currentColor" stroke-width="1.4"/></svg>Elite</a>
+          <a class="mega-link" data-page="accounts"><svg viewBox="0 0 16 16" fill="none"><path d="M3 13l3-7 3 4 4-7" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>Pro</a>
+          <a class="mega-link" data-page="accounts"><svg viewBox="0 0 16 16" fill="none"><path d="M11 8a3 3 0 11-3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Islamic</a>
+          <a class="mega-link" data-page="accounts"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" stroke="currentColor" stroke-width="1.4"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Demo Account</a>
+        </div></div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-link" aria-expanded="false">Markets
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega"><div class="mega-grid">
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/></svg>Live Rates</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M2 13l4-4 3 3 5-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Spreads</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Market Hours</a>
+          <a class="mega-link" data-page="education"><svg viewBox="0 0 16 16" fill="none"><rect x="2.5" y="3.5" width="11" height="10" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 6.5h11M5 2v3M11 2v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Economic Calendar</a>
+          <a class="mega-link" data-page="trading"><svg viewBox="0 0 16 16" fill="none"><path d="M2 8l3-4 3 6 3-3 3 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Volatility Index</a>
+        </div></div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-link" aria-expanded="false">Education
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega"><div class="mega-grid">
+          <a class="mega-link" data-page="education"><svg viewBox="0 0 16 16" fill="none"><path d="M2 6l6-3 6 3-6 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 7v4c0 1 1.5 2 3 2s3-1 3-2V7" stroke="currentColor" stroke-width="1.4"/></svg>Trading Academy</a>
+          <a class="mega-link" data-page="education"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="9" stroke="currentColor" stroke-width="1.4"/><path d="M7 6l3 2-3 2z" fill="currentColor"/></svg>Video Courses</a>
+          <a class="mega-link" data-page="education"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 14c1-2.5 3-3.5 5-3.5s4 1 5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Webinars</a>
+          <a class="mega-link" data-page="education"><svg viewBox="0 0 16 16" fill="none"><path d="M2 13l4-5 3 3 5-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Market Analysis</a>
+          <a class="mega-link" data-page="education"><svg viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.4"/><path d="M6 6h4M6 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Glossary</a>
+        </div></div>
+      </div>
+
+      <div class="nav-item">
+        <button class="nav-link" aria-expanded="false">Company
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega"><div class="mega-grid">
+          <a class="mega-link" data-page="company"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5M8 11v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>About Us</a>
+          <a class="mega-link" data-page="company"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l5 2v5c0 3-2.5 5-5 5s-5-2-5-5V4z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Regulations</a>
+          <a class="mega-link" data-page="company"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 8.5L4 14l4-2 4 2-1.5-5.5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Awards</a>
+          <a class="mega-link" data-page="company"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Press Room</a>
+          <a class="mega-link" data-page="company"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 14c1-2.5 3-3.5 5-3.5s4 1 5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Careers</a>
+          <a class="mega-link" data-page="company"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10v8H3z" stroke="currentColor" stroke-width="1.4"/><path d="M3 4l5 4 5-4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Contact Us</a>
+        </div></div>
+      </div>
+    </nav>
+
+    <div class="nav-cta">
+      <button class="text-link">Live Chat</button>
+      <button class="text-link">Login</button>
+      <button class="btn btn-gold btn-sm hide-tablet">Open Account
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-controls="drawer" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== MOBILE DRAWER ========== -->
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <a class="logo" data-page="home">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M20 3 L34 20 L20 37 L13 28 L24 20 L13 12 Z" fill="#C9A84C"/>
+        <path d="M6 20 L20 3 L20 14 L13 20 L20 26 L20 37 Z" fill="#C9A84C" opacity=".55"/>
+      </svg>
+      <span class="logo-text"><span class="a">Auro</span><span class="b">Brokers</span></span>
+    </a>
+    <button class="hamburger open" id="hamburgerClose" aria-label="Close menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="drawer-body">
+    <details class="drawer-section"><summary>Trading <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+      <div class="drawer-sub">
+        <a data-page="trading">Forex</a><a data-page="trading">Indices</a><a data-page="trading">Commodities</a>
+        <a data-page="trading">Shares</a><a data-page="trading">Crypto</a><a data-page="trading">ETFs</a>
+        <a data-page="trading">Precious Metals</a>
+      </div>
+    </details>
+    <details class="drawer-section"><summary>Platforms <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+      <div class="drawer-sub">
+        <a data-page="platforms">MetaTrader 4</a><a data-page="platforms">MetaTrader 5</a>
+        <a data-page="platforms">cTrader</a><a data-page="platforms">Auro WebTrader</a>
+        <a data-page="platforms">Mobile App</a>
+      </div>
+    </details>
+    <details class="drawer-section"><summary>Accounts <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+      <div class="drawer-sub">
+        <a data-page="accounts">Standard</a><a data-page="accounts">Raw+</a>
+        <a data-page="accounts">Elite</a><a data-page="accounts">Pro</a>
+        <a data-page="accounts">Islamic</a><a data-page="accounts">Demo Account</a>
+      </div>
+    </details>
+    <details class="drawer-section"><summary>Markets <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+      <div class="drawer-sub">
+        <a data-page="trading">Live Rates</a><a data-page="trading">Spreads</a>
+        <a data-page="trading">Market Hours</a><a data-page="education">Economic Calendar</a>
+        <a data-page="trading">Volatility Index</a>
+      </div>
+    </details>
+    <details class="drawer-section"><summary>Education <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+      <div class="drawer-sub">
+        <a data-page="education">Trading Academy</a><a data-page="education">Video Courses</a>
+        <a data-page="education">Webinars</a><a data-page="education">Market Analysis</a>
+        <a data-page="education">Glossary</a>
+      </div>
+    </details>
+    <details class="drawer-section"><summary>Company <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+      <div class="drawer-sub">
+        <a data-page="company">About Us</a><a data-page="company">Regulations</a>
+        <a data-page="company">Awards</a><a data-page="company">Press Room</a>
+        <a data-page="company">Careers</a><a data-page="company">Contact Us</a>
+      </div>
+    </details>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn btn-gold btn-block">Open Account</button>
+    <button class="btn btn-outline btn-block">Login</button>
+  </div>
+</aside>
+
+<!-- ========== TICKER ========== -->
+<div class="ticker" role="marquee" aria-label="Live market prices">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- ========== MAIN ========== -->
+<main id="main">
+<!-- ========== PAGE: HOME ========== -->
+<section class="page active" id="page-home" data-page="home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <canvas class="hero-canvas" id="heroCanvas"></canvas>
+      <svg class="hero-chart" viewBox="0 0 1200 600" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="chartL" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C9A84C" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g stroke="#C9A84C" stroke-width="1" fill="none">
+          <path d="M0 480 L100 420 L200 460 L300 360 L400 400 L500 280 L600 320 L700 220 L800 280 L900 180 L1000 240 L1100 140 L1200 200" />
+        </g>
+        <g stroke="#C9A84C" stroke-width="1" opacity=".6">
+          <line x1="40" y1="380" x2="40" y2="460"/><rect x="32" y="400" width="16" height="40" fill="#00E87A" opacity=".4"/>
+          <line x1="100" y1="340" x2="100" y2="440"/><rect x="92" y="360" width="16" height="50" fill="#FF3A2F" opacity=".4"/>
+          <line x1="160" y1="320" x2="160" y2="420"/><rect x="152" y="340" width="16" height="60" fill="#00E87A" opacity=".4"/>
+          <line x1="220" y1="280" x2="220" y2="380"/><rect x="212" y="300" width="16" height="50" fill="#00E87A" opacity=".4"/>
+          <line x1="280" y1="260" x2="280" y2="360"/><rect x="272" y="280" width="16" height="50" fill="#FF3A2F" opacity=".4"/>
+          <line x1="340" y1="220" x2="340" y2="340"/><rect x="332" y="240" width="16" height="70" fill="#00E87A" opacity=".4"/>
+          <line x1="400" y1="200" x2="400" y2="320"/><rect x="392" y="220" width="16" height="60" fill="#00E87A" opacity=".4"/>
+          <line x1="460" y1="180" x2="460" y2="300"/><rect x="452" y="200" width="16" height="60" fill="#FF3A2F" opacity=".4"/>
+          <line x1="520" y1="140" x2="520" y2="280"/><rect x="512" y="160" width="16" height="80" fill="#00E87A" opacity=".4"/>
+        </g>
+      </svg>
+      <div class="hero-accent"></div>
+    </div>
+
+    <div class="wrap hero-inner">
+      <div class="reveal"><span class="eyebrow">EST. 2002 · LICENSED IN 170 COUNTRIES</span></div>
+      <h1 class="reveal h-display serif">Trade The World's<br><span class="gold">Markets.</span></h1>
+      <p class="lead reveal">2,100+ instruments. Institutional-grade spreads. Four elite platforms — engineered for the discerning trader.</p>
+
+      <div class="hero-ctas reveal">
+        <button class="btn btn-gold">Start Trading
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn btn-outline">Try Free Demo</button>
+      </div>
+
+      <div class="trust-row reveal">
+        <span><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>FCA Regulated</span>
+        <span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>2M+ Active Clients</span>
+        <span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v6l4 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/></svg>26 Years Experience</span>
+        <span><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.5L12 5l-3 3 1 4-3-2-3 2 1-4-3-3 3.5-.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Award-Winning</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats" id="statsSection">
+    <div class="wrap">
+      <div class="stats-grid">
+        <div><div class="stat-num"><span data-count="2100" data-suffix="+">0</span></div><div class="stat-lab">Instruments</div></div>
+        <div><div class="stat-num"><span data-count="26">0</span></div><div class="stat-lab">Years in Markets</div></div>
+        <div><div class="stat-num"><span data-count="2" data-suffix="M+">0</span></div><div class="stat-lab">Clients</div></div>
+        <div><div class="stat-num"><span data-count="170">0</span></div><div class="stat-lab">Countries</div></div>
+        <div><div class="stat-num">0.0<span class="muted" style="font-size:.55em"> pip</span></div><div class="stat-lab">Spreads From</div></div>
+        <div><div class="stat-num">24/5</div><div class="stat-lab">Support</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">WHY AURO</span>
+        <h2 class="h2 serif">Built for traders who demand more.</h2>
+        <p class="lead">Six pillars that separate Auro Brokers from the rest. Every feature engineered for execution, transparency and trust.</p>
+      </header>
+
+      <div class="bento">
+        <article class="card reveal">
+          <span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2v8M5 8l6-6 6 6M3 14l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>Ultra-Fast Execution</h3>
+          <p>Average order execution under 11ms. Co-located servers in LD4, NY4 and TY3 datacentres for institutional-grade fill quality.</p>
+        </article>
+        <article class="card reveal">
+          <span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 11l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>Regulated &amp; Secure</h3>
+          <p>Triple-licensed by FCA, CySEC and FSCA. Client funds segregated in tier-1 banks with negative balance protection as standard.</p>
+        </article>
+        <article class="card reveal">
+          <span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 18l5-6 4 4 7-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>Institutional Spreads</h3>
+          <p>Raw spreads from 0.0 pips on EUR/USD with deep tier-1 liquidity. No re-quotes. No dealing desk intervention. Ever.</p>
+        </article>
+        <article class="card reveal">
+          <span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="12" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="12" width="7" height="7" stroke="currentColor" stroke-width="1.6"/><rect x="12" y="12" width="7" height="7" stroke="currentColor" stroke-width="1.6"/></svg></span>
+          <h3>Four Trading Platforms</h3>
+          <p>MetaTrader 4, MetaTrader 5, cTrader and our flagship Auro WebTrader. Choose your edge — switch any time.</p>
+        </article>
+        <article class="card reveal">
+          <span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 7c0-2 2-3 4-3h6c2 0 4 1 4 3v6c0 2-2 3-4 3H10l-4 3v-3H8c-2 0-4-1-4-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+          <h3>24/5 Expert Support</h3>
+          <p>Dedicated multilingual desk staffed by ex-traders, available across 18 languages. Average response time under 90 seconds.</p>
+        </article>
+        <article class="card reveal">
+          <span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11l4 4L19 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 3"/></svg></span>
+          <h3>Negative Balance Protection</h3>
+          <p>You will never owe more than you deposit. Built-in across every account type, every market, every trade — without exception.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKETS -->
+  <section class="section" style="background:linear-gradient(180deg,var(--void),var(--ink) 50%,var(--void))">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">MARKETS</span>
+        <h2 class="h2 serif">Live spreads. Real instruments.</h2>
+        <p class="lead">Filter by asset class. Each card shows the live mid, spread, and a 24-hour sparkline.</p>
+      </header>
+      <div class="market-pills" role="tablist">
+        <button class="pill active" data-asset="forex">Forex</button>
+        <button class="pill" data-asset="indices">Indices</button>
+        <button class="pill" data-asset="commodities">Commodities</button>
+        <button class="pill" data-asset="crypto">Crypto</button>
+        <button class="pill" data-asset="shares">Shares</button>
+        <button class="pill" data-asset="metals">Metals</button>
+      </div>
+      <div class="instr-grid" id="instrGrid"></div>
+    </div>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">PLATFORMS</span>
+        <h2 class="h2 serif">Four platforms. One powerful broker.</h2>
+      </header>
+
+      <div class="split">
+        <div class="reveal">
+          <div class="tabs" role="tablist" id="platTabs">
+            <button class="tab active" data-tab="mt4">MetaTrader 4</button>
+            <button class="tab" data-tab="mt5">MetaTrader 5</button>
+            <button class="tab" data-tab="ct">cTrader</button>
+            <button class="tab" data-tab="wt">WebTrader</button>
+          </div>
+          <div class="tabpane active" data-pane="mt4">
+            <h3>MetaTrader 4 — The Industry Standard</h3>
+            <p class="muted">The world's most popular forex platform, finely tuned by Auro for ultra-low latency and rock-solid stability.</p>
+            <ul>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>One-click trading &amp; partial closes</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>30+ technical indicators built-in</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Expert Advisors (EAs) &amp; MQL4 scripting</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Hedging &amp; FIFO accounts available</li>
+            </ul>
+            <div class="dl-row">
+              <button class="btn btn-gold btn-sm">Download for Windows</button>
+              <button class="btn btn-ghost btn-sm">macOS</button>
+              <button class="btn btn-ghost btn-sm">iOS</button>
+              <button class="btn btn-ghost btn-sm">Android</button>
+            </div>
+          </div>
+          <div class="tabpane" data-pane="mt5">
+            <h3>MetaTrader 5 — Multi-Asset Powerhouse</h3>
+            <p class="muted">Trade FX, stocks, futures and crypto from a single interface. The next-generation MetaTrader rebuilt for speed.</p>
+            <ul>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>21 timeframes, 38 built-in indicators</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Depth of Market (DOM) &amp; Time &amp; Sales</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Integrated economic calendar</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>MQL5 IDE &amp; advanced strategy tester</li>
+            </ul>
+            <div class="dl-row">
+              <button class="btn btn-gold btn-sm">Download for Windows</button>
+              <button class="btn btn-ghost btn-sm">macOS</button>
+              <button class="btn btn-ghost btn-sm">iOS</button>
+              <button class="btn btn-ghost btn-sm">Android</button>
+            </div>
+          </div>
+          <div class="tabpane" data-pane="ct">
+            <h3>cTrader — The Pro's Choice</h3>
+            <p class="muted">Level II pricing, advanced order types and a clean UI engineered for high-frequency, professional traders.</p>
+            <ul>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Full Level II Depth of Market</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>cAlgo automated trading suite</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Smart Stop-Out &amp; Order Risk Calculator</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>54 chart timeframes</li>
+            </ul>
+            <div class="dl-row">
+              <button class="btn btn-gold btn-sm">Download cTrader</button>
+              <button class="btn btn-ghost btn-sm">iOS</button>
+              <button class="btn btn-ghost btn-sm">Android</button>
+            </div>
+          </div>
+          <div class="tabpane" data-pane="wt">
+            <h3>Auro WebTrader — Trade From Any Browser</h3>
+            <p class="muted">Our flagship in-house platform. Zero downloads. Full functionality. Beautiful by design.</p>
+            <ul>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>HTML5, no plugins required</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>TradingView charts integrated</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Single sign-on across devices</li>
+              <li><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Biometric login on supported devices</li>
+            </ul>
+            <div class="dl-row">
+              <button class="btn btn-gold btn-sm">Launch WebTrader</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="platform-mockup" aria-hidden="true">
+            <div class="mock-bar"><span></span><span></span><span></span></div>
+            <div class="mock-grid">
+              <div class="mock-side">
+                <div class="mock-side-row"><span>EUR/USD</span><b class="pos">+0.12%</b></div>
+                <div class="mock-side-row"><span>GBP/JPY</span><b class="neg">−0.34%</b></div>
+                <div class="mock-side-row"><span>XAU/USD</span><b class="pos">+0.58%</b></div>
+                <div class="mock-side-row"><span>BTC/USD</span><b class="pos">+1.84%</b></div>
+                <div class="mock-side-row"><span>US30</span><b class="neg">−0.21%</b></div>
+                <div class="mock-side-row"><span>OIL</span><b class="pos">+0.46%</b></div>
+                <div class="mock-side-row"><span>AAPL</span><b class="pos">+0.92%</b></div>
+              </div>
+              <div class="mock-chart">
+                <svg viewBox="0 0 200 120" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="mg" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#C9A84C" stop-opacity=".4"/>
+                      <stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0 90 L20 80 L40 86 L60 70 L80 76 L100 60 L120 66 L140 50 L160 56 L180 40 L200 46 L200 120 L0 120 Z" fill="url(#mg)"/>
+                  <path d="M0 90 L20 80 L40 86 L60 70 L80 76 L100 60 L120 66 L140 50 L160 56 L180 40 L200 46" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                  <line x1="0" y1="100" x2="200" y2="100" stroke="#1F1F24"/>
+                  <line x1="0" y1="60" x2="200" y2="60" stroke="#1F1F24" stroke-dasharray="2 2"/>
+                  <line x1="0" y1="20" x2="200" y2="20" stroke="#1F1F24"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ACCOUNTS -->
+  <section class="section" style="background:linear-gradient(180deg,var(--void),var(--ink-2))">
+    <div class="wrap">
+      <header class="sec-head center reveal">
+        <span class="eyebrow">ACCOUNTS</span>
+        <h2 class="h2 serif">Choose your edge.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">From your first trade to your thousandth — there is an Auro account engineered for your style.</p>
+      </header>
+
+      <div class="acct-grid">
+        <article class="acct reveal">
+          <span class="acct-badge">Standard</span>
+          <h3>Standard</h3>
+          <div class="acct-deposit">From <b>$100</b> minimum deposit</div>
+          <ul class="acct-feats">
+            <li><span>Spread from</span><span>1.0 pip</span></li>
+            <li><span>Commission</span><span>$0</span></li>
+            <li><span>Max leverage</span><span>1:500</span></li>
+            <li><span>Platforms</span><span>MT4 · MT5 · WT</span></li>
+            <li><span>Min lot</span><span>0.01</span></li>
+          </ul>
+          <button class="btn btn-outline btn-block">Open Standard Account</button>
+        </article>
+
+        <article class="acct featured reveal">
+          <span class="acct-badge">Most Popular</span>
+          <h3>Raw+</h3>
+          <div class="acct-deposit">From <b>$500</b> minimum deposit</div>
+          <ul class="acct-feats">
+            <li><span>Spread from</span><span>0.0 pip</span></li>
+            <li><span>Commission</span><span>$3.50 / lot</span></li>
+            <li><span>Max leverage</span><span>1:500</span></li>
+            <li><span>Platforms</span><span>MT4 · MT5 · cTrader · WT</span></li>
+            <li><span>Min lot</span><span>0.01</span></li>
+          </ul>
+          <button class="btn btn-gold btn-block">Open Raw+ Account</button>
+        </article>
+
+        <article class="acct reveal">
+          <span class="acct-badge">Elite</span>
+          <h3>Elite</h3>
+          <div class="acct-deposit">From <b>$25,000</b> minimum deposit</div>
+          <ul class="acct-feats">
+            <li><span>Spread from</span><span>0.0 pip</span></li>
+            <li><span>Commission</span><span>$2.00 / lot</span></li>
+            <li><span>Max leverage</span><span>1:500</span></li>
+            <li><span>Platforms</span><span>All four platforms</span></li>
+            <li><span>Min lot</span><span>0.01</span></li>
+          </ul>
+          <button class="btn btn-outline btn-block">Open Elite Account</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- AWARDS & REGULATION -->
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head center reveal">
+        <span class="eyebrow">REGULATION · TRUST · RECOGNITION</span>
+        <h2 class="h2 serif">Triple-licensed. Globally trusted.</h2>
+      </header>
+
+      <div class="regs-row reveal">
+        <div class="reg-badge">
+          <svg width="38" height="44" viewBox="0 0 38 44" fill="none"><path d="M19 2l16 6v14c0 10-8 17-16 20-8-3-16-10-16-20V8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 22l5 5 9-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b>FCA</b><small>United Kingdom · 509956</small></div>
+        </div>
+        <div class="reg-badge">
+          <svg width="38" height="44" viewBox="0 0 38 44" fill="none"><path d="M19 2l16 6v14c0 10-8 17-16 20-8-3-16-10-16-20V8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="19" cy="20" r="6" stroke="currentColor" stroke-width="1.8"/></svg>
+          <div><b>CySEC</b><small>European Union · 078/07</small></div>
+        </div>
+        <div class="reg-badge">
+          <svg width="38" height="44" viewBox="0 0 38 44" fill="none"><path d="M19 2l16 6v14c0 10-8 17-16 20-8-3-16-10-16-20V8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 18v8l5-3 5 3v-8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <div><b>FSCA</b><small>South Africa · 45052</small></div>
+        </div>
+      </div>
+
+      <div class="awards-row">
+        <div class="award reveal"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><div><b>Best Trading App 2025</b><small>FT &amp; Investors Chronicle</small></div></div>
+        <div class="award reveal"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><div><b>Best CFD Provider 2025</b><small>Global Forex Awards</small></div></div>
+        <div class="award reveal"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><div><b>Best Platform 2024</b><small>World Finance Magazine</small></div></div>
+      </div>
+
+      <div class="testi-grid">
+        <article class="testi reveal">
+          <div class="stars">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+          </div>
+          <blockquote>"Spreads are genuinely raw — I've never seen 0.0 hold the way it does on Auro. The execution is institutional."</blockquote>
+          <div class="testi-meta"><span>James M.</span><span>UNITED KINGDOM</span></div>
+        </article>
+        <article class="testi reveal">
+          <div class="stars">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+          </div>
+          <blockquote>"Withdrawals back to my account in under 4 hours. The support desk speaks like ex-traders, because they are."</blockquote>
+          <div class="testi-meta"><span>Aïcha B.</span><span>FRANCE</span></div>
+        </article>
+        <article class="testi reveal">
+          <div class="stars">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1l1.8 4 4.2.4-3.2 2.9 1 4.3L7 10.4 3.2 12.6l1-4.3L1 5.4 5.2 5z"/></svg>
+          </div>
+          <blockquote>"WebTrader is the cleanest interface I've used. I run a small fund and Auro replaced two other brokers in our stack."</blockquote>
+          <div class="testi-meta"><span>Hiroshi T.</span><span>JAPAN</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION STRIP -->
+  <section class="section edu-strip">
+    <div class="wrap" style="position:relative;z-index:1">
+      <header class="sec-head center reveal">
+        <span class="eyebrow">EDUCATION</span>
+        <h2 class="h2 serif">Master the markets.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">From first principles to advanced order-flow analysis. Free for every Auro client.</p>
+      </header>
+
+      <div class="edu-pillars">
+        <div class="edu-pillar reveal">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M2 9l12-5 12 5-12 5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 11v6c0 2 3 4 7 4s7-2 7-4v-6" stroke="currentColor" stroke-width="1.6"/></svg>
+          <b>Trading Academy</b>
+        </div>
+        <div class="edu-pillar reveal">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="6" width="22" height="16" stroke="currentColor" stroke-width="1.6"/><path d="M12 11l5 3-5 3z" fill="currentColor"/></svg>
+          <b>Live Webinars</b>
+        </div>
+        <div class="edu-pillar reveal">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 22l6-8 4 4 8-11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <b>Market Analysis</b>
+        </div>
+        <div class="edu-pillar reveal">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="4" y="5" width="20" height="19" stroke="currentColor" stroke-width="1.6"/><path d="M4 10h20M9 3v4M19 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <b>Economic Calendar</b>
+        </div>
+      </div>
+      <div class="center"><button class="btn btn-outline" data-page="education">Explore Education Hub
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button></div>
+    </div>
+  </section>
+
+  <!-- OPEN ACCOUNT CTA -->
+  <section class="section cta-band">
+    <div class="wrap cta-band-inner">
+      <span class="eyebrow" style="justify-content:center">GET STARTED</span>
+      <h2 class="h2 serif" style="margin:14px 0 8px">Start trading in three steps.</h2>
+      <p class="lead" style="margin-left:auto;margin-right:auto">Onboard in minutes. Verified accounts can fund and trade the same day.</p>
+
+      <div class="steps">
+        <span class="step"><b>1</b>Register</span>
+        <span class="step-arr"><svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M2 7h16M14 2l4 5-4 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="step"><b>2</b>Verify</span>
+        <span class="step-arr"><svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M2 7h16M14 2l4 5-4 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="step"><b>3</b>Fund &amp; Trade</span>
+      </div>
+
+      <div class="cta-buttons">
+        <button class="btn btn-gold">Open Live Account
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="btn btn-outline">Open Demo Account</button>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<!-- ========== PAGE: TRADING ========== -->
+<section class="page" id="page-trading" data-page="trading">
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">TRADING</span>
+      <h1 class="h1 serif">2,100+ instruments across<br><span class="gold">seven asset classes.</span></h1>
+      <p class="lead">Tier-1 liquidity. Raw spreads. Microsecond execution. Trade the world's deepest markets from a single account.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="market-pills" style="margin-bottom:32px" id="tradePills">
+        <button class="pill active" data-table="forex">Forex</button>
+        <button class="pill" data-table="indices">Indices</button>
+        <button class="pill" data-table="commodities">Commodities</button>
+        <button class="pill" data-table="shares">Shares</button>
+        <button class="pill" data-table="crypto">Crypto</button>
+        <button class="pill" data-table="etfs">ETFs</button>
+        <button class="pill" data-table="metals">Metals</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="dt" id="tradeTable">
+          <thead><tr>
+            <th>Symbol</th><th>Description</th><th>Spread From</th><th>Min Lot</th><th>Leverage</th><th>Trading Hours</th><th></th>
+          </tr></thead>
+          <tbody id="tradeBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta-band">
+    <div class="wrap cta-band-inner">
+      <h2 class="h2 serif">Ready to trade tier-1 liquidity?</h2>
+      <p class="lead" style="margin:16px auto 32px">Open a live account in minutes — or test-drive the platform with a free demo.</p>
+      <div class="cta-buttons">
+        <button class="btn btn-gold">Open Live Account</button>
+        <button class="btn btn-outline">Try Free Demo</button>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ========== PAGE: PLATFORMS ========== -->
+<section class="page" id="page-platforms" data-page="platforms">
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">PLATFORMS</span>
+      <h1 class="h1 serif">Four platforms.<br><span class="gold">One powerful broker.</span></h1>
+      <p class="lead">Choose the platform built for how you trade — and switch any time, with the same login.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="split">
+        <div class="reveal">
+          <span class="eyebrow">METATRADER 4</span>
+          <h2 class="h2 serif" style="margin:14px 0 16px">The industry standard,<br>retuned.</h2>
+          <p class="lead" style="margin-bottom:24px">The most-deployed FX platform in the world. Auro hosts MT4 in latency-optimised datacentres for sub-12ms execution.</p>
+          <ul class="acct-feats" style="margin-bottom:24px">
+            <li><span>Charting timeframes</span><span>9</span></li>
+            <li><span>Built-in indicators</span><span>30+</span></li>
+            <li><span>Expert Advisors</span><span>MQL4 supported</span></li>
+            <li><span>One-click trading</span><span>Yes</span></li>
+            <li><span>Hedging</span><span>Available</span></li>
+            <li><span>Multi-language</span><span>40 languages</span></li>
+          </ul>
+          <div class="dl-row">
+            <button class="btn btn-gold btn-sm">Download Windows</button>
+            <button class="btn btn-ghost btn-sm">macOS</button>
+            <button class="btn btn-ghost btn-sm">iOS</button>
+            <button class="btn btn-ghost btn-sm">Android</button>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="platform-mockup">
+            <div class="mock-bar"><span></span><span></span><span></span></div>
+            <div class="mock-grid">
+              <div class="mock-side">
+                <div class="mock-side-row"><span>EUR/USD</span><b class="pos">1.0865</b></div>
+                <div class="mock-side-row"><span>GBP/USD</span><b class="neg">1.2643</b></div>
+                <div class="mock-side-row"><span>USD/JPY</span><b class="pos">149.82</b></div>
+                <div class="mock-side-row"><span>AUD/USD</span><b class="neg">0.6612</b></div>
+              </div>
+              <div class="mock-chart">
+                <svg viewBox="0 0 200 120" preserveAspectRatio="none">
+                  <path d="M0 80 L25 60 L50 70 L75 50 L100 65 L125 40 L150 55 L175 30 L200 45" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <div class="split">
+        <div class="reveal">
+          <div class="platform-mockup">
+            <div class="mock-bar"><span></span><span></span><span></span></div>
+            <div class="mock-grid">
+              <div class="mock-side">
+                <div class="mock-side-row"><span>NAS100</span><b class="pos">17,842</b></div>
+                <div class="mock-side-row"><span>SPX500</span><b class="pos">5,124</b></div>
+                <div class="mock-side-row"><span>GER40</span><b class="neg">18,432</b></div>
+                <div class="mock-side-row"><span>UK100</span><b class="pos">7,892</b></div>
+              </div>
+              <div class="mock-chart">
+                <svg viewBox="0 0 200 120" preserveAspectRatio="none">
+                  <g stroke="#00E87A" stroke-width="1.2" fill="none">
+                    <line x1="20" y1="40" x2="20" y2="80"/><rect x="14" y="50" width="12" height="30" fill="#00E87A" opacity=".5"/>
+                    <line x1="50" y1="30" x2="50" y2="70"/><rect x="44" y="40" width="12" height="30" fill="#FF3A2F" opacity=".5"/>
+                    <line x1="80" y1="35" x2="80" y2="75"/><rect x="74" y="45" width="12" height="30" fill="#00E87A" opacity=".5"/>
+                    <line x1="110" y1="20" x2="110" y2="60"/><rect x="104" y="30" width="12" height="30" fill="#00E87A" opacity=".5"/>
+                    <line x1="140" y1="25" x2="140" y2="65"/><rect x="134" y="35" width="12" height="30" fill="#FF3A2F" opacity=".5"/>
+                    <line x1="170" y1="15" x2="170" y2="55"/><rect x="164" y="25" width="12" height="30" fill="#00E87A" opacity=".5"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <span class="eyebrow">METATRADER 5</span>
+          <h2 class="h2 serif" style="margin:14px 0 16px">Multi-asset.<br>Multi-market. Faster.</h2>
+          <p class="lead" style="margin-bottom:24px">The next-generation MetaTrader. Trade FX, equities, futures and crypto from one account, one platform.</p>
+          <ul class="acct-feats" style="margin-bottom:24px">
+            <li><span>Charting timeframes</span><span>21</span></li>
+            <li><span>Built-in indicators</span><span>38</span></li>
+            <li><span>Depth of Market</span><span>Yes — full L2</span></li>
+            <li><span>Economic calendar</span><span>Integrated</span></li>
+            <li><span>Strategy tester</span><span>Multi-currency</span></li>
+            <li><span>MQL5</span><span>Full IDE included</span></li>
+          </ul>
+          <div class="dl-row">
+            <button class="btn btn-gold btn-sm">Download Windows</button>
+            <button class="btn btn-ghost btn-sm">macOS</button>
+            <button class="btn btn-ghost btn-sm">iOS</button>
+            <button class="btn btn-ghost btn-sm">Android</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="split">
+        <div class="reveal">
+          <span class="eyebrow">CTRADER</span>
+          <h2 class="h2 serif" style="margin:14px 0 16px">Built for<br>professionals.</h2>
+          <p class="lead" style="margin-bottom:24px">Native ECN integration, advanced order types and a UI engineered for high-frequency, professional trading.</p>
+          <ul class="acct-feats" style="margin-bottom:24px">
+            <li><span>Charting timeframes</span><span>54</span></li>
+            <li><span>Order types</span><span>Stop limit · GTD · OCO</span></li>
+            <li><span>Depth of Market</span><span>Full L2 ladder</span></li>
+            <li><span>Algorithmic trading</span><span>cAlgo (C#)</span></li>
+            <li><span>Risk management</span><span>Smart stop-out</span></li>
+            <li><span>Copy trading</span><span>cTrader Copy</span></li>
+          </ul>
+          <div class="dl-row">
+            <button class="btn btn-gold btn-sm">Download cTrader</button>
+            <button class="btn btn-ghost btn-sm">iOS</button>
+            <button class="btn btn-ghost btn-sm">Android</button>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="platform-mockup">
+            <div class="mock-bar"><span></span><span></span><span></span></div>
+            <div class="mock-grid">
+              <div class="mock-side">
+                <div class="mock-side-row"><span>BID 1.0864</span><b class="pos">12.4M</b></div>
+                <div class="mock-side-row"><span>BID 1.0863</span><b class="pos">8.2M</b></div>
+                <div class="mock-side-row"><span>BID 1.0862</span><b class="pos">5.1M</b></div>
+                <div class="mock-side-row"><span>ASK 1.0865</span><b class="neg">11.8M</b></div>
+                <div class="mock-side-row"><span>ASK 1.0866</span><b class="neg">7.9M</b></div>
+              </div>
+              <div class="mock-chart">
+                <svg viewBox="0 0 200 120" preserveAspectRatio="none">
+                  <path d="M0 70 L20 50 L40 60 L60 40 L80 50 L100 30 L120 45 L140 25 L160 38 L180 18 L200 32" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <div class="split">
+        <div class="reveal">
+          <div class="platform-mockup">
+            <div class="mock-bar"><span></span><span></span><span></span></div>
+            <div class="mock-grid">
+              <div class="mock-side">
+                <div class="mock-side-row"><span>BTC/USD</span><b class="pos">68,420</b></div>
+                <div class="mock-side-row"><span>ETH/USD</span><b class="pos">3,482</b></div>
+                <div class="mock-side-row"><span>SOL/USD</span><b class="neg">182.4</b></div>
+                <div class="mock-side-row"><span>XAU/USD</span><b class="pos">2,384</b></div>
+              </div>
+              <div class="mock-chart">
+                <svg viewBox="0 0 200 120" preserveAspectRatio="none">
+                  <defs><linearGradient id="wtg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C9A84C" stop-opacity=".5"/><stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 90 L25 70 L50 80 L75 50 L100 60 L125 35 L150 45 L175 25 L200 30 L200 120 L0 120 Z" fill="url(#wtg)"/>
+                  <path d="M0 90 L25 70 L50 80 L75 50 L100 60 L125 35 L150 45 L175 25 L200 30" stroke="#C9A84C" stroke-width="1.5" fill="none"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <span class="eyebrow">AURO WEBTRADER</span>
+          <h2 class="h2 serif" style="margin:14px 0 16px">Trade from<br>any browser.</h2>
+          <p class="lead" style="margin-bottom:24px">Our flagship in-house platform. No installs, no plugins — every feature, every market, instantly.</p>
+          <ul class="acct-feats" style="margin-bottom:24px">
+            <li><span>Charting</span><span>TradingView integrated</span></li>
+            <li><span>Login</span><span>SSO + biometric</span></li>
+            <li><span>Watchlists</span><span>Cross-device sync</span></li>
+            <li><span>Hotkeys</span><span>Fully customisable</span></li>
+            <li><span>Themes</span><span>Dark · Light · Auto</span></li>
+            <li><span>API access</span><span>REST + WebSocket</span></li>
+          </ul>
+          <button class="btn btn-gold btn-sm">Launch WebTrader
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap center">
+      <header class="sec-head center reveal" style="margin-left:auto;margin-right:auto">
+        <span class="eyebrow" style="justify-content:center">AURO MOBILE</span>
+        <h2 class="h2 serif">Markets in your pocket.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">The full Auro experience on iOS and Android — biometric login, push price alerts, one-tap order entry.</p>
+      </header>
+      <div class="dl-row" style="justify-content:center">
+        <button class="btn btn-gold">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11 1c-1 0-2 .8-2.5 1.5C8 3.2 8 4 8 4s.8 0 1.5-.5C10 3 10.5 2 11 1zM12 5c-1.5 0-2 1-3 1s-1.5-1-3-1c-2 0-3.5 2-3.5 4.5C2.5 12 4 15 6 15c.8 0 1.2-.5 2-.5s1.2.5 2 .5c2 0 3.5-3 3.5-5.5C13.5 7 12 5 12 5z"/></svg>
+          Download for iOS
+        </button>
+        <button class="btn btn-gold">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 13l5-5-5-5v10zM3 14l5-5 2 2-7 3zM3 2l7 3-2 2-5-5z"/></svg>
+          Download for Android
+        </button>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ========== PAGE: ACCOUNTS ========== -->
+<section class="page" id="page-accounts" data-page="accounts">
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">ACCOUNTS</span>
+      <h1 class="h1 serif">Choose your<br><span class="gold">trading account.</span></h1>
+      <p class="lead">Five account types. One philosophy: institutional-grade conditions for every trader, at every level.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="table-wrap">
+        <table class="dt">
+          <thead><tr>
+            <th>Feature</th><th>Standard</th><th>Raw+</th><th>Elite</th><th>Pro</th><th>Islamic</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Min. deposit</td><td>$100</td><td>$500</td><td>$25,000</td><td>$50,000</td><td>$100</td></tr>
+            <tr><td>Spread from</td><td>1.0 pip</td><td>0.0 pip</td><td>0.0 pip</td><td>0.0 pip</td><td>1.0 pip</td></tr>
+            <tr><td>Commission</td><td>$0</td><td>$3.50 / lot</td><td>$2.00 / lot</td><td>$1.50 / lot</td><td>$0</td></tr>
+            <tr><td>Max leverage</td><td>1:500</td><td>1:500</td><td>1:500</td><td>1:500</td><td>1:500</td></tr>
+            <tr><td>Min lot</td><td>0.01</td><td>0.01</td><td>0.01</td><td>0.01</td><td>0.01</td></tr>
+            <tr><td>Stop-out level</td><td>20%</td><td>20%</td><td>20%</td><td>20%</td><td>20%</td></tr>
+            <tr><td>Hedging</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>Scalping</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>EAs allowed</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+            <tr><td>Swap-free</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Yes</td></tr>
+            <tr><td>Personal manager</td><td>—</td><td>—</td><td>Yes</td><td>Yes</td><td>—</td></tr>
+            <tr><td>Platforms</td><td>MT4 · MT5 · WT</td><td>All four</td><td>All four</td><td>All four</td><td>MT4 · MT5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;justify-content:center">
+        <button class="btn btn-gold">Open Live Account</button>
+        <button class="btn btn-outline">Open Demo Account</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <header class="sec-head center reveal">
+        <span class="eyebrow" style="justify-content:center">HOW TO OPEN</span>
+        <h2 class="h2 serif">From sign-up to first trade in 4 steps.</h2>
+      </header>
+
+      <div class="timeline">
+        <div class="tl-item reveal"><div class="tl-year">01</div><h4>Register</h4><p>Complete the online application — name, email, country. 90 seconds, no documents required.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">02</div><h4>Verify identity</h4><p>Upload a government-issued ID and proof of residence. Verified within minutes during business hours.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">03</div><h4>Fund the account</h4><p>Choose from 12 funding methods including bank transfer, card, and major e-wallets. No deposit fees.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">04</div><h4>Start trading</h4><p>Download your platform, log in, and place your first trade. Demo always available alongside.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap" style="max-width:840px">
+      <header class="sec-head center reveal">
+        <span class="eyebrow" style="justify-content:center">FAQ</span>
+        <h2 class="h2 serif">Common questions.</h2>
+      </header>
+
+      <div class="faq">
+        <details><summary>How long does account verification take?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">Verification is typically completed within 30 minutes during business hours. Submit a clear government-issued ID and a recent proof of address — we'll notify you by email the moment your account is active.</div></details>
+        <details><summary>What deposit and withdrawal methods are supported?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">Bank transfer, Visa &amp; Mastercard, Skrill, Neteller, PayPal, Apple Pay, Google Pay, and major crypto rails. Auro covers all transaction fees on deposits.</div></details>
+        <details><summary>Are deposits and withdrawals free?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">Yes — Auro Brokers does not charge any internal fees on deposits or withdrawals. Some payment providers may apply their own charges; we always disclose these before you confirm.</div></details>
+        <details><summary>How long do withdrawals take?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">Card and e-wallet withdrawals are processed within 4 hours during business hours. Bank wires typically settle within 1–3 business days.</div></details>
+        <details><summary>Is my money safe with Auro Brokers?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">All client funds are segregated in tier-1 banks and protected under FCA, CySEC and FSCA frameworks. Negative balance protection is included on every account.</div></details>
+        <details><summary>Can I have multiple accounts?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">Yes — you can hold up to 10 sub-accounts under a single login, including a mix of live and demo, in any of our 5 base currencies.</div></details>
+        <details><summary>Do you offer a swap-free Islamic account?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">Yes. Our Islamic account is fully Shariah-compliant — no overnight swap or rollover interest is charged on positions held overnight.</div></details>
+        <details><summary>What is negative balance protection?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary><div class="faq-body">In the event of extreme market volatility, you cannot lose more than your account balance. Auro absorbs any negative balance — guaranteed across every account type.</div></details>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ========== PAGE: EDUCATION ========== -->
+<section class="page" id="page-education" data-page="education">
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">EDUCATION</span>
+      <h1 class="h1 serif">Learn to trade<br><span class="gold">with confidence.</span></h1>
+      <p class="lead">Free for every Auro client. From first principles to advanced strategy — written and taught by working market practitioners.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">TRADING ACADEMY</span>
+        <h2 class="h2 serif">Six structured courses.</h2>
+      </header>
+      <div class="course-grid">
+        <article class="course reveal"><span class="level beg">Beginner</span><h4>Foundations of Forex</h4><p class="muted">Currencies, pairs, pips, spreads, lots — the core mechanics every trader must know cold.</p><div class="course-meta"><span>12 LESSONS</span><span>2H 40M</span></div></article>
+        <article class="course reveal"><span class="level beg">Beginner</span><h4>Reading Price Action</h4><p class="muted">Candlesticks, support/resistance, market structure. Read any chart, any market, any timeframe.</p><div class="course-meta"><span>10 LESSONS</span><span>3H 10M</span></div></article>
+        <article class="course reveal"><span class="level int">Intermediate</span><h4>Technical Analysis Mastery</h4><p class="muted">Trend, momentum, volatility and volume — combined into a coherent decision framework.</p><div class="course-meta"><span>16 LESSONS</span><span>5H 45M</span></div></article>
+        <article class="course reveal"><span class="level int">Intermediate</span><h4>Risk &amp; Money Management</h4><p class="muted">Position sizing, R-multiples, drawdown control. The maths behind staying in the game.</p><div class="course-meta"><span>9 LESSONS</span><span>3H 20M</span></div></article>
+        <article class="course reveal"><span class="level adv">Advanced</span><h4>Order Flow &amp; Tape Reading</h4><p class="muted">DOM, footprint charts, time &amp; sales — see what the institutional desks are actually doing.</p><div class="course-meta"><span>14 LESSONS</span><span>6H 30M</span></div></article>
+        <article class="course reveal"><span class="level adv">Advanced</span><h4>Algorithmic Trading with MQL5</h4><p class="muted">Build, backtest and deploy your first profitable expert advisor — start to finish.</p><div class="course-meta"><span>18 LESSONS</span><span>9H 15M</span></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">MARKET ANALYSIS</span>
+        <h2 class="h2 serif">This week's research.</h2>
+      </header>
+      <div class="article-grid">
+        <article class="article reveal">
+          <div class="article-tag">FX OUTLOOK</div>
+          <h4>Dollar Index breaks 105 — what it means for the majors</h4>
+          <p class="muted" style="font-size:13.5px;line-height:1.55;margin-bottom:14px">A look at positioning, rate differentials and the technical picture as DXY pushes through a six-month ceiling.</p>
+          <div class="article-date">5 MAY 2026 · 6 MIN READ</div>
+        </article>
+        <article class="article reveal">
+          <div class="article-tag">COMMODITIES</div>
+          <h4>Gold at $2,400 — the institutional bid that won't quit</h4>
+          <p class="muted" style="font-size:13.5px;line-height:1.55;margin-bottom:14px">Central bank flows, ETF inflows, and the bull case from here. Plus: key levels for the week ahead.</p>
+          <div class="article-date">3 MAY 2026 · 8 MIN READ</div>
+        </article>
+        <article class="article reveal">
+          <div class="article-tag">CRYPTO</div>
+          <h4>Bitcoin's post-halving structure — the historical playbook</h4>
+          <p class="muted" style="font-size:13.5px;line-height:1.55;margin-bottom:14px">Three previous cycles, three distinct phases. We map the patterns onto today's price structure.</p>
+          <div class="article-date">1 MAY 2026 · 10 MIN READ</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">UPCOMING WEBINARS</span>
+        <h2 class="h2 serif">Live, with traders.</h2>
+      </header>
+      <div class="webinars">
+        <div class="webinar reveal">
+          <div>
+            <span class="web-date">FRI · 10 MAY · 14:00 GMT</span>
+            <h4>Trading the FOMC — a step-by-step framework</h4>
+          </div>
+          <button class="btn btn-outline btn-sm">Register</button>
+        </div>
+        <div class="webinar reveal">
+          <div>
+            <span class="web-date">WED · 15 MAY · 17:30 GMT</span>
+            <h4>Reading the daily chart — the pros &amp; cons of higher timeframes</h4>
+          </div>
+          <button class="btn btn-outline btn-sm">Register</button>
+        </div>
+        <div class="webinar reveal">
+          <div>
+            <span class="web-date">FRI · 17 MAY · 14:00 GMT</span>
+            <h4>Building your first MT5 expert advisor — live coding session</h4>
+          </div>
+          <button class="btn btn-outline btn-sm">Register</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">GLOSSARY</span>
+        <h2 class="h2 serif">Speak the markets.</h2>
+      </header>
+      <div class="gloss-alpha">
+        <button>A</button><button>B</button><button>C</button><button>D</button><button>E</button>
+        <button>F</button><button>G</button><button>H</button><button>I</button><button>J</button>
+        <button>K</button><button>L</button><button>M</button><button>N</button><button>O</button>
+        <button>P</button><button>Q</button><button>R</button><button>S</button><button>T</button>
+        <button>U</button><button>V</button><button>W</button><button>X</button><button>Y</button>
+        <button>Z</button>
+      </div>
+      <div class="gloss-defs">
+        <div class="gdef"><b>Ask</b><p>The price at which the market is willing to sell a currency pair to you. Always slightly higher than the bid — the difference is the spread.</p></div>
+        <div class="gdef"><b>Bid</b><p>The price at which the market is willing to buy a currency pair from you. Quoted alongside the ask in every two-way market.</p></div>
+        <div class="gdef"><b>CFD</b><p>Contract for Difference — a derivative that lets you speculate on the price movement of an asset without owning the underlying.</p></div>
+        <div class="gdef"><b>Drawdown</b><p>The peak-to-trough decline in your account balance during a specific period. A core measure of risk in any trading strategy.</p></div>
+        <div class="gdef"><b>ECN</b><p>Electronic Communication Network — a venue that aggregates liquidity from multiple banks and prime brokers, with no dealing desk.</p></div>
+        <div class="gdef"><b>Forex</b><p>The foreign exchange market — the largest, most liquid market on earth, with daily turnover exceeding $7 trillion.</p></div>
+        <div class="gdef"><b>Hedging</b><p>Holding offsetting positions in correlated instruments to reduce net exposure to a particular price move or risk factor.</p></div>
+        <div class="gdef"><b>Leverage</b><p>The ability to control a larger position with a smaller deposit. Amplifies both gains and losses — used judiciously.</p></div>
+        <div class="gdef"><b>Pip</b><p>The smallest standard price increment on a forex pair — typically the fourth decimal place (or second, for JPY pairs).</p></div>
+        <div class="gdef"><b>Spread</b><p>The difference between the bid and ask price. The smaller the spread, the lower the cost of entering and exiting trades.</p></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ========== PAGE: COMPANY ========== -->
+<section class="page" id="page-company" data-page="company">
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">COMPANY</span>
+      <h1 class="h1 serif">Trusted by 2 million<br><span class="gold">traders worldwide.</span></h1>
+      <p class="lead">Founded 2002. Triple-licensed. Built by traders, for traders — with offices on four continents and clients in 170+ countries.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">OUR STORY</span>
+        <h2 class="h2 serif">Twenty-six years in the markets.</h2>
+      </header>
+      <div class="timeline">
+        <div class="tl-item reveal"><div class="tl-year">2002</div><h4>Founded in London</h4><p>Three former bank-FX traders launch Auro with a simple thesis — institutional conditions for everyone.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2010</div><h4>FCA licensed</h4><p>Granted full FCA authorisation. Surpass 100,000 active accounts before the year is out.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2021</div><h4>Bahamas HQ &amp; FSCA license</h4><p>New global headquarters in Nassau. FSCA license secured to serve African markets directly.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2025</div><h4>Triple Award Winner</h4><p>Best Trading App, Best CFD Provider and Best Platform — three industry awards in a single year.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">REGULATION</span>
+        <h2 class="h2 serif">Triple-licensed.</h2>
+      </header>
+      <div class="acct-grid">
+        <article class="acct reveal">
+          <span class="acct-badge">FCA · UK</span>
+          <h3>Financial Conduct Authority</h3>
+          <div class="acct-deposit">License <b>509956</b></div>
+          <p class="muted" style="font-size:13.5px">UK-authorised investment firm operating under MiFID II. Client funds segregated under FSCS protection.</p>
+          <button class="btn btn-outline btn-sm">View FCA register</button>
+        </article>
+        <article class="acct reveal">
+          <span class="acct-badge">CySEC · EU</span>
+          <h3>Cyprus Securities &amp; Exchange Commission</h3>
+          <div class="acct-deposit">License <b>078/07</b></div>
+          <p class="muted" style="font-size:13.5px">Passporting rights across all EU member states. Client funds covered by the Investor Compensation Fund.</p>
+          <button class="btn btn-outline btn-sm">View CySEC register</button>
+        </article>
+        <article class="acct reveal">
+          <span class="acct-badge">FSCA · ZA</span>
+          <h3>Financial Sector Conduct Authority</h3>
+          <div class="acct-deposit">License <b>45052</b></div>
+          <p class="muted" style="font-size:13.5px">Authorised Financial Services Provider for South Africa. Operates under FAIS Act compliance frameworks.</p>
+          <button class="btn btn-outline btn-sm">View FSCA register</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">RECOGNITION</span>
+        <h2 class="h2 serif">Awards wall.</h2>
+      </header>
+      <div class="bento">
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2025 · Best Trading App</h3><p>Financial Times &amp; Investors Chronicle Awards · Retail Trading Apps category</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2025 · Best CFD Provider</h3><p>Global Forex Awards · CFD Brokers category, awarded in Limassol</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2024 · Best Platform</h3><p>World Finance Magazine · Trading Platform Innovation, third year running</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2024 · Best Customer Service</h3><p>FX Empire Brokers Awards · 24/5 multilingual desk recognised</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2023 · Most Trusted Broker</h3><p>UK Forex Awards · Voted by retail clients across all UK regions</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2023 · Best ECN Broker</h3><p>Forex Brokers Awards · Raw spread integrity and execution quality</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2022 · Innovation Award</h3><p>Finance Magnates Awards · Auro WebTrader v3.0 platform launch</p></article>
+        <article class="card reveal"><span class="card-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="9" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l-2 7 6-3 6 3-2-7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>2022 · Best Mobile App</h3><p>European CEO Awards · Cross-platform mobile trading category</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--ink-2)">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">LEADERSHIP</span>
+        <h2 class="h2 serif">The team.</h2>
+      </header>
+      <div class="team-grid">
+        <article class="team reveal"><div class="avatar">MR</div><b>Martin Reeves</b><small>CHIEF EXECUTIVE</small></article>
+        <article class="team reveal"><div class="avatar">SP</div><b>Sofia Petrova</b><small>CHIEF TRADING OFFICER</small></article>
+        <article class="team reveal"><div class="avatar">DK</div><b>Daniel Kowalski</b><small>HEAD OF TECHNOLOGY</small></article>
+        <article class="team reveal"><div class="avatar">AN</div><b>Anya Nakamura</b><small>HEAD OF COMPLIANCE</small></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <header class="sec-head reveal">
+        <span class="eyebrow">OFFICES</span>
+        <h2 class="h2 serif">Where we are.</h2>
+      </header>
+      <div class="office-grid">
+        <article class="office reveal">
+          <h4>London</h4>
+          <p><b style="color:var(--off);font-weight:500">Headquarters · EMEA</b><br>1 Cornhill, London EC3V 3ND<br>United Kingdom<br><br>+44 20 7946 0500<br>london@aurobrokers.com</p>
+        </article>
+        <article class="office reveal">
+          <h4>Limassol</h4>
+          <p><b style="color:var(--off);font-weight:500">EU Operations</b><br>83 Spyrou Kyprianou Avenue<br>4042 Limassol, Cyprus<br><br>+357 25 030 400<br>cyprus@aurobrokers.com</p>
+        </article>
+        <article class="office reveal">
+          <h4>Dubai</h4>
+          <p><b style="color:var(--off);font-weight:500">MENA Region</b><br>DIFC Gate Village 7<br>Dubai, UAE<br><br>+971 4 401 9700<br>dubai@aurobrokers.com</p>
+        </article>
+        <article class="office reveal">
+          <h4>Nassau</h4>
+          <p><b style="color:var(--off);font-weight:500">Global HQ · Americas</b><br>Lyford Cay<br>Nassau, Bahamas<br><br>+1 242 367 8200<br>nassau@aurobrokers.com</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</section>
+
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <a class="logo" data-page="home">
+          <svg class="logo-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M20 3 L34 20 L20 37 L13 28 L24 20 L13 12 Z" fill="#C9A84C"/>
+            <path d="M6 20 L20 3 L20 14 L13 20 L20 26 L20 37 Z" fill="#C9A84C" opacity=".55"/>
+          </svg>
+          <span class="logo-text"><span class="a">Auro</span><span class="b">Brokers</span></span>
+        </a>
+        <p class="foot-tag">Premium FX &amp; CFD brokerage. Triple-licensed, globally trusted, built for traders who demand more.</p>
+        <div class="socials">
+          <a aria-label="X (Twitter)"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M12.5 1.5h2.4l-5.2 5.95L16 14.5h-4.8l-3.76-4.92-4.3 4.92H.74l5.56-6.36L0 1.5h4.92l3.4 4.5zm-.84 11.5h1.33L4.4 2.9H2.97z"/></svg></a>
+          <a aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 6h-2v8h2V6zM2.5 1.5C1.7 1.5 1 2.2 1 3s.7 1.5 1.5 1.5S4 3.8 4 3s-.7-1.5-1.5-1.5zM15 9.4C15 7.4 14 6 12.4 6c-1.2 0-1.7.6-2 1V6h-2v8h2V9.6c0-1.1.7-1.7 1.5-1.7s1.4.6 1.4 1.7V14h2V9.4z"/></svg></a>
+          <a aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="2.6" stroke="currentColor" stroke-width="1.4"/><circle cx="11.5" cy="4.5" r=".8" fill="currentColor"/></svg></a>
+          <a aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 4.6c-.2-.6-.7-1.1-1.3-1.3C12 3 8 3 8 3s-4 0-5.2.3c-.6.2-1.1.7-1.3 1.3C1.2 5.8 1.2 8 1.2 8s0 2.2.3 3.4c.2.6.7 1.1 1.3 1.3C4 13 8 13 8 13s4 0 5.2-.3c.6-.2 1.1-.7 1.3-1.3.3-1.2.3-3.4.3-3.4s0-2.2-.3-3.4zM6.6 10.2V5.8L10.4 8z"/></svg></a>
+        </div>
+        <div class="foot-regs">
+          <span>FCA · 509956</span>
+          <span>CySEC · 078/07</span>
+          <span>FSCA · 45052</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Trading</h5>
+        <ul>
+          <li><a data-page="trading">Forex</a></li>
+          <li><a data-page="trading">Indices</a></li>
+          <li><a data-page="trading">Commodities</a></li>
+          <li><a data-page="trading">Shares</a></li>
+          <li><a data-page="trading">Crypto</a></li>
+          <li><a data-page="trading">ETFs</a></li>
+          <li><a data-page="trading">Metals</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Platforms</h5>
+        <ul>
+          <li><a data-page="platforms">MetaTrader 4</a></li>
+          <li><a data-page="platforms">MetaTrader 5</a></li>
+          <li><a data-page="platforms">cTrader</a></li>
+          <li><a data-page="platforms">Auro WebTrader</a></li>
+          <li><a data-page="platforms">iOS App</a></li>
+          <li><a data-page="platforms">Android App</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a data-page="company">About Us</a></li>
+          <li><a data-page="company">Regulations</a></li>
+          <li><a data-page="company">Awards</a></li>
+          <li><a data-page="company">Press Room</a></li>
+          <li><a data-page="company">Careers</a></li>
+          <li><a data-page="company">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Support</h5>
+        <ul>
+          <li><a>Help Centre</a></li>
+          <li><a data-page="accounts">FAQ</a></li>
+          <li><a data-page="education">Education</a></li>
+          <li><a data-page="education">Glossary</a></li>
+          <li><a>Live Chat</a></li>
+          <li><a data-page="company">Complaints</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="risk">
+      <strong style="color:var(--off);font-weight:600">Risk Warning.</strong> CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 74% of retail investor accounts lose money when trading CFDs with this provider. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money.
+    </div>
+
+    <div class="copy">
+      <span>© 2026 Auro Brokers Limited. All rights reserved.</span>
+      <ul>
+        <li><a>Privacy Policy</a></li>
+        <li><a>Terms &amp; Conditions</a></li>
+        <li><a>Cookie Policy</a></li>
+        <li><a>Risk Disclosure</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<script>
+(()=>{
+  const $=(s,r=document)=>r.querySelector(s);
+  const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile=window.matchMedia('(max-width: 1024px)').matches;
+
+  /* ---------- SPA ROUTING ---------- */
+  const pages=$$('.page');
+  function go(id){
+    pages.forEach(p=>p.classList.toggle('active',p.dataset.page===id));
+    $$('.nav-link').forEach((b,i)=>{
+      const map=['trading','platforms','accounts','trading','education','company']; // matches order
+      b.classList.toggle('active',map[i]===id);
+    });
+    document.body.scrollTop=0;document.documentElement.scrollTop=0;
+    // re-trigger reveal on visible elements
+    requestAnimationFrame(()=>observeReveals());
+    // close drawer
+    drawer.classList.remove('open');hb.classList.remove('open');hb.setAttribute('aria-expanded','false');document.body.style.overflow='';
+  }
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('[data-page]');
+    if(t){e.preventDefault();go(t.dataset.page);}
+  });
+
+  /* ---------- NAV SCROLL ---------- */
+  const nav=$('#nav');
+  const onScroll=()=>{
+    nav.classList.toggle('scrolled',window.scrollY>20);
+    const h=document.documentElement;
+    const max=h.scrollHeight-h.clientHeight;
+    const pct=max>0?(window.scrollY/max)*100:0;
+    $('#scrollProgress').style.width=pct+'%';
+  };
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  /* ---------- MOBILE DRAWER ---------- */
+  const drawer=$('#drawer'),hb=$('#hamburger'),hbc=$('#hamburgerClose');
+  hb.addEventListener('click',()=>{
+    const open=!drawer.classList.contains('open');
+    drawer.classList.toggle('open',open);
+    hb.classList.toggle('open',open);
+    hb.setAttribute('aria-expanded',open);
+    document.body.style.overflow=open?'hidden':'';
+  });
+  hbc.addEventListener('click',()=>{
+    drawer.classList.remove('open');hb.classList.remove('open');hb.setAttribute('aria-expanded','false');document.body.style.overflow='';
+  });
+
+  /* ---------- CUSTOM CURSOR ---------- */
+  if(!isMobile && !reduceMotion){
+    const dot=$('#cursorDot'),ring=$('#cursorRing');
+    let dx=0,dy=0,rx=0,ry=0;
+    window.addEventListener('mousemove',e=>{dx=e.clientX;dy=e.clientY;dot.style.transform=`translate(${dx}px,${dy}px) translate(-50%,-50%)`;});
+    const tick=()=>{rx+=(dx-rx)*.18;ry+=(dy-ry)*.18;ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;requestAnimationFrame(tick);};
+    tick();
+    document.addEventListener('mouseover',e=>{
+      if(e.target.closest('a,button,.card,.acct,.instr,.pill,.tab,.testi,.course,.article,.webinar,details summary,[data-page]'))ring.classList.add('hover');
+    });
+    document.addEventListener('mouseout',e=>{
+      if(e.target.closest('a,button,.card,.acct,.instr,.pill,.tab,.testi,.course,.article,.webinar,details summary,[data-page]'))ring.classList.remove('hover');
+    });
+  }
+
+  /* ---------- REVEAL ON SCROLL ---------- */
+  let revIO;
+  function observeReveals(){
+    const items=$$('.reveal:not(.in)');
+    if(!revIO){
+      revIO=new IntersectionObserver((entries)=>{
+        entries.forEach((en,i)=>{
+          if(en.isIntersecting){
+            const el=en.target;
+            const idx=Array.from(el.parentElement.children).indexOf(el);
+            el.style.animationDelay=(Math.max(0,idx)*60)+'ms';
+            el.classList.add('in');
+            revIO.unobserve(el);
+          }
+        });
+      },{rootMargin:'0px 0px -10% 0px',threshold:.1});
+    }
+    items.forEach(i=>revIO.observe(i));
+  }
+  observeReveals();
+
+  /* ---------- STATS COUNTER ---------- */
+  const counters=$$('[data-count]');
+  const cIO=new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        const el=en.target;
+        const target=parseFloat(el.dataset.count);
+        const suf=el.dataset.suffix||'';
+        const dur=2000,start=performance.now();
+        const tick=(t)=>{
+          const p=Math.min((t-start)/dur,1);
+          const eased=1-Math.pow(1-p,3);
+          const v=target<10?(target*eased).toFixed(1):Math.round(target*eased);
+          el.textContent=v+suf;
+          if(p<1)requestAnimationFrame(tick);
+          else el.textContent=target+suf;
+        };
+        if(reduceMotion){el.textContent=target+suf;}else{requestAnimationFrame(tick);}
+        cIO.unobserve(el);
+      }
+    });
+  },{threshold:.4});
+  counters.forEach(c=>cIO.observe(c));
+
+  /* ---------- HERO PARTICLES ---------- */
+  const canvas=$('#heroCanvas');
+  if(canvas && !reduceMotion){
+    const ctx=canvas.getContext('2d');
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    let w,h,parts;
+    const N=isMobile?20:40;
+    const init=()=>{
+      const r=canvas.getBoundingClientRect();
+      w=canvas.width=r.width*dpr;h=canvas.height=r.height*dpr;
+      canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';
+      parts=Array.from({length:N},()=>({
+        x:Math.random()*w,y:Math.random()*h,
+        r:(Math.random()*1.6+.4)*dpr,
+        vx:(Math.random()-.5)*.15*dpr,vy:(Math.random()-.5)*.12*dpr,
+        a:Math.random()*.5+.2
+      }));
+    };
+    init();
+    window.addEventListener('resize',init);
+    const draw=()=>{
+      ctx.clearRect(0,0,w,h);
+      for(const p of parts){
+        p.x+=p.vx;p.y+=p.vy;
+        if(p.x<0)p.x=w;if(p.x>w)p.x=0;
+        if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=`rgba(201,168,76,${p.a})`;ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    };
+    draw();
+  }
+
+  /* ---------- TICKER ---------- */
+  const tickerSyms=[
+    {s:'EUR/USD',p:1.0865,d:4},{s:'GBP/USD',p:1.2643,d:4},{s:'USD/JPY',p:149.82,d:2},
+    {s:'AUD/USD',p:0.6612,d:4},{s:'USD/CHF',p:0.9032,d:4},{s:'XAU/USD',p:2384.50,d:2},
+    {s:'BTC/USD',p:68420,d:0},{s:'ETH/USD',p:3482,d:0},{s:'US30',p:39245,d:0},
+    {s:'NAS100',p:17842,d:0},{s:'SPX500',p:5124,d:1},{s:'OIL',p:78.42,d:2},
+    {s:'AAPL',p:189.42,d:2},{s:'TSLA',p:178.20,d:2}
+  ];
+  const tickerEl=$('#tickerTrack');
+  function buildTicker(){
+    const html=[...tickerSyms,...tickerSyms].map((it,i)=>{
+      const chg=((Math.random()-.5)*1.2).toFixed(2);
+      const cls=chg>=0?'pos':'neg';
+      const sign=chg>=0?'+':'';
+      return `<span class="ticker-item" data-i="${i%tickerSyms.length}">
+        <span class="ticker-sym">${it.s}</span>
+        <span class="ticker-px">${it.p.toFixed(it.d)}</span>
+        <span class="ticker-chg ${cls}">${sign}${chg}%</span>
+      </span>`;
+    }).join('');
+    tickerEl.innerHTML=html;
+  }
+  buildTicker();
+  // periodic updates
+  setInterval(()=>{
+    $$('.ticker-item',tickerEl).forEach(it=>{
+      const i=+it.dataset.i;
+      const sym=tickerSyms[i];
+      const drift=(Math.random()-.5)*sym.p*0.0008;
+      sym.p=Math.max(0.0001,sym.p+drift);
+      const chgEl=it.querySelector('.ticker-chg');
+      const old=parseFloat(chgEl.textContent);
+      const next=(old+(Math.random()-.5)*0.05).toFixed(2);
+      const up=next>=0;
+      chgEl.textContent=(up?'+':'')+next+'%';
+      chgEl.classList.toggle('pos',up);chgEl.classList.toggle('neg',!up);
+      chgEl.classList.remove('flash-up','flash-down');
+      void chgEl.offsetWidth;
+      chgEl.classList.add(next>old?'flash-up':'flash-down');
+      it.querySelector('.ticker-px').textContent=sym.p.toFixed(sym.d);
+    });
+  },2000);
+
+  /* ---------- MARKETS GRID (home) ---------- */
+  const marketData={
+    forex:[
+      {n:'EUR/USD',p:1.0865,sp:0.0,c:0.12},{n:'GBP/USD',p:1.2643,sp:0.2,c:-0.34},
+      {n:'USD/JPY',p:149.82,sp:0.1,c:0.21},{n:'AUD/USD',p:0.6612,sp:0.4,c:-0.18},
+      {n:'EUR/GBP',p:0.8593,sp:0.5,c:0.08},{n:'USD/CAD',p:1.3654,sp:0.4,c:-0.11},
+      {n:'NZD/USD',p:0.6024,sp:0.6,c:0.27},{n:'USD/CHF',p:0.9032,sp:0.3,c:-0.04}
+    ],
+    indices:[
+      {n:'US30',p:39245,sp:1.0,c:0.42},{n:'NAS100',p:17842,sp:1.0,c:0.84},
+      {n:'SPX500',p:5124,sp:0.4,c:0.31},{n:'GER40',p:18432,sp:0.8,c:-0.21},
+      {n:'UK100',p:7892,sp:0.8,c:0.12},{n:'JPN225',p:38420,sp:6.0,c:-0.45},
+      {n:'AUS200',p:7720,sp:1.0,c:0.18},{n:'HK50',p:17240,sp:6.0,c:-0.62}
+    ],
+    commodities:[
+      {n:'OIL',p:78.42,sp:3.0,c:0.46},{n:'NATGAS',p:2.084,sp:5.0,c:-1.24},
+      {n:'COFFEE',p:198.50,sp:8.0,c:0.84},{n:'SUGAR',p:21.20,sp:5.0,c:-0.32},
+      {n:'COCOA',p:7892,sp:10,c:1.20},{n:'COTTON',p:78.40,sp:6.0,c:-0.18},
+      {n:'WHEAT',p:572.4,sp:8.0,c:0.42},{n:'CORN',p:432.2,sp:6.0,c:0.21}
+    ],
+    crypto:[
+      {n:'BTC/USD',p:68420,sp:30,c:1.84},{n:'ETH/USD',p:3482,sp:0.8,c:2.42},
+      {n:'SOL/USD',p:182.4,sp:0.4,c:-1.12},{n:'XRP/USD',p:0.5184,sp:0.001,c:0.62},
+      {n:'ADA/USD',p:0.4582,sp:0.001,c:-0.84},{n:'DOGE/USD',p:0.1842,sp:0.0008,c:1.42},
+      {n:'AVAX/USD',p:42.18,sp:0.05,c:0.32},{n:'LINK/USD',p:18.42,sp:0.03,c:-0.42}
+    ],
+    shares:[
+      {n:'AAPL',p:189.42,sp:0.04,c:0.92},{n:'MSFT',p:412.18,sp:0.08,c:0.42},
+      {n:'TSLA',p:178.20,sp:0.05,c:-1.84},{n:'AMZN',p:184.20,sp:0.06,c:0.62},
+      {n:'GOOG',p:172.40,sp:0.05,c:0.18},{n:'META',p:482.20,sp:0.10,c:1.04},
+      {n:'NVDA',p:892.40,sp:0.12,c:2.18},{n:'NFLX',p:632.40,sp:0.10,c:-0.32}
+    ],
+    metals:[
+      {n:'XAU/USD',p:2384.5,sp:0.20,c:0.58},{n:'XAG/USD',p:28.42,sp:0.025,c:0.84},
+      {n:'XPT/USD',p:982.40,sp:1.50,c:-0.32},{n:'XPD/USD',p:1024.4,sp:2.00,c:0.42},
+      {n:'COPPER',p:4.184,sp:0.005,c:0.62},{n:'ALUM',p:2484,sp:1.0,c:-0.18},
+      {n:'NICKEL',p:18420,sp:8.0,c:0.32},{n:'ZINC',p:2842,sp:1.5,c:0.12}
+    ]
+  };
+  function spark(seed){
+    let last=50;const pts=[];
+    for(let i=0;i<20;i++){
+      last+=(Math.sin(seed+i*.5)+(Math.random()-.5))*8;
+      last=Math.max(10,Math.min(90,last));
+      pts.push(`${i*5},${last.toFixed(0)}`);
+    }
+    return pts.join(' ');
+  }
+  function renderInstr(asset){
+    const data=marketData[asset]||[];
+    $('#instrGrid').innerHTML=data.map((it,i)=>{
+      const up=it.c>=0;
+      const sign=up?'+':'';
+      const stroke=up?'#00E87A':'#FF3A2F';
+      return `<article class="instr">
+        <div class="instr-top">
+          <span class="instr-name">${it.n}</span>
+          <span class="instr-px">${it.p.toFixed(it.p<10?4:it.p<1000?2:0)}</span>
+        </div>
+        <svg class="spark" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="${spark(i*3)}" fill="none" stroke="${stroke}" stroke-width="2"/></svg>
+        <div class="instr-mid">
+          <span class="instr-spread">SPREAD ${it.sp.toFixed(it.sp<1?2:1)}</span>
+          <span class="instr-chg ${up?'':'neg'}">${sign}${it.c.toFixed(2)}%</span>
+        </div>
+      </article>`;
+    }).join('');
+  }
+  renderInstr('forex');
+  $$('.market-pills .pill').forEach(b=>{
+    if(b.dataset.asset){
+      b.addEventListener('click',()=>{
+        $$('.market-pills .pill').forEach(x=>x.classList.toggle('active',x===b));
+        renderInstr(b.dataset.asset);
+      });
+    }
+  });
+
+  /* ---------- PLATFORM TABS ---------- */
+  $$('#platTabs .tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      const id=t.dataset.tab;
+      $$('#platTabs .tab').forEach(x=>x.classList.toggle('active',x===t));
+      $$('.tabpane').forEach(p=>p.classList.toggle('active',p.dataset.pane===id));
+    });
+  });
+
+  /* ---------- TRADING TABLE ---------- */
+  const tradeData={
+    forex:[
+      ['EUR/USD','Euro / US Dollar','0.0','0.01','1:500','24/5'],
+      ['GBP/USD','British Pound / US Dollar','0.2','0.01','1:500','24/5'],
+      ['USD/JPY','US Dollar / Japanese Yen','0.1','0.01','1:500','24/5'],
+      ['USD/CHF','US Dollar / Swiss Franc','0.3','0.01','1:500','24/5'],
+      ['AUD/USD','Australian Dollar / US Dollar','0.4','0.01','1:500','24/5'],
+      ['NZD/USD','New Zealand Dollar / US Dollar','0.6','0.01','1:500','24/5'],
+      ['USD/CAD','US Dollar / Canadian Dollar','0.4','0.01','1:500','24/5'],
+      ['EUR/GBP','Euro / British Pound','0.5','0.01','1:500','24/5'],
+      ['EUR/JPY','Euro / Japanese Yen','0.4','0.01','1:500','24/5'],
+      ['GBP/JPY','British Pound / Japanese Yen','0.7','0.01','1:500','24/5']
+    ],
+    indices:[
+      ['US30','Dow Jones Industrial Average','1.0','0.10','1:200','Sun 22:00 – Fri 21:00'],
+      ['NAS100','NASDAQ 100','1.0','0.10','1:200','Sun 22:00 – Fri 21:00'],
+      ['SPX500','S&P 500','0.4','0.10','1:200','Sun 22:00 – Fri 21:00'],
+      ['GER40','DAX 40','0.8','0.10','1:200','Mon–Fri 07:00–21:00'],
+      ['UK100','FTSE 100','0.8','0.10','1:200','Mon–Fri 08:00–21:00'],
+      ['JPN225','Nikkei 225','6.0','0.10','1:200','Mon–Fri 23:00–05:25'],
+      ['AUS200','ASX 200','1.0','0.10','1:200','Sun–Fri 22:50–06:30'],
+      ['HK50','Hang Seng','6.0','0.10','1:200','Mon–Fri 01:15–08:00'],
+      ['EU50','Euro Stoxx 50','1.5','0.10','1:200','Mon–Fri 07:00–21:00']
+    ],
+    commodities:[
+      ['OIL','WTI Crude Oil','3.0','0.10','1:200','Sun 23:00 – Fri 22:00'],
+      ['NATGAS','Natural Gas','5.0','0.10','1:200','Sun 23:00 – Fri 22:00'],
+      ['COFFEE','Coffee Arabica','8.0','0.10','1:50','Mon–Fri 09:15–18:30'],
+      ['SUGAR','Sugar #11','5.0','0.10','1:50','Mon–Fri 08:30–17:55'],
+      ['COCOA','Cocoa','10.0','0.10','1:50','Mon–Fri 09:45–18:30'],
+      ['COTTON','Cotton','6.0','0.10','1:50','Mon–Fri 02:00–19:20'],
+      ['WHEAT','Wheat','8.0','0.10','1:50','Sun–Fri 02:00–13:45'],
+      ['CORN','Corn','6.0','0.10','1:50','Sun–Fri 02:00–13:45']
+    ],
+    shares:[
+      ['AAPL','Apple Inc.','0.04','0.10','1:20','NYSE Hours'],
+      ['MSFT','Microsoft Corp.','0.08','0.10','1:20','NYSE Hours'],
+      ['TSLA','Tesla Inc.','0.05','0.10','1:20','NYSE Hours'],
+      ['AMZN','Amazon.com','0.06','0.10','1:20','NYSE Hours'],
+      ['GOOG','Alphabet Inc.','0.05','0.10','1:20','NYSE Hours'],
+      ['META','Meta Platforms','0.10','0.10','1:20','NYSE Hours'],
+      ['NVDA','NVIDIA Corp.','0.12','0.10','1:20','NYSE Hours'],
+      ['NFLX','Netflix Inc.','0.10','0.10','1:20','NYSE Hours'],
+      ['DIS','Walt Disney Co.','0.06','0.10','1:20','NYSE Hours']
+    ],
+    crypto:[
+      ['BTC/USD','Bitcoin / US Dollar','30','0.01','1:50','24/7'],
+      ['ETH/USD','Ethereum / US Dollar','0.80','0.10','1:50','24/7'],
+      ['SOL/USD','Solana / US Dollar','0.40','0.10','1:50','24/7'],
+      ['XRP/USD','Ripple / US Dollar','0.001','1.0','1:50','24/7'],
+      ['ADA/USD','Cardano / US Dollar','0.001','1.0','1:50','24/7'],
+      ['DOGE/USD','Dogecoin / US Dollar','0.0008','10','1:50','24/7'],
+      ['AVAX/USD','Avalanche / US Dollar','0.05','0.10','1:50','24/7'],
+      ['LINK/USD','Chainlink / US Dollar','0.03','0.10','1:50','24/7']
+    ],
+    etfs:[
+      ['SPY','SPDR S&P 500 ETF','0.10','0.10','1:20','NYSE Hours'],
+      ['QQQ','Invesco QQQ Trust','0.10','0.10','1:20','NYSE Hours'],
+      ['IWM','iShares Russell 2000','0.06','0.10','1:20','NYSE Hours'],
+      ['EEM','iShares MSCI EM','0.04','0.10','1:20','NYSE Hours'],
+      ['GLD','SPDR Gold Shares','0.05','0.10','1:20','NYSE Hours'],
+      ['SLV','iShares Silver Trust','0.02','0.10','1:20','NYSE Hours'],
+      ['TLT','iShares 20+Y Treasury','0.04','0.10','1:20','NYSE Hours'],
+      ['VXX','iPath VIX Short-Term','0.06','0.10','1:20','NYSE Hours']
+    ],
+    metals:[
+      ['XAU/USD','Gold / US Dollar','0.20','0.01','1:200','24/5'],
+      ['XAG/USD','Silver / US Dollar','0.025','0.01','1:200','24/5'],
+      ['XPT/USD','Platinum / US Dollar','1.50','0.01','1:100','Mon–Fri 01:00–24:00'],
+      ['XPD/USD','Palladium / US Dollar','2.00','0.01','1:100','Mon–Fri 01:00–24:00'],
+      ['XAU/EUR','Gold / Euro','0.30','0.01','1:200','24/5'],
+      ['XAU/AUD','Gold / Australian Dollar','0.50','0.01','1:200','24/5'],
+      ['XAU/JPY','Gold / Japanese Yen','30','0.01','1:200','24/5'],
+      ['XAG/EUR','Silver / Euro','0.04','0.01','1:200','24/5']
+    ]
+  };
+  function renderTrade(key){
+    const rows=tradeData[key]||[];
+    $('#tradeBody').innerHTML=rows.map(r=>`
+      <tr>
+        <td>${r[0]}</td><td style="font-family:'DM Sans',sans-serif;color:var(--muted-2)">${r[1]}</td>
+        <td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td>
+        <td><span class="row-cta">Trade ${r[0]} →</span></td>
+      </tr>`).join('');
+  }
+  renderTrade('forex');
+  $$('#tradePills .pill').forEach(b=>{
+    b.addEventListener('click',()=>{
+      $$('#tradePills .pill').forEach(x=>x.classList.toggle('active',x===b));
+      renderTrade(b.dataset.table);
+    });
+  });
+
+  /* ---------- TABLE SORT ---------- */
+  $$('table.dt thead th').forEach((th,idx)=>{
+    th.addEventListener('click',()=>{
+      const tb=th.closest('table').querySelector('tbody');
+      const rows=Array.from(tb.querySelectorAll('tr'));
+      const dir=th.dataset.dir==='asc'?'desc':'asc';
+      th.dataset.dir=dir;
+      rows.sort((a,b)=>{
+        const av=a.children[idx].textContent.trim();
+        const bv=b.children[idx].textContent.trim();
+        const an=parseFloat(av),bn=parseFloat(bv);
+        if(!isNaN(an)&&!isNaN(bn))return dir==='asc'?an-bn:bn-an;
+        return dir==='asc'?av.localeCompare(bv):bv.localeCompare(av);
+      });
+      rows.forEach(r=>tb.appendChild(r));
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
