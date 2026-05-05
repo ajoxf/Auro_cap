@@ -745,6 +745,124 @@ table.dt tbody tr:hover .row-cta{opacity:1}
 }
 .page-hero h1{margin:14px 0 18px}
 .page-hero .lead{margin-bottom:0}
+
+/* ========== ANIMATION POLISH ========== */
+
+/* Continuous gold shimmer on accent words in headlines */
+@keyframes goldShine{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
+}
+h1 .gold,.h1 .gold,.h-display .gold,h2.h2 .gold{
+  background:linear-gradient(90deg,var(--gold-dim) 0%,var(--gold-light) 25%,#FFEAB0 50%,var(--gold-light) 75%,var(--gold-dim) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:transparent;
+  animation:goldShine 6s linear infinite;
+}
+
+/* Nav-link animated underline */
+.nav-link::after{
+  content:"";position:absolute;left:14px;right:14px;bottom:16px;
+  height:1px;background:var(--gold);
+  transform:scaleX(0);transform-origin:left center;
+  transition:transform 300ms var(--ease);
+}
+.nav-link:hover::after,.nav-link.active::after{transform:scaleX(1)}
+
+/* Cursor-tracking spotlight on cards / pills */
+.card,.acct,.testi,.course,.article,.instr,.team,.office,.award,.gdef,.tl-item,.edu-pillar,.webinar,.pill{
+  position:relative;
+}
+.card::after,.acct::after,.testi::after,.course::after,.article::after,.instr::after,.team::after,.office::after,.award::after,.gdef::after,.tl-item::after,.edu-pillar::after,.webinar::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(201,168,76,.10),transparent 45%);
+  opacity:0;transition:opacity 300ms var(--ease);
+  pointer-events:none;
+}
+.card:hover::after,.acct:hover::after,.testi:hover::after,.course:hover::after,.article:hover::after,.instr:hover::after,.team:hover::after,.office:hover::after,.award:hover::after,.gdef:hover::after,.tl-item:hover::after,.edu-pillar:hover::after,.webinar:hover::after{opacity:1}
+
+/* Pill cursor-tracking glow (different shape, smaller) */
+.pill::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:radial-gradient(80px circle at var(--mx,50%) var(--my,50%),rgba(201,168,76,.18),transparent 70%);
+  opacity:0;transition:opacity 250ms var(--ease);pointer-events:none;
+}
+.pill:hover::before{opacity:1}
+.pill.active::before{opacity:0}
+
+/* Magnetic gold buttons */
+.btn-gold{transform:translate(var(--mag-x,0),var(--mag-y,0))}
+.btn-gold:active{transform:translate(var(--mag-x,0),var(--mag-y,0)) scale(.98)}
+
+/* Logo subtle glow on hover */
+.logo .logo-mark{transition:filter 300ms var(--ease),transform 400ms var(--ease)}
+.logo:hover .logo-mark{filter:drop-shadow(0 0 10px rgba(201,168,76,.55));transform:rotate(-6deg)}
+
+/* Page transition: subtle scale + fade */
+.page{transition:opacity 280ms var(--ease),transform 280ms var(--ease);transform:translateY(8px) scale(.996)}
+.page.active{transform:none}
+
+/* Hero parallax (driven by JS-set --hero-py) */
+.hero-bg{transform:translate3d(0,var(--hero-py,0px),0);will-change:transform}
+.hero-inner{transform:translate3d(0,calc(var(--hero-py,0px) * .35),0)}
+
+/* Hero h1 character cascade (overrides .reveal for hero h1) */
+.hero h1.reveal{opacity:1;animation:none}
+.hero h1 .ch{
+  display:inline-block;opacity:0;transform:translateY(0.5em);
+  animation:charUp 700ms var(--ease) forwards;
+  will-change:transform,opacity;
+}
+@keyframes charUp{to{opacity:1;transform:none}}
+
+/* Mockup chart draw-on when card enters view */
+.mock-chart svg path{
+  stroke-dasharray:600;stroke-dashoffset:600;
+  animation:drawLine 2.4s var(--ease) forwards;
+  animation-delay:.4s;
+}
+@keyframes drawLine{to{stroke-dashoffset:0}}
+
+/* Award icon spin on hover */
+.award svg{transition:transform 500ms var(--ease)}
+.award:hover svg{transform:rotate(360deg) scale(1.08)}
+
+/* Stat count pop-in */
+.stat-num{display:inline-block;transform-origin:center bottom}
+.stat-num.in{animation:statPop 700ms var(--ease) both}
+@keyframes statPop{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:none}}
+
+/* Reg-badge hover */
+.reg-badge{transition:transform 300ms var(--ease)}
+.reg-badge:hover{transform:translateY(-3px)}
+.reg-badge svg{transition:transform 500ms var(--ease)}
+.reg-badge:hover svg{transform:scale(1.1) rotate(-4deg)}
+
+/* Sparkline draw-on */
+.instr svg.spark polyline{
+  stroke-dasharray:200;stroke-dashoffset:200;
+  animation:drawLine 1.8s var(--ease) forwards;
+}
+
+/* Eyebrow line grow */
+.eyebrow::before{transition:width 600ms var(--ease)}
+.reveal.in .eyebrow::before,.eyebrow.in::before{width:24px}
+
+/* Custom cursor: ripple on click (box-shadow, doesn't fight transform) */
+@keyframes cursorPulse{0%{box-shadow:0 0 0 0 rgba(201,168,76,.5)}100%{box-shadow:0 0 0 26px rgba(201,168,76,0)}}
+.cursor-ring.click{animation:cursorPulse 500ms var(--ease)}
+
+/* Hero accent slow drift */
+@keyframes accentDrift{
+  0%,100%{transform:rotate(35deg) translate(0,0)}
+  50%{transform:rotate(38deg) translate(-20px,15px)}
+}
+.hero-accent{animation:accentDrift 14s ease-in-out infinite}
+
+/* CTA buttons icon arrow slide */
+.btn svg{transition:transform 250ms var(--ease)}
+.btn:hover svg{transform:translateX(3px)}
 </style>
 </head>
 <body>
@@ -2389,6 +2507,91 @@ table.dt tbody tr:hover .row-cta{opacity:1}
       renderTrade(b.dataset.table);
     });
   });
+
+  /* ---------- CARD SPOTLIGHT (cursor-tracking radial glow) ---------- */
+  if(!isMobile){
+    const spotSel='.card,.acct,.testi,.course,.article,.instr,.team,.office,.award,.gdef,.tl-item,.edu-pillar,.webinar,.pill';
+    document.addEventListener('mousemove',e=>{
+      const el=e.target.closest(spotSel);
+      if(!el)return;
+      const r=el.getBoundingClientRect();
+      el.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+      el.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+    },{passive:true});
+  }
+
+  /* ---------- MAGNETIC BUTTONS (gold CTAs) ---------- */
+  if(!isMobile && !reduceMotion){
+    $$('.btn-gold').forEach(b=>{
+      b.addEventListener('mousemove',e=>{
+        const r=b.getBoundingClientRect();
+        const x=(e.clientX-r.left-r.width/2)*0.22;
+        const y=(e.clientY-r.top-r.height/2)*0.22;
+        b.style.setProperty('--mag-x',x+'px');
+        b.style.setProperty('--mag-y',y+'px');
+      });
+      b.addEventListener('mouseleave',()=>{
+        b.style.setProperty('--mag-x','0px');
+        b.style.setProperty('--mag-y','0px');
+      });
+    });
+  }
+
+  /* ---------- HERO PARALLAX ---------- */
+  if(!reduceMotion){
+    const heroEl=$('.hero');
+    let heroH=heroEl?heroEl.offsetHeight:0;
+    window.addEventListener('resize',()=>{heroH=heroEl?heroEl.offsetHeight:0});
+    const updateParallax=()=>{
+      if(!heroEl)return;
+      const y=Math.min(window.scrollY,heroH);
+      document.documentElement.style.setProperty('--hero-py',(y*0.35)+'px');
+    };
+    window.addEventListener('scroll',updateParallax,{passive:true});
+    updateParallax();
+  }
+
+  /* ---------- HERO H1 CHARACTER CASCADE ---------- */
+  const heroH1=$('.hero h1');
+  if(heroH1 && !reduceMotion){
+    let charIdx=0;
+    const splitNode=node=>{
+      if(node.nodeType===3){
+        const txt=node.textContent;
+        const frag=document.createDocumentFragment();
+        for(const ch of txt){
+          const span=document.createElement('span');
+          span.className='ch';
+          span.textContent=ch===' '?' ':ch;
+          span.style.animationDelay=(charIdx*30)+'ms';
+          charIdx++;
+          frag.appendChild(span);
+        }
+        node.parentNode.replaceChild(frag,node);
+      }else if(node.nodeType===1 && node.tagName!=='BR'){
+        // recurse into children, including <span class="gold">
+        Array.from(node.childNodes).forEach(splitNode);
+      }
+    };
+    Array.from(heroH1.childNodes).forEach(splitNode);
+  }
+
+  /* ---------- STAT COUNT POP ---------- */
+  $$('.stat-num').forEach(el=>{
+    const popIO=new IntersectionObserver(es=>{
+      es.forEach(en=>{if(en.isIntersecting){el.classList.add('in');popIO.disconnect()}});
+    },{threshold:.5});
+    popIO.observe(el);
+  });
+
+  /* ---------- CURSOR CLICK PULSE ---------- */
+  if(!isMobile && !reduceMotion){
+    const ring=$('#cursorRing');
+    document.addEventListener('mousedown',()=>{
+      if(!ring)return;
+      ring.classList.remove('click');void ring.offsetWidth;ring.classList.add('click');
+    });
+  }
 
   /* ---------- TABLE SORT ---------- */
   $$('table.dt thead th').forEach((th,idx)=>{
