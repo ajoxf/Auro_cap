@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+auro.html
 *.local
 
 # Python bytecode (UI/UX Pro Max scripts)
