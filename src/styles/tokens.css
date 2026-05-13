@@ -1,35 +1,45 @@
 :root {
-  /* ===== COLOR — White + Gold luxury ===== */
-  --paper: #FBF7EE;
-  --paper-2: #F4ECD8;
-  --surface: #FFFFFF;
-  --surface-elev: #FFFFFF;
+  /* ===== BRAND COLORS — per AuroCapital Style Guide ===== */
+  --gold: #D1AC40;
+  --gold-60: #E1CB8D;
+  --gold-20: #F6EBC8;
+  --gold-deep: #A8862E;
 
-  --ink: #1A1610;
-  --ink-2: #5E574A;
-  --ink-3: #8E8676;
-  --ink-4: #B8AE9B;
+  --black: #000000;
+  --black-60: #666666;
+  --black-20: #CCCCCC;
 
-  --gold: #C9A04C;
-  --gold-deep: #A07A2E;
-  --gold-soft: #E8D8A3;
-  --gold-tint: #F7EFD5;
+  --white: #FFFFFF;
 
-  --hairline: rgba(26, 22, 16, 0.10);
-  --hairline-2: rgba(26, 22, 16, 0.18);
-  --hairline-strong: rgba(26, 22, 16, 0.32);
+  /* ===== SEMANTIC TOKENS ===== */
+  --paper: var(--white);
+  --paper-2: #FAFAFA;
+  --surface: var(--white);
+  --surface-elev: var(--white);
 
-  --up: #2F6B45;
-  --up-tint: #DBEEDC;
-  --down: #A23A30;
-  --down-tint: #F3D9D5;
+  --ink: var(--black);
+  --ink-2: var(--black-60);
+  --ink-3: #999999;
+  --ink-4: var(--black-20);
+
+  --gold-soft: var(--gold-60);
+  --gold-tint: var(--gold-20);
+
+  --hairline: rgba(0, 0, 0, 0.08);
+  --hairline-2: rgba(0, 0, 0, 0.16);
+  --hairline-strong: rgba(0, 0, 0, 0.32);
+
+  --up: #1E7A3C;
+  --up-tint: #DEEFE2;
+  --down: #B83025;
+  --down-tint: #F6D9D5;
 
   --focus: #0066FF;
 
-  /* ===== TYPE ===== */
-  --font-display: "Cormorant Garamond", "Times New Roman", Georgia, serif;
-  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
-  --font-mono: "DM Mono", "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  /* ===== TYPE — Poppins per style guide ===== */
+  --font-display: "Poppins", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+  --font-body: "Poppins", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: "Poppins", ui-monospace, "SF Mono", monospace;
 
   --fs-12: 12px;
   --fs-13: 13px;
@@ -74,12 +84,12 @@
   --r-24: 24px;
   --r-pill: 999px;
 
-  /* ===== SHADOWS — soft luxe, not flat ===== */
-  --sh-1: 0 1px 2px rgba(26, 22, 16, 0.04), 0 1px 1px rgba(26, 22, 16, 0.03);
-  --sh-2: 0 2px 6px rgba(26, 22, 16, 0.05), 0 1px 2px rgba(26, 22, 16, 0.04);
-  --sh-3: 0 12px 32px rgba(26, 22, 16, 0.08), 0 4px 12px rgba(26, 22, 16, 0.04);
-  --sh-4: 0 32px 64px rgba(26, 22, 16, 0.12), 0 12px 24px rgba(26, 22, 16, 0.06);
-  --sh-gold: 0 12px 40px rgba(201, 160, 76, 0.30), 0 4px 12px rgba(201, 160, 76, 0.18);
+  /* ===== SHADOWS ===== */
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.03);
+  --sh-2: 0 2px 6px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --sh-3: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --sh-4: 0 32px 64px rgba(0, 0, 0, 0.12), 0 12px 24px rgba(0, 0, 0, 0.06);
+  --sh-gold: 0 12px 40px rgba(209, 172, 64, 0.32), 0 4px 12px rgba(209, 172, 64, 0.20);
   --sh-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 
   /* ===== MOTION ===== */

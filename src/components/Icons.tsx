@@ -15,17 +15,11 @@ const base = (size: number): SVGProps<SVGSVGElement> => ({
 });
 
 export const Logo = ({ size = 28, ...p }: IconProps) => (
-  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden {...p}>
-    <defs>
-      <linearGradient id="auro-g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#E8D8A3" />
-        <stop offset="55%" stopColor="#C9A04C" />
-        <stop offset="100%" stopColor="#A07A2E" />
-      </linearGradient>
-    </defs>
-    <circle cx="16" cy="16" r="14" stroke="url(#auro-g)" strokeWidth="2" />
-    <path d="M9 22L16 7L23 22" stroke="url(#auro-g)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    <path d="M12 17H20" stroke="url(#auro-g)" strokeWidth="2" strokeLinecap="round" />
+  <svg width={size} height={(size * 56) / 64} viewBox="0 0 64 56" fill="none" aria-hidden {...p}>
+    {/* AuroCapital mark — three angular gold pieces forming an upward motion */}
+    <polygon points="2,52 26,8 32,14 14,52" fill="#D1AC40" />
+    <polygon points="38,14 62,52 50,52 32,22" fill="#D1AC40" />
+    <polygon points="28,22 38,4 44,8 34,26" fill="#D1AC40" />
   </svg>
 );
 

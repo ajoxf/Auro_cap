@@ -1,9 +1,9 @@
-# Auro Brokers
+# AuroCapital
 
 Premium FX and CFD brokerage website.
 
 **Built with:** Vite, React 19, TypeScript, React Router, Framer Motion.
-**Design system:** White + Gold (Cormorant Garamond × Private Banking).
+**Design system:** AuroCapital Style Guide — White + Black + Gold `#D1AC40`, Poppins Medium / Bold.
 
 ## Pages
 1. Home
@@ -19,11 +19,16 @@ Premium FX and CFD brokerage website.
 - Founded 2002 · 2M+ clients · 170+ countries · 2,100+ instruments
 
 ## Stack
-- Cormorant Garamond (display) + DM Sans (body) + DM Mono (data)
+- Poppins (Medium 500 + Bold 700) for all type
 - 8pt grid spacing system
 - Inline SVG iconography (no emoji, no icon fonts)
 - Framer Motion for animation orchestration
 - `prefers-reduced-motion` honoured
+
+## Brand assets
+Real logo, portraits, partner logos and article thumbnails live under
+`public/brand/`. See `public/brand/README.md` for the file map. The site
+gracefully falls back to SVG placeholders when files are missing.
 
 ## Run
 ```bash

@@ -52,14 +52,16 @@ export function Footer() {
       <div className="container-wide">
         <div className="footer-top">
           <div className="footer-brand">
-            <Link to="/" className="footer-logo" aria-label="Auro Brokers — home">
+            <Link to="/" className="footer-logo" aria-label="AuroCapital — home">
               <BrandImg
                 src="/brand/logo-mark.svg"
                 alt=""
-                fallback={<Logo size={36} />}
-                style={{ height: 36, width: 36 }}
+                fallback={<Logo size={40} />}
+                style={{ height: 40, width: "auto" }}
               />
-              <span className="footer-logo-word">AURO</span>
+              <span className="footer-logo-word">
+                <strong>Auro</strong>Capital
+              </span>
             </Link>
             <p className="footer-tag serif-italic">Trade the world's markets.</p>
             <div className="footer-newsletter">
@@ -118,7 +120,7 @@ export function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p className="footer-copy text-faint mono">© {new Date().getFullYear()} Auro Brokers Group. All rights reserved.</p>
+          <p className="footer-copy text-faint mono">© {new Date().getFullYear()} AuroCapital. All rights reserved.</p>
           <ul className="footer-legal">
             <li><a href="#legal">Legal</a></li>
             <li><a href="#privacy">Privacy</a></li>

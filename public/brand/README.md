@@ -1,4 +1,4 @@
-# Auro Brokers — Brand Assets
+# AuroCapital — Brand Assets
 
 Drop real brand files into the matching paths below. Each one is consumed by
 a `<BrandImg>` slot in the React code; if the file is missing, the site falls

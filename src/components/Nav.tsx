@@ -46,15 +46,17 @@ export function Nav() {
       <Ticker />
       <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
         <div className="container-wide nav-inner">
-          <Link to="/" className="nav-logo" aria-label="Auro Brokers — home">
+          <Link to="/" className="nav-logo" aria-label="AuroCapital — home">
             <BrandImg
               src="/brand/logo-mark.svg"
               alt=""
-              fallback={<Logo size={32} />}
-              style={{ height: 32, width: 32 }}
+              fallback={<Logo size={34} />}
+              style={{ height: 34, width: "auto" }}
               loading="eager"
             />
-            <span className="nav-logo-word">AURO</span>
+            <span className="nav-logo-word">
+              <strong>Auro</strong>Capital
+            </span>
           </Link>
 
           <nav className="nav-links" aria-label="Primary">

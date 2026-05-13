@@ -39,15 +39,15 @@ body {
   color: var(--ink);
   background: var(--paper);
   font-size: var(--fs-16);
-  line-height: 1.55;
+  font-weight: 400;
+  line-height: 1.6;
   overflow-x: hidden;
-  font-feature-settings: "ss01", "cv01";
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   line-height: 1.08;
   margin: 0;
   color: var(--ink);
@@ -55,23 +55,26 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   font-size: var(--fs-96);
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  line-height: 0.96;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
 }
 
 h2 {
   font-size: clamp(40px, 5vw, 64px);
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 h3 {
   font-size: clamp(28px, 3vw, 40px);
-  letter-spacing: -0.015em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 h4 {
   font-size: var(--fs-24);
+  font-weight: 600;
 }
 
 p {
@@ -162,6 +165,8 @@ img, svg, video {
 .mono {
   font-family: var(--font-mono);
   font-feature-settings: "tnum", "zero";
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
 /* ===== BUTTONS ===== */
@@ -279,18 +284,18 @@ img, svg, video {
 
 /* ===== TYPOGRAPHY HELPERS ===== */
 .text-display { font-family: var(--font-display); }
-.text-mono { font-family: var(--font-mono); font-feature-settings: "tnum"; }
+.text-mono { font-family: var(--font-mono); font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
 .text-muted { color: var(--ink-2); }
 .text-faint { color: var(--ink-3); }
-.text-gold { color: var(--gold-deep); }
+.text-gold { color: var(--gold); }
 .text-up { color: var(--up); }
 .text-down { color: var(--down); }
 
 .italic { font-style: italic; }
-.serif-italic {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 500;
+.serif-italic,
+.accent {
+  color: var(--gold);
+  font-weight: 700;
 }
 
 /* ===== UTILS ===== */
