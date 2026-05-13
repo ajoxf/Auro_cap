@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 
 type Props = {
   points: number[];
@@ -55,9 +56,35 @@ export function Sparkline({
           <stop offset="100%" stopColor={fill} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={`${path} L ${width} ${height} L 0 ${height} Z`} fill={`url(#spk-fill-${auto ? "u" : "d"})`} />
-      <path d={path} stroke={color} strokeWidth={strokeWidth} fill="none" strokeLinecap="round" />
-      <circle cx={width} cy={lastY} r="2.5" fill={color} />
+      <motion.path
+        d={`${path} L ${width} ${height} L 0 ${height} Z`}
+        fill={`url(#spk-fill-${auto ? "u" : "d"})`}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      />
+      <motion.path
+        d={path}
+        stroke={color}
+        strokeWidth={strokeWidth}
+        fill="none"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+      />
+      <motion.circle
+        cx={width}
+        cy={lastY}
+        r="2.5"
+        fill={color}
+        initial={{ scale: 0 }}
+        whileInView={{ scale: 1 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.4, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+      />
     </svg>
   );
 }

@@ -5,6 +5,10 @@ import { PageShell } from "../components/PageShell";
 import { Reveal, Stagger, StaggerItem } from "../components/Reveal";
 import { AnimatedNumber } from "../components/AnimatedNumber";
 import { Sparkline, genSeries } from "../components/Sparkline";
+import { Magnetic } from "../components/Magnetic";
+import { TiltCard } from "../components/TiltCard";
+import { Spotlight } from "../components/Spotlight";
+import { LogoMarquee } from "../components/LogoMarquee";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -37,11 +41,11 @@ function Hero() {
   );
 
   return (
-    <section className="hero">
+    <Spotlight className="hero" size={520}>
       <div className="hero-bg" aria-hidden />
       <div className="hero-grid" aria-hidden />
 
-      <div className="container-wide hero-inner">
+      <div className="container-wide hero-inner" style={{ position: "relative", zIndex: 1 }}>
         <div>
           <motion.div
             className="hero-eyebrow"
@@ -98,12 +102,16 @@ function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Link to="/accounts" className="btn btn-gold">
-              Open live account <ArrowUpRight size={16} />
-            </Link>
-            <Link to="/platforms" className="btn btn-ghost">
-              Try demo <ArrowRight size={16} />
-            </Link>
+            <Magnetic strength={0.2}>
+              <Link to="/accounts" className="btn btn-gold">
+                Open live account <ArrowUpRight size={16} />
+              </Link>
+            </Magnetic>
+            <Magnetic strength={0.18}>
+              <Link to="/platforms" className="btn btn-ghost">
+                Try demo <ArrowRight size={16} />
+              </Link>
+            </Magnetic>
           </motion.div>
 
           <motion.div
@@ -175,7 +183,7 @@ function Hero() {
           })}
         </div>
       </div>
-    </section>
+    </Spotlight>
   );
 }
 
@@ -373,23 +381,24 @@ function Markets() {
             return (
               <motion.div
                 key={t.symbol}
-                className="market-card"
                 variants={{
                   hidden: { opacity: 0, y: 16 },
                   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
                 }}
               >
-                <div className="market-card-info">
-                  <span className="market-sym">{t.symbol}</span>
-                  <span className="market-name">{t.name}</span>
-                </div>
-                <div className="market-card-r">
-                  <Sparkline points={series[t.symbol] ?? []} width={88} height={28} up={up} />
-                  <span className="market-price">{formatPrice(t)}</span>
-                  <span className={`market-delta ${up ? "is-up" : "is-down"}`}>
-                    {up ? "▲" : "▼"} {t.pct >= 0 ? "+" : ""}{t.pct.toFixed(2)}%
-                  </span>
-                </div>
+                <TiltCard className="market-card" max={5}>
+                  <div className="market-card-info">
+                    <span className="market-sym">{t.symbol}</span>
+                    <span className="market-name">{t.name}</span>
+                  </div>
+                  <div className="market-card-r">
+                    <Sparkline points={series[t.symbol] ?? []} width={88} height={28} up={up} />
+                    <span className="market-price">{formatPrice(t)}</span>
+                    <span className={`market-delta ${up ? "is-up" : "is-down"}`}>
+                      {up ? "▲" : "▼"} {t.pct >= 0 ? "+" : ""}{t.pct.toFixed(2)}%
+                    </span>
+                  </div>
+                </TiltCard>
               </motion.div>
             );
           })}
@@ -582,6 +591,7 @@ export function Home() {
     <PageShell>
       <Hero />
       <Stats />
+      <LogoMarquee />
       <WhyAuro />
       <Markets />
       <Trust />
