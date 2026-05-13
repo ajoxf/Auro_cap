@@ -15,11 +15,18 @@ const base = (size: number): SVGProps<SVGSVGElement> => ({
 });
 
 export const Logo = ({ size = 28, ...p }: IconProps) => (
-  <svg width={size} height={(size * 56) / 64} viewBox="0 0 64 56" fill="none" aria-hidden {...p}>
-    {/* AuroCapital mark — three angular gold pieces forming an upward motion */}
-    <polygon points="2,52 26,8 32,14 14,52" fill="#D1AC40" />
-    <polygon points="38,14 62,52 50,52 32,22" fill="#D1AC40" />
-    <polygon points="28,22 38,4 44,8 34,26" fill="#D1AC40" />
+  <svg
+    width={size}
+    height={(size * 60) / 58}
+    viewBox="0 0 58 60"
+    fill="none"
+    aria-hidden
+    {...p}
+  >
+    {/* AuroCapital icon — three gold parallelogram facets (AuroCapital Style Guide, p.1) */}
+    <polygon points="5.1,42.1 0,8.2 13.9,11.4 19,45.3" fill="#D1AC40" />
+    <polygon points="25.4,0 57.2,12.5 47.5,22.9 15.6,10.4" fill="#D1AC40" />
+    <polygon points="51.7,38.5 25,59.9 20.8,46.3 47.5,24.9" fill="#D1AC40" />
   </svg>
 );
 
