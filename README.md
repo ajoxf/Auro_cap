@@ -1,10 +1,9 @@
 # Auro Brokers
 
-Premium FX and CFD brokerage website — single-page application.
+Premium FX and CFD brokerage website.
 
-**Built with:** HTML5, CSS3, Vanilla JS (no frameworks, no bundler).
-**Design system:** UI UX Pro Max — Luxury Dark (Bloomberg Terminal × Private Banking).
-**Components:** 21st.dev Magic MCP patterns adapted to Auro brand.
+**Built with:** Vite, React 19, TypeScript, React Router, Framer Motion.
+**Design system:** White + Gold (Cormorant Garamond × Private Banking).
 
 ## Pages
 1. Home
@@ -23,15 +22,25 @@ Premium FX and CFD brokerage website — single-page application.
 - Cormorant Garamond (display) + DM Sans (body) + DM Mono (data)
 - 8pt grid spacing system
 - Inline SVG iconography (no emoji, no icon fonts)
-- Intersection Observer + RequestAnimationFrame
+- Framer Motion for animation orchestration
 - `prefers-reduced-motion` honoured
 
 ## Run
-Open `index.html` directly in a browser, or serve locally:
+```bash
+npm install
+npm run dev
+```
 
+Open the URL Vite prints (default: http://localhost:5173).
+
+## Build
+```bash
+npm run build
+npm run preview
 ```
-python3 -m http.server 8000
-```
+
+## Legacy
+The original single-file vanilla site lives in `_legacy/index.html` for reference.
 
 ## Risk warning
 CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. 74% of retail investor accounts lose money when trading CFDs with this provider.

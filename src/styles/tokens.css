@@ -1,0 +1,100 @@
+:root {
+  /* ===== COLOR — White + Gold luxury ===== */
+  --paper: #FBF7EE;
+  --paper-2: #F4ECD8;
+  --surface: #FFFFFF;
+  --surface-elev: #FFFFFF;
+
+  --ink: #1A1610;
+  --ink-2: #5E574A;
+  --ink-3: #8E8676;
+  --ink-4: #B8AE9B;
+
+  --gold: #C9A04C;
+  --gold-deep: #A07A2E;
+  --gold-soft: #E8D8A3;
+  --gold-tint: #F7EFD5;
+
+  --hairline: rgba(26, 22, 16, 0.10);
+  --hairline-2: rgba(26, 22, 16, 0.18);
+  --hairline-strong: rgba(26, 22, 16, 0.32);
+
+  --up: #2F6B45;
+  --up-tint: #DBEEDC;
+  --down: #A23A30;
+  --down-tint: #F3D9D5;
+
+  --focus: #0066FF;
+
+  /* ===== TYPE ===== */
+  --font-display: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: "DM Mono", "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-15: 15px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-28: 28px;
+  --fs-32: 32px;
+  --fs-40: 40px;
+  --fs-48: 48px;
+  --fs-56: 56px;
+  --fs-72: 72px;
+  --fs-96: clamp(56px, 9vw, 112px);
+
+  /* ===== SPACING — 8pt grid ===== */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-14: 56px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+  --s-32: 128px;
+
+  /* ===== RADII ===== */
+  --r-2: 2px;
+  --r-4: 4px;
+  --r-6: 6px;
+  --r-8: 8px;
+  --r-12: 12px;
+  --r-16: 16px;
+  --r-20: 20px;
+  --r-24: 24px;
+  --r-pill: 999px;
+
+  /* ===== SHADOWS — soft luxe, not flat ===== */
+  --sh-1: 0 1px 2px rgba(26, 22, 16, 0.04), 0 1px 1px rgba(26, 22, 16, 0.03);
+  --sh-2: 0 2px 6px rgba(26, 22, 16, 0.05), 0 1px 2px rgba(26, 22, 16, 0.04);
+  --sh-3: 0 12px 32px rgba(26, 22, 16, 0.08), 0 4px 12px rgba(26, 22, 16, 0.04);
+  --sh-4: 0 32px 64px rgba(26, 22, 16, 0.12), 0 12px 24px rgba(26, 22, 16, 0.06);
+  --sh-gold: 0 12px 40px rgba(201, 160, 76, 0.30), 0 4px 12px rgba(201, 160, 76, 0.18);
+  --sh-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* ===== MOTION ===== */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --d-1: 120ms;
+  --d-2: 200ms;
+  --d-3: 320ms;
+  --d-4: 520ms;
+  --d-5: 800ms;
+
+  /* ===== LAYOUT ===== */
+  --container: 1280px;
+  --container-wide: 1440px;
+  --nav-h: 72px;
+  --ticker-h: 36px;
+}
