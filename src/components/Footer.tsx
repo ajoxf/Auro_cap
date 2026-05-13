@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Logo, ArrowUpRight } from "./Icons";
+import { BrandImg } from "./BrandImg";
 import "./Footer.css";
 
 const LINKS = [
@@ -52,7 +53,12 @@ export function Footer() {
         <div className="footer-top">
           <div className="footer-brand">
             <Link to="/" className="footer-logo" aria-label="Auro Brokers — home">
-              <Logo size={36} />
+              <BrandImg
+                src="/brand/logo-mark.svg"
+                alt=""
+                fallback={<Logo size={36} />}
+                style={{ height: 36, width: 36 }}
+              />
               <span className="footer-logo-word">AURO</span>
             </Link>
             <p className="footer-tag serif-italic">Trade the world's markets.</p>

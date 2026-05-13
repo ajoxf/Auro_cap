@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { PageShell } from "../components/PageShell";
 import { Reveal, Stagger, StaggerItem } from "../components/Reveal";
 import { ArrowUpRight, ArrowRight, Shield } from "../components/Icons";
+import { BrandImg } from "../components/BrandImg";
 import { easeOutExpo } from "../styles/motion";
 import "./Home.css";
 import "./Trading.css";
@@ -18,24 +19,28 @@ const HISTORY = [
 
 const LEADERS = [
   {
+    slug: "helena-cardenas",
     name: "Helena Cárdenas",
     role: "Chief Executive Officer",
     bio: "Former MD at a tier-1 European prime broker. 22 years building execution platforms.",
     grad: ["#F7E5B7", "#A57424"],
   },
   {
+    slug: "niels-hvidberg",
     name: "Niels Hvidberg",
     role: "Chief Operating Officer",
     bio: "Built the execution stack at Auro since 2009. Stanford EE, ex-LCH.",
     grad: ["#EBD49B", "#7A5520"],
   },
   {
+    slug: "maria-bertolini",
     name: "Maria Bertolini",
     role: "Chief Macro Strategist",
     bio: "Ten years on the BIS Markets Committee. Bocconi PhD in monetary economics.",
     grad: ["#FFDFA3", "#C0822E"],
   },
   {
+    slug: "tunde-akande",
     name: "Tunde Akande",
     role: "Chief Compliance Officer",
     bio: "FCA-supervised CF11. Previously Head of Compliance at a Swiss neo-bank.",
@@ -193,8 +198,13 @@ function Leadership() {
         <Stagger className="lead-grid" delay={0.08}>
           {LEADERS.map((l) => (
             <StaggerItem className="lead-card" key={l.name}>
-              <div className="lead-portrait" aria-hidden>
-                <PortraitSilhouette grad={l.grad as [string, string]} />
+              <div className="lead-portrait">
+                <BrandImg
+                  src={`/brand/portraits/${l.slug}.jpg`}
+                  alt={`${l.name}, ${l.role}`}
+                  fallback={<PortraitSilhouette grad={l.grad as [string, string]} />}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
               </div>
               <div className="lead-body">
                 <h3 className="lead-name">{l.name}</h3>

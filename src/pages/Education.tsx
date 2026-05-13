@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { PageShell } from "../components/PageShell";
 import { Reveal } from "../components/Reveal";
 import { ArrowUpRight, ArrowRight } from "../components/Icons";
+import { BrandImg } from "../components/BrandImg";
 import { easeOutExpo } from "../styles/motion";
 import "./Home.css";
 import "./Trading.css";
@@ -20,6 +21,7 @@ const TABS: { id: TabId; label: string }[] = [
 
 const ARTICLES = [
   {
+    slug: "forex-from-first-principles",
     tab: "academy" as TabId,
     feat: true,
     tag: "Course",
@@ -29,6 +31,7 @@ const ARTICLES = [
     read: "65 min · 12 lessons",
   },
   {
+    slug: "risk-of-ruin",
     tab: "academy" as TabId,
     feat: false,
     tag: "Guide",
@@ -38,6 +41,7 @@ const ARTICLES = [
     read: "14 min read",
   },
   {
+    slug: "depth-of-market",
     tab: "academy" as TabId,
     feat: false,
     tag: "Series",
@@ -47,6 +51,7 @@ const ARTICLES = [
     read: "32 min · 5 parts",
   },
   {
+    slug: "mql5-bootcamp",
     tab: "academy" as TabId,
     feat: false,
     tag: "Reference",
@@ -56,6 +61,7 @@ const ARTICLES = [
     read: "9 hr · 24 lessons",
   },
   {
+    slug: "auro-weekly-247",
     tab: "analysis" as TabId,
     feat: true,
     tag: "Macro",
@@ -65,6 +71,7 @@ const ARTICLES = [
     read: "Issue 247 · 22 min",
   },
   {
+    slug: "eur-usd-1860",
     tab: "analysis" as TabId,
     feat: false,
     tag: "FX",
@@ -74,6 +81,7 @@ const ARTICLES = [
     read: "5 min · today",
   },
   {
+    slug: "btc-etf-flows",
     tab: "analysis" as TabId,
     feat: false,
     tag: "Crypto",
@@ -83,6 +91,7 @@ const ARTICLES = [
     read: "4 min · today",
   },
   {
+    slug: "sp-earnings-three-names",
     tab: "analysis" as TabId,
     feat: false,
     tag: "Indices",
@@ -149,9 +158,9 @@ function PHero() {
   );
 }
 
-function ArticleThumb({ tag, level }: { tag: string; level: string }) {
-  return (
-    <div className="article-thumb">
+function ArticleThumb({ tag, level, slug, title }: { tag: string; level: string; slug: string; title: string }) {
+  const gradientFallback = (
+    <>
       <svg className="article-thumb-chart" viewBox="0 0 400 250" preserveAspectRatio="none">
         <motion.path
           d="M0 200 L40 180 L80 190 L120 150 L160 160 L200 110 L240 130 L280 80 L320 90 L360 50 L400 70"
@@ -164,6 +173,16 @@ function ArticleThumb({ tag, level }: { tag: string; level: string }) {
           transition={{ duration: 1.2, ease: easeOutExpo }}
         />
       </svg>
+    </>
+  );
+  return (
+    <div className="article-thumb">
+      <BrandImg
+        src={`/brand/articles/${slug}.jpg`}
+        alt={title}
+        fallback={gradientFallback}
+        style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
+      />
       <span className="article-thumb-tag">{tag}</span>
       <span className="article-thumb-level">{level}</span>
     </div>
@@ -177,7 +196,7 @@ function ArticlesGrid({ tab }: { tab: TabId }) {
       <div className="articles-grid">
         {items.map((a) => (
           <article key={a.title} className={`article ${a.feat ? "feat" : ""}`}>
-            <ArticleThumb tag={a.tag} level={a.level} />
+            <ArticleThumb tag={a.tag} level={a.level} slug={a.slug} title={a.title} />
             <div className="article-body">
               <h3 className="article-title">{a.title}</h3>
               <p className="article-excerpt">{a.excerpt}</p>

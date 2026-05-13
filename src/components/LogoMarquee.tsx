@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { BrandImg } from "./BrandImg";
 import "./LogoMarquee.css";
 
 const LOGOS = [
@@ -32,12 +33,20 @@ export function LogoMarquee() {
           animate={{ x: ["0%", "-50%"] }}
           transition={{ duration: 60, ease: "linear", repeat: Infinity }}
         >
-          {stream.map((l, i) => (
-            <div className="lmq-item" key={`${l.name}-${i}`}>
-              <span className="lmq-name">{l.name}</span>
-              <span className="lmq-sub">{l.sub}</span>
-            </div>
-          ))}
+          {stream.map((l, i) => {
+            const slug = l.name.toLowerCase().replace(/\s+/g, "-");
+            return (
+              <div className="lmq-item" key={`${l.name}-${i}`}>
+                <BrandImg
+                  src={`/brand/partners/${slug}.svg`}
+                  alt={l.name}
+                  fallback={<span className="lmq-name">{l.name}</span>}
+                  style={{ height: 28, width: "auto", maxWidth: 140 }}
+                />
+                <span className="lmq-sub">{l.sub}</span>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
     </section>

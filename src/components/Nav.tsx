@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { Logo, Menu, Close, ArrowUpRight } from "./Icons";
+import { BrandImg } from "./BrandImg";
 import { Ticker } from "./Ticker";
 import "./Nav.css";
 
@@ -46,7 +47,13 @@ export function Nav() {
       <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
         <div className="container-wide nav-inner">
           <Link to="/" className="nav-logo" aria-label="Auro Brokers — home">
-            <Logo size={32} />
+            <BrandImg
+              src="/brand/logo-mark.svg"
+              alt=""
+              fallback={<Logo size={32} />}
+              style={{ height: 32, width: 32 }}
+              loading="eager"
+            />
             <span className="nav-logo-word">AURO</span>
           </Link>
 
