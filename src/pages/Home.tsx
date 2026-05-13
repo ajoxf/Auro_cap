@@ -21,9 +21,21 @@ import {
   Chart,
   Star,
 } from "../components/Icons";
-import { usePrices, formatPrice } from "../hooks/usePrices";
+import { usePrices, formatPrice, type PriceTick } from "../hooks/usePrices";
 import { easeOutExpo } from "../styles/motion";
 import "./Home.css";
+
+function fmt(p: number, digits: number) {
+  return p.toLocaleString("en-US", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+function spreadFor(t: PriceTick) {
+  const step = Math.pow(10, -t.digits);
+  return { bid: t.price - step * 1.5, ask: t.price + step * 1.5 };
+}
 
 /* ============================================================
    HERO
@@ -32,13 +44,21 @@ function Hero() {
   const reduce = useReducedMotion();
   const ticks = usePrices(1100);
   const featured = useMemo(
-    () => [
-      ticks.find((t) => t.symbol === "EUR/USD"),
-      ticks.find((t) => t.symbol === "XAU/USD"),
-      ticks.find((t) => t.symbol === "BTC/USD"),
-    ].filter(Boolean),
+    () =>
+      [
+        ticks.find((t) => t.symbol === "EUR/USD"),
+        ticks.find((t) => t.symbol === "XAU/USD"),
+        ticks.find((t) => t.symbol === "BTC/USD"),
+      ].filter((t): t is PriceTick => Boolean(t)),
     [ticks],
   );
+
+  const heroSeries = useMemo(() => {
+    const m: Record<string, number[]> = {};
+    for (const t of featured) m[t.symbol] = genSeries(36, t.pct);
+    return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [featured.length]);
 
   return (
     <Spotlight className="hero" size={520}>
@@ -130,19 +150,22 @@ function Hero() {
 
         <div className="hero-stage" aria-hidden>
           <div className="hero-stage-bg" />
+          <motion.div
+            className="hero-stage-tag"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.2, ease: "easeOut" }}
+          >
+            <span className="lpulse" aria-hidden />LIVE · STREAMING FROM LD4
+          </motion.div>
+
           {featured.map((t, i) => {
-            if (!t) return null;
-            const positions = [
-              { top: "8%", left: "8%" },
-              { top: "38%", right: "4%" },
-              { bottom: "8%", left: "16%" },
-            ];
             const up = t.change >= 0;
+            const { bid, ask } = spreadFor(t);
             return (
               <motion.div
                 key={t.symbol}
-                className="fcard"
-                style={positions[i]}
+                className={`hquote hquote-${i}`}
                 initial={{ opacity: 0, y: 30, scale: 0.94 }}
                 animate={{
                   opacity: 1,
@@ -162,22 +185,40 @@ function Hero() {
                       },
                 }}
               >
-                <div className="fcard-top">
-                  <span className="fcard-sym">{t.symbol}</span>
-                  <span>{t.category.toUpperCase()}</span>
+                <div className="hquote-top">
+                  <div className="hquote-id">
+                    <span className="hquote-sym">{t.symbol}</span>
+                    <span className="hquote-name">{t.name}</span>
+                  </div>
+                  <span className="hquote-cat">{t.category}</span>
                 </div>
-                <motion.div
-                  className="fcard-px"
-                  key={t.price.toFixed(t.digits)}
-                  initial={reduce ? false : { color: up ? "#2F6B45" : "#A23A30" }}
-                  animate={{ color: "var(--ink)" }}
-                  transition={{ duration: 0.9 }}
-                >
-                  {formatPrice(t)}
-                </motion.div>
-                <span className={`fcard-delta ${up ? "is-up" : "is-down"}`}>
-                  {up ? "▲" : "▼"} {t.pct >= 0 ? "+" : ""}{t.pct.toFixed(2)}% today
-                </span>
+                <div className="hquote-row">
+                  <motion.span
+                    className="hquote-px"
+                    key={t.price.toFixed(t.digits)}
+                    initial={reduce ? false : { color: up ? "var(--up)" : "var(--down)" }}
+                    animate={{ color: "var(--ink)" }}
+                    transition={{ duration: 0.9 }}
+                  >
+                    {formatPrice(t)}
+                  </motion.span>
+                  <span className={`hquote-delta ${up ? "is-up" : "is-down"}`}>
+                    {up ? "▲" : "▼"} {t.pct >= 0 ? "+" : ""}{t.pct.toFixed(2)}%
+                  </span>
+                </div>
+                <div className="hquote-spark">
+                  <Sparkline points={heroSeries[t.symbol] ?? []} width={236} height={32} up={up} />
+                </div>
+                <div className="hquote-spread">
+                  <span className="hqs-cell">
+                    <span className="hqs-l">Bid</span>
+                    <span className="hqs-v">{fmt(bid, t.digits)}</span>
+                  </span>
+                  <span className="hqs-cell">
+                    <span className="hqs-l">Ask</span>
+                    <span className="hqs-v">{fmt(ask, t.digits)}</span>
+                  </span>
+                </div>
               </motion.div>
             );
           })}
@@ -343,6 +384,7 @@ function Markets() {
     const m: Record<string, number[]> = {};
     for (const t of ticks) m[t.symbol] = genSeries(28, t.pct);
     return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticks.length]);
 
   const filtered = cat === "all" ? ticks.slice(0, 12) : ticks.filter((t) => t.category === cat).slice(0, 12);
@@ -378,6 +420,7 @@ function Markets() {
         >
           {filtered.map((t) => {
             const up = t.change >= 0;
+            const { bid, ask } = spreadFor(t);
             return (
               <motion.div
                 key={t.symbol}
@@ -387,16 +430,34 @@ function Markets() {
                 }}
               >
                 <TiltCard className="market-card" max={5}>
-                  <div className="market-card-info">
-                    <span className="market-sym">{t.symbol}</span>
-                    <span className="market-name">{t.name}</span>
-                  </div>
-                  <div className="market-card-r">
-                    <Sparkline points={series[t.symbol] ?? []} width={88} height={28} up={up} />
-                    <span className="market-price">{formatPrice(t)}</span>
-                    <span className={`market-delta ${up ? "is-up" : "is-down"}`}>
+                  <div className="market-head">
+                    <div className="market-id">
+                      <span className="market-sym">{t.symbol}</span>
+                      <span className="market-name">{t.name}</span>
+                    </div>
+                    <span className={`market-pill ${up ? "is-up" : "is-down"}`}>
                       {up ? "▲" : "▼"} {t.pct >= 0 ? "+" : ""}{t.pct.toFixed(2)}%
                     </span>
+                  </div>
+                  <div className="market-spark">
+                    <Sparkline points={series[t.symbol] ?? []} width={280} height={48} up={up} />
+                  </div>
+                  <div className="market-foot">
+                    <div className="market-price-block">
+                      <span className="market-price">{formatPrice(t)}</span>
+                      <span className="market-mid">Mid</span>
+                    </div>
+                    <div className="market-spread">
+                      <span className="msp-side">
+                        <span className="msp-l">Bid</span>
+                        <span className="msp-v">{fmt(bid, t.digits)}</span>
+                      </span>
+                      <span className="msp-divider" aria-hidden />
+                      <span className="msp-side">
+                        <span className="msp-l">Ask</span>
+                        <span className="msp-v">{fmt(ask, t.digits)}</span>
+                      </span>
+                    </div>
                   </div>
                 </TiltCard>
               </motion.div>
@@ -426,7 +487,7 @@ const TESTIMONIALS = [
     name: "James Marek",
     role: "Independent prop trader",
     location: "London, UK",
-    verified: "Verified — Trustpilot",
+    verified: "Trustpilot",
   },
   {
     grad: ["#E8CDA3", "#8D6529"],
@@ -436,7 +497,7 @@ const TESTIMONIALS = [
     name: "Aoife O'Reilly",
     role: "Family office CIO",
     location: "Dublin, IE",
-    verified: "Verified — LinkedIn",
+    verified: "LinkedIn",
   },
   {
     grad: ["#FFEFC0", "#B89042"],
@@ -446,7 +507,7 @@ const TESTIMONIALS = [
     name: "Rohan Thakur",
     role: "Quant lead, Lagrange Capital",
     location: "Singapore",
-    verified: "Verified — Bloomberg LP",
+    verified: "Bloomberg LP",
   },
 ];
 
@@ -467,14 +528,23 @@ function Trust() {
         </Reveal>
 
         <div className="trust-grid">
-          <Reveal className="trust-panel">
+          <Reveal className="trust-panel testi-panel">
             <div className="trust-aggregate">
-              <span className="score">4.8</span>
-              <div>
+              <span className="score">
+                <AnimatedNumber value={4.8} decimals={1} />
+              </span>
+              <div className="trust-agg-meta">
                 <div className="stars" aria-label="Average rating 4.8 of 5">
                   {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={20} />)}
                 </div>
-                <div className="meta mono">38,412 verified reviews · Trustpilot, App Store, Play</div>
+                <div className="meta mono">38,412 verified reviews</div>
+                <div className="trust-sources">
+                  <span className="ts-src">Trustpilot</span>
+                  <span className="ts-dot" aria-hidden />
+                  <span className="ts-src">App Store</span>
+                  <span className="ts-dot" aria-hidden />
+                  <span className="ts-src">Google Play</span>
+                </div>
               </div>
             </div>
 
@@ -488,16 +558,22 @@ function Trust() {
                   >
                     {t.initials}
                   </div>
-                  <div>
+                  <div className="testi-body">
+                    <svg className="testi-mark" aria-hidden viewBox="0 0 32 32">
+                      <path
+                        d="M6 22c0-7 4-11 9-12v3c-3 1-5 3-5 6h4v9H6v-6zm12 0c0-7 4-11 9-12v3c-3 1-5 3-5 6h4v9h-8v-6z"
+                        fill="currentColor"
+                      />
+                    </svg>
                     <div className="testi-stars" aria-hidden>
                       {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={12} />)}
                     </div>
                     <p className="testi-quote">"{t.quote}"</p>
                     <p className="testi-attr">
-                      <strong style={{ color: "var(--ink)", fontWeight: 500 }}>{t.name}</strong>
-                      · <span>{t.role}</span> · <span>{t.location}</span>
-                      <span style={{ marginLeft: "auto", color: "var(--gold-deep)", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        <Check size={12} />{t.verified}
+                      <strong className="testi-name">{t.name}</strong>
+                      <span className="testi-meta">{t.role} · {t.location}</span>
+                      <span className="testi-verified">
+                        <Check size={12} />Verified — {t.verified}
                       </span>
                     </p>
                   </div>
@@ -516,13 +592,14 @@ function Trust() {
                     <div className="reg-desc">{r.body}</div>
                     <div className="reg-no">License · {r.lic}</div>
                   </div>
+                  <span className="reg-verified" aria-hidden><Check size={12} /></span>
                 </Reveal>
               ))}
             </div>
 
             <Reveal style={{ marginTop: "var(--s-6)" }} className="trust-panel">
               <span className="eyebrow">Awards 2023–2024</span>
-              <ul style={{ listStyle: "none", padding: 0, margin: "var(--s-4) 0 0", display: "flex", flexDirection: "column", gap: "var(--s-3)" }}>
+              <ul className="awards-list">
                 <li><strong className="mono">Finance Magnates</strong> — Best Multi-Asset Broker 2024</li>
                 <li><strong className="mono">World Finance</strong> — Best Trading Conditions Europe 2024</li>
                 <li><strong className="mono">Global Forex Awards</strong> — Best Liquidity Provider 2023</li>
