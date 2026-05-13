@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { PageShell } from "../components/PageShell";
 import { Reveal, Stagger, StaggerItem } from "../components/Reveal";
 import { AnimatedNumber } from "../components/AnimatedNumber";
@@ -43,6 +43,9 @@ function spreadFor(t: PriceTick) {
 function Hero() {
   const reduce = useReducedMotion();
   const ticks = usePrices(1100);
+  const { scrollY } = useScroll();
+  const stageY = useTransform(scrollY, [0, 720], [0, -90]);
+  const bgX = useTransform(scrollY, [0, 720], ["50%", "62%"]);
   const featured = useMemo(
     () =>
       [
@@ -62,7 +65,11 @@ function Hero() {
 
   return (
     <Spotlight className="hero" size={520}>
-      <div className="hero-bg" aria-hidden />
+      <motion.div
+        className="hero-bg"
+        aria-hidden
+        style={reduce ? undefined : { backgroundPositionX: bgX }}
+      />
       <div className="hero-grid" aria-hidden />
 
       <div className="container-wide hero-inner" style={{ position: "relative", zIndex: 1 }}>
@@ -148,7 +155,11 @@ function Hero() {
           </motion.div>
         </div>
 
-        <div className="hero-stage" aria-hidden>
+        <motion.div
+          className="hero-stage"
+          aria-hidden
+          style={reduce ? undefined : { y: stageY }}
+        >
           <div className="hero-stage-bg" />
           <motion.div
             className="hero-stage-tag"
@@ -222,7 +233,7 @@ function Hero() {
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </Spotlight>
   );
@@ -378,6 +389,7 @@ const CATS: { id: Cat | "all"; label: string }[] = [
 ];
 
 function Markets() {
+  const reduceM = useReducedMotion();
   const [cat, setCat] = useState<Cat | "all">("all");
   const ticks = usePrices(1700);
   const series = useMemo(() => {
@@ -390,8 +402,8 @@ function Markets() {
   const filtered = cat === "all" ? ticks.slice(0, 12) : ticks.filter((t) => t.category === cat).slice(0, 12);
 
   return (
-    <section className="section" style={{ background: "var(--paper-2)" }}>
-      <div className="container-wide">
+    <Spotlight className="section section-paper" size={680}>
+      <div className="container-wide section-stack">
         <Reveal className="sec-head">
           <span className="eyebrow">Markets</span>
           <h2>Two thousand instruments. <span className="serif-italic">One ledger.</span></h2>
@@ -444,18 +456,42 @@ function Markets() {
                   </div>
                   <div className="market-foot">
                     <div className="market-price-block">
-                      <span className="market-price">{formatPrice(t)}</span>
+                      <motion.span
+                        className="market-price"
+                        key={t.price.toFixed(t.digits)}
+                        initial={reduceM ? false : { color: up ? "var(--up)" : "var(--down)" }}
+                        animate={{ color: "var(--ink)" }}
+                        transition={{ duration: 0.9 }}
+                      >
+                        {formatPrice(t)}
+                      </motion.span>
                       <span className="market-mid">Mid</span>
                     </div>
                     <div className="market-spread">
                       <span className="msp-side">
                         <span className="msp-l">Bid</span>
-                        <span className="msp-v">{fmt(bid, t.digits)}</span>
+                        <motion.span
+                          className="msp-v"
+                          key={bid.toFixed(t.digits)}
+                          initial={reduceM ? false : { color: up ? "var(--up)" : "var(--down)" }}
+                          animate={{ color: "var(--ink)" }}
+                          transition={{ duration: 0.9 }}
+                        >
+                          {fmt(bid, t.digits)}
+                        </motion.span>
                       </span>
                       <span className="msp-divider" aria-hidden />
                       <span className="msp-side">
                         <span className="msp-l">Ask</span>
-                        <span className="msp-v">{fmt(ask, t.digits)}</span>
+                        <motion.span
+                          className="msp-v"
+                          key={ask.toFixed(t.digits)}
+                          initial={reduceM ? false : { color: up ? "var(--up)" : "var(--down)" }}
+                          animate={{ color: "var(--ink)" }}
+                          transition={{ duration: 0.9 }}
+                        >
+                          {fmt(ask, t.digits)}
+                        </motion.span>
                       </span>
                     </div>
                   </div>
@@ -471,7 +507,7 @@ function Markets() {
           </Link>
         </Reveal>
       </div>
-    </section>
+    </Spotlight>
   );
 }
 
@@ -519,8 +555,8 @@ const REGS = [
 
 function Trust() {
   return (
-    <section className="section">
-      <div className="container-wide">
+    <Spotlight className="section" size={680}>
+      <div className="container-wide section-stack">
         <Reveal className="sec-head center">
           <span className="eyebrow">Trust & regulation</span>
           <h2>The receipts.</h2>
@@ -609,7 +645,7 @@ function Trust() {
           </div>
         </div>
       </div>
-    </section>
+    </Spotlight>
   );
 }
 
@@ -618,9 +654,10 @@ function Trust() {
    ============================================================ */
 function CTABand() {
   return (
-    <section className="cta-band">
+    <Spotlight className="cta-band" size={720}>
       <div className="cta-band-bg" aria-hidden />
-      <div className="container-wide cta-inner">
+      <div className="cta-band-drift" aria-hidden />
+      <div className="container-wide cta-inner section-stack">
         <Reveal>
           <span className="eyebrow">Open in three steps</span>
           <h2 style={{ margin: "var(--s-3) 0 var(--s-5)" }}>
@@ -656,7 +693,7 @@ function CTABand() {
           ))}
         </Stagger>
       </div>
-    </section>
+    </Spotlight>
   );
 }
 

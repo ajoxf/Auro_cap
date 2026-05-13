@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { Logo, Menu, Close, ArrowUpRight } from "./Icons";
 import { BrandImg } from "./BrandImg";
 import { Ticker } from "./Ticker";
+import { Magnetic } from "./Magnetic";
 import "./Nav.css";
 
 const NAV_ITEMS = [
@@ -46,18 +47,20 @@ export function Nav() {
       <Ticker />
       <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
         <div className="container-wide nav-inner">
-          <Link to="/" className="nav-logo" aria-label="AuroCapital — home">
-            <BrandImg
-              src="/brand/logo-mark.svg"
-              alt=""
-              fallback={<Logo size={34} />}
-              style={{ height: 34, width: "auto" }}
-              loading="eager"
-            />
-            <span className="nav-logo-word">
-              <strong>Auro</strong>Capital
-            </span>
-          </Link>
+          <Magnetic strength={0.18}>
+            <Link to="/" className="nav-logo" aria-label="AuroCapital — home">
+              <BrandImg
+                src="/brand/logo-mark.svg"
+                alt=""
+                fallback={<Logo size={34} />}
+                style={{ height: 34, width: "auto" }}
+                loading="eager"
+              />
+              <span className="nav-logo-word">
+                <strong>Auro</strong>Capital
+              </span>
+            </Link>
+          </Magnetic>
 
           <nav className="nav-links" aria-label="Primary">
             {NAV_ITEMS.map((item) => (

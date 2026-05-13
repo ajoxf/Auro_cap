@@ -352,7 +352,24 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-2);
+  position: relative;
+  padding-bottom: var(--s-3);
+  transition: transform var(--d-3) var(--ease-out);
 }
+
+.stat-cell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  transition: width var(--d-3) var(--ease-out);
+}
+
+.stat-cell:hover { transform: translateY(-3px); }
+.stat-cell:hover::after { width: 60%; }
 
 .stat-num {
   font-family: var(--font-display);
@@ -437,6 +454,18 @@
   background: var(--paper-2);
   color: var(--gold-deep);
   margin-bottom: var(--s-3);
+  transition:
+    transform var(--d-3) var(--ease-out),
+    background-color var(--d-3) var(--ease-out),
+    color var(--d-3) var(--ease-out),
+    box-shadow var(--d-3) var(--ease-out);
+}
+
+.bento-tile:hover .bento-icon {
+  transform: translateY(-2px) rotate(-6deg) scale(1.06);
+  background: var(--gold-tint);
+  color: var(--ink);
+  box-shadow: 0 6px 18px -8px var(--gold);
 }
 
 .bento-title {
@@ -998,6 +1027,29 @@
   opacity: 0.3;
 }
 
+.cta-band-drift {
+  position: absolute;
+  inset: -20% -10%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 280px at 20% 30%, var(--gold-tint), transparent 60%),
+    radial-gradient(ellipse 500px 240px at 80% 70%, var(--gold-20), transparent 60%);
+  filter: blur(40px);
+  opacity: 0.85;
+  animation: cta-drift 18s var(--ease-in-out) infinite alternate;
+}
+
+@keyframes cta-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(-3%, 2%, 0) rotate(2deg); }
+  100% { transform: translate3d(3%, -2%, 0) rotate(-2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-band-drift { animation: none; }
+}
+
 .cta-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1073,4 +1125,38 @@
   font-size: var(--fs-18);
   line-height: 1.5;
   max-width: 56ch;
+}
+
+/* ===== Section utilities for Spotlight-wrapped sections ===== */
+.section-paper { background: var(--paper-2); }
+.section-stack { position: relative; z-index: 1; }
+
+/* Markets card subtle hover lift */
+.market-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Hero stage-tag pulse softens on reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .lpulse { animation: none; }
+}
+
+/* Hero bg ambient drift — slow scroll-coupled position via inline style;
+   plus an idle ambient float when no scroll. */
+.hero-bg {
+  background-image:
+    radial-gradient(circle at 50% 30%, var(--gold-tint) 0%, transparent 55%);
+  background-repeat: no-repeat;
+  background-size: 1400px 1400px;
+  background-position: 50% 30%;
+  animation: hero-ambient 22s var(--ease-in-out) infinite alternate;
+}
+
+@keyframes hero-ambient {
+  0%   { background-size: 1400px 1400px; opacity: 0.6; }
+  100% { background-size: 1600px 1600px; opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg { animation: none; }
 }
