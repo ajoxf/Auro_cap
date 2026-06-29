@@ -13,11 +13,11 @@
 <style>
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
-  body { margin:0; background:#f4f3ec; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  body { margin:0; background:linear-gradient(180deg,#ffffff 0%,#eef1f4 100%) fixed; background-color:#fbfcfd; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
   ::selection { background:rgba(31,71,51,.15); }
   ::-webkit-scrollbar { width:12px; }
-  ::-webkit-scrollbar-track { background:#edece5; }
-  ::-webkit-scrollbar-thumb { background:#cfccc0; border-radius:6px; border:3px solid #edece5; }
+  ::-webkit-scrollbar-track { background:#eef1f4; }
+  ::-webkit-scrollbar-thumb { background:#cfccc0; border-radius:6px; border:3px solid #eef1f4; }
   input, button { font-family:'IBM Plex Sans',sans-serif; }
   a { color:inherit; }
   h1,h2,h3 { font-family:'Newsreader',serif; font-weight:500; letter-spacing:-.01em; }
@@ -48,8 +48,10 @@
   [id]{ scroll-margin-top:84px; }
 
   /* ============ CINEMATIC HERO (Bloomberg clip, smooth autoplay loop) ============ */
-  #cine-hero { position:relative; width:100%; height:86vh; height:86svh; overflow:hidden; background:#05060A; }
+  #cine-hero { position:relative; width:100%; height:64vh; height:64svh; overflow:hidden; background:#05060A; }
   #cine-vid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
+  /* dark → cream dissolve so the hero melts into the page */
+  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:30vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(5,6,10,0), #ffffff 96%); }
   .cine-headline { position:absolute; top:50%; left:clamp(24px,7vw,120px); transform:translateY(-50%); max-width:min(560px,80vw); text-align:left; z-index:3; }
   .cine-inner { will-change:transform, opacity; }
   .cine-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.26em; color:#f0d68f; display:inline-flex; align-items:center; gap:12px; margin-bottom:22px; }
@@ -78,7 +80,7 @@
 </style>
 </head>
 <body>
-<div style="min-height:100vh; background:#f4f3ec;">
+<div style="min-height:100vh; background:transparent;">
 
   <!-- ============ NAV ============ -->
   <nav id="nav">
@@ -108,6 +110,7 @@
     <video id="cine-vid" autoplay muted loop playsinline preload="auto" poster="assets/bloomberg-poster.jpg">
       <source src="assets/bloomberg-hero.mp4" type="video/mp4">
     </video>
+    <div id="cine-fade"></div>
 
     <button id="cine-sound" onclick="toggleSound()"><span id="cine-sound-ico">🔇</span> <span id="cine-sound-txt">Sound off</span></button>
 
@@ -186,7 +189,7 @@
   </header>
 
   <!-- ============ MARKET TICKER ============ -->
-  <section style="border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9; background:#fbfaf6;">
+  <section style="border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9; background:#f6f8fb;">
     <div id="ticker" style="max-width:1240px; margin:0 auto; padding:18px 44px; display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between;"></div>
   </section>
 
@@ -213,7 +216,7 @@
   </section>
 
   <!-- ============ INSTRUCTORS ============ -->
-  <section id="instructors" style="background:#fbfaf6; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
+  <section id="instructors" style="background:#f6f8fb; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
     <div style="max-width:1240px; margin:0 auto; padding:80px 44px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:36px;">
         <div>
@@ -355,7 +358,7 @@
       <p style="font-size:16px; color:#6a7280; margin:0 0 28px; max-width:460px; margin-left:auto; margin-right:auto;">One sharp breakdown of a market or modeling concept, every Sunday. Free.</p>
       <div id="newsletter">
         <div style="display:flex; gap:10px; max-width:460px; margin:0 auto; flex-wrap:wrap; justify-content:center;">
-          <input id="sub-email" type="email" placeholder="you@firm.com" style="flex:1; min-width:220px; padding:15px 18px; border-radius:10px; border:1px solid #d9d7cd; background:#faf9f5; color:#1a241c; font-size:15px; outline:none;">
+          <input id="sub-email" type="email" placeholder="you@firm.com" style="flex:1; min-width:220px; padding:15px 18px; border-radius:10px; border:1px solid #d9d7cd; background:#f5f7fa; color:#1a241c; font-size:15px; outline:none;">
           <button onclick="subscribe()" style="cursor:pointer; border:none; padding:15px 28px; border-radius:10px; background:#1f4733; color:#fff; font-size:15px; font-weight:700;">Subscribe</button>
         </div>
       </div>
@@ -363,7 +366,7 @@
   </section>
 
   <!-- ============ FOOTER ============ -->
-  <footer style="border-top:1px solid #e4e2d9; padding:48px 44px 36px; background:#fbfaf6;">
+  <footer style="border-top:1px solid #e4e2d9; padding:48px 44px 36px; background:#f6f8fb;">
     <div style="max-width:1240px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px;">
       <div style="display:flex; align-items:center; gap:11px;">
         <span class="serif" style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; color:#fff;">M</span>
@@ -699,7 +702,7 @@ function renderModal(){
   if (state.step === 1){
     body = `<div style="padding:24px 28px 28px;">
       <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:22px;">
-        ${items.map(c => `<div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 16px; border-radius:12px; background:#faf9f5; border:1px solid #ece9e0;">
+        ${items.map(c => `<div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 16px; border-radius:12px; background:#f5f7fa; border:1px solid #ece9e0;">
           <div style="display:flex; align-items:center; gap:11px;">
             <span style="width:30px; height:30px; flex:none; border-radius:8px; background:${c.accent};"></span>
             <div><div style="font-size:14px; font-weight:600; color:#1a241c;">${esc(c.title)}</div><div style="font-size:12px; color:#8a92a0;">${esc(c.instr)}</div></div>
@@ -717,9 +720,9 @@ function renderModal(){
     body = `<div style="padding:24px 28px 28px;">
       <div class="mono" style="font-size:11px; letter-spacing:.1em; color:#8a92a0; margin-bottom:16px;">YOU'LL FINISH CHECKOUT ON THINKIFIC</div>
       <label style="display:block; font-size:13px; color:#6a7280; margin-bottom:7px;">Full name</label>
-      <input placeholder="Jordan Avery" style="width:100%; padding:14px 16px; border-radius:11px; border:1px solid #d9d7cd; background:#faf9f5; color:#1a241c; font-size:15px; outline:none; margin-bottom:16px;">
+      <input placeholder="Jordan Avery" style="width:100%; padding:14px 16px; border-radius:11px; border:1px solid #d9d7cd; background:#f5f7fa; color:#1a241c; font-size:15px; outline:none; margin-bottom:16px;">
       <label style="display:block; font-size:13px; color:#6a7280; margin-bottom:7px;">Email</label>
-      <input type="email" placeholder="you@firm.com" style="width:100%; padding:14px 16px; border-radius:11px; border:1px solid #d9d7cd; background:#faf9f5; color:#1a241c; font-size:15px; outline:none;">
+      <input type="email" placeholder="you@firm.com" style="width:100%; padding:14px 16px; border-radius:11px; border:1px solid #d9d7cd; background:#f5f7fa; color:#1a241c; font-size:15px; outline:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:18px; border-top:1px solid #ece9e0;">
         <div><div style="font-size:12px; color:#8a92a0;">Total today</div><div class="serif" style="font-size:28px; color:#1f4733;">$${sum}</div></div>
         <button onclick="goToThinkific(); modalNext();" style="cursor:pointer; border:none; padding:15px 26px; border-radius:11px; background:#1f4733; color:#fff; font-size:15px; font-weight:700;">Checkout on Thinkific →</button>
