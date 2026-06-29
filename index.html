@@ -135,11 +135,6 @@
     <div class="cine-cue"><span class="dot"></span><span>Scroll to explore</span></div>
   </header>
 
-  <!-- ============ MARKET TICKER ============ -->
-  <section style="border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9; background:#f6f8fb;">
-    <div id="ticker" style="max-width:1240px; margin:0 auto; padding:18px 44px; display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between;"></div>
-  </section>
-
   <!-- ============ LEARNING PATHS ============ -->
   <section id="paths" style="max-width:1240px; margin:0 auto; padding:80px 44px 44px;">
     <div class="reveal" style="margin-bottom:34px;">
@@ -753,7 +748,7 @@ function initReveal(){
 }
 
 /* ---- boot ---- */
-renderTicker(); renderPaths(); renderFilters(); renderCourses();
+renderPaths(); renderFilters(); renderCourses();   /* renderTicker() removed — re-add when the ticker section returns */
 renderInstructors(); renderFaq(); renderSelbar(); initReveal(); initHero();
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 loadCatalog();   // auto-sync from Thinkific when THINKIFIC.catalogEndpoint is set
