@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05060A">
+<title>Auro Capital — Scroll Experience</title>
+<meta name="description" content="A scroll-driven cinematic frame animation rendered with Three.js. Scroll down to play forward, scroll up to reverse.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E8C97A;
+  --off:#F0ECE4;
+  --muted:#9893A8;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:'DM Sans',system-ui,sans-serif;
+  color:var(--off);
+  /* Dark gradient background */
+  background:
+    radial-gradient(120% 90% at 75% 10%, #14122A 0%, rgba(20,18,42,0) 55%),
+    radial-gradient(130% 110% at 10% 95%, #0B1024 0%, rgba(11,16,36,0) 50%),
+    linear-gradient(160deg, #05060A 0%, #0A0B14 45%, #05060A 100%);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+canvas{display:block}
+
+/* The scroll track defines how much the user must scroll to play the whole clip.
+   Its height is computed in JS from the clip duration and the scroll-speed factor. */
+#track{position:relative;width:100%}
+
+/* Sticky stage pins the WebGL canvas to the viewport while the track scrolls past. */
+#stage{
+  position:sticky;top:0;
+  width:100%;height:100vh;height:100svh;
+  overflow:hidden;
+}
+#gl{position:absolute;inset:0;width:100%;height:100%}
+
+/* Subtle vignette + grain on top of the WebGL canvas for cinematic depth. */
+#stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(130% 130% at 50% 50%, rgba(5,6,10,0) 55%, rgba(5,6,10,.72) 100%);
+  mix-blend-mode:multiply;
+}
+
+/* ---------- Headline (center-left) ---------- */
+.headline{
+  position:absolute;
+  top:50%;left:clamp(24px,7vw,120px);
+  transform:translateY(-50%);
+  max-width:min(560px,80vw);
+  text-align:left;
+  z-index:3;
+  /* parallax offset applied via CSS var from JS */
+  --py:0px;
+}
+.headline-inner{transform:translate3d(0,var(--py),0);will-change:transform}
+.eyebrow{
+  font-family:'DM Mono',monospace;font-size:12px;font-weight:500;
+  text-transform:uppercase;letter-spacing:0.26em;color:var(--gold);
+  display:inline-flex;align-items:center;gap:12px;margin-bottom:22px;
+}
+.eyebrow::before{content:"";width:30px;height:1px;background:var(--gold)}
+.headline h1{
+  margin:0;
+  font-family:'Cormorant Garamond',serif;font-weight:500;
+  font-size:clamp(40px,6.4vw,88px);line-height:1.02;letter-spacing:-0.015em;
+}
+.headline h1 em{font-style:italic;color:var(--gold-light)}
+.headline p{
+  margin:24px 0 0;max-width:42ch;
+  font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:var(--muted);font-weight:300;
+}
+
+/* Scroll cue + progress readout */
+.cue{
+  position:absolute;left:clamp(24px,7vw,120px);bottom:36px;z-index:3;
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:14px;
+}
+.cue .bar{position:relative;width:120px;height:1px;background:rgba(240,236,228,.18)}
+.cue .bar span{position:absolute;inset:0;width:0%;background:var(--gold);transition:width .12s linear}
+.cue .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);
+  animation:pulse 2.4s var(--ease) infinite}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+/* Loading veil */
+#veil{
+  position:fixed;inset:0;z-index:10;display:grid;place-items:center;
+  background:#05060A;transition:opacity .8s var(--ease),visibility .8s var(--ease);
+}
+#veil.hidden{opacity:0;visibility:hidden}
+#veil .ring{
+  width:42px;height:42px;border-radius:50%;
+  border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (prefers-reduced-motion: reduce){
+  .cue .dot{animation:none}
+  #veil .ring{animation:none}
+}
+@media (max-width:640px){
+  .headline{top:42%}
+  .cue .bar{width:84px}
+}
+</style>
+</head>
+<body>
+
+<div id="veil"><div class="ring"></div></div>
+
+<div id="track">
+  <div id="stage">
+    <canvas id="gl"></canvas>
+
+    <div class="headline" id="headline">
+      <div class="headline-inner">
+        <span class="eyebrow">Auro Capital</span>
+        <h1>Markets in <em>motion</em>,<br>captured frame<br>by frame.</h1>
+        <p>Scroll to drive the sequence forward — reverse it the moment you scroll back. Every frame is rendered live through WebGL.</p>
+      </div>
+    </div>
+
+    <div class="cue">
+      <span class="dot"></span>
+      <span>Scroll</span>
+      <span class="bar"><span id="prog"></span></span>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden source video. We never "play" it — we scrub currentTime from scroll. -->
+<video id="src" src="assets/scroll-sequence.mp4" muted playsinline preload="auto" style="display:none"></video>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const SCROLL_SPEED   = 0.6;   // 1.0 = baseline. 0.6 = 40% slower scrub.
+const VIEWPORTS_BASE = 4;     // baseline scroll length, in viewport heights.
+const SMOOTHING      = 0.085; // lerp factor: lower = smoother / heavier.
+const PARALLAX_AMT   = 90;    // px the headline drifts over the full scroll.
+
+const video    = document.getElementById('src');
+const trackEl  = document.getElementById('track');
+const headline = document.getElementById('headline');
+const progBar  = document.getElementById('prog');
+const veil     = document.getElementById('veil');
+const canvas   = document.getElementById('gl');
+
+/* ============================================================
+   THREE.JS — fullscreen video plane with "cover" framing
+   ============================================================ */
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+const scene  = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+const texture = new THREE.VideoTexture(video);
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.minFilter  = THREE.LinearFilter;
+texture.magFilter  = THREE.LinearFilter;
+
+// Custom material so we can "cover"-fit the video to any viewport aspect
+// and grade it slightly (contrast + cool teal/gold lift) to match the theme.
+const material = new THREE.ShaderMaterial({
+  uniforms:{
+    uTex:{ value:texture },
+    uScale:{ value:new THREE.Vector2(1,1) }, // cover-fit scale
+    uFade:{ value:0 },                       // 0→1 reveal on load
+  },
+  vertexShader:`
+    varying vec2 vUv;
+    void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
+  `,
+  fragmentShader:`
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D uTex;
+    uniform vec2 uScale;
+    uniform float uFade;
+    void main(){
+      vec2 uv = (vUv - 0.5) * uScale + 0.5;       // cover-fit
+      vec3 c = texture2D(uTex, uv).rgb;
+      // gentle cinematic grade
+      c = (c - 0.5) * 1.06 + 0.5;                  // contrast
+      c *= vec3(0.98, 1.0, 1.04);                  // cool the shadows a touch
+      // soft edge mask so off-texture areas stay dark, not stretched
+      vec2 e = step(0.0, uv) * step(uv, vec2(1.0));
+      float inside = e.x * e.y;
+      gl_FragColor = vec4(c * inside * uFade, 1.0);
+    }
+  `,
+});
+
+const quad = new THREE.Mesh(new THREE.PlaneGeometry(2,2), material);
+scene.add(quad);
+
+/* Cover-fit math: scale UVs so the video fills the viewport without distortion. */
+function fitCover(){
+  const vw = video.videoWidth  || 16;
+  const vh = video.videoHeight || 9;
+  const sw = window.innerWidth;
+  const sh = window.innerHeight;
+  const videoAR  = vw / vh;
+  const screenAR = sw / sh;
+  const s = material.uniforms.uScale.value;
+  if (screenAR > videoAR){ s.set(1, videoAR / screenAR); }
+  else { s.set(screenAR / videoAR, 1); }
+}
+
+function resize(){
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
+  fitCover();
+}
+window.addEventListener('resize', resize);
+
+/* ============================================================
+   SCROLL → FRAME MAPPING
+   ============================================================ */
+let duration   = 0;
+let targetT    = 0;   // scroll-derived target time (seconds)
+let currentT   = 0;   // smoothed, displayed time (seconds)
+let pendingSeek= false;
+
+function layoutTrack(){
+  // Longer track => slower scrub. Dividing by SCROLL_SPEED (0.6) lengthens
+  // the track by ~1.67×, so the clip advances at 60% of the baseline rate.
+  const vh = window.innerHeight;
+  const len = (VIEWPORTS_BASE / SCROLL_SPEED) * vh + vh; // + one viewport for the sticky stage
+  trackEl.style.height = len + 'px';
+}
+
+function scrollProgress(){
+  // 0 at top of track, 1 when the sticky stage has scrolled its full length.
+  const max = trackEl.offsetHeight - window.innerHeight;
+  if (max <= 0) return 0;
+  return Math.min(1, Math.max(0, window.scrollY / max));
+}
+
+/* ============================================================
+   RENDER LOOP
+   ============================================================ */
+function tick(){
+  const p = scrollProgress();
+  targetT = p * duration;
+
+  // Smoothly chase the scroll target. Scrolling down advances time (plays
+  // forward); scrolling up lowers the target (plays in reverse) — for free.
+  currentT += (targetT - currentT) * SMOOTHING;
+
+  if (duration > 0 && Math.abs(video.currentTime - currentT) > 0.001){
+    if (!pendingSeek){
+      pendingSeek = true;
+      // clamp a hair inside the bounds to avoid seek stalls at the edges
+      video.currentTime = Math.min(duration - 0.001, Math.max(0, currentT));
+    }
+  }
+  texture.needsUpdate = true;
+
+  // Subtle headline parallax: drifts upward as you scroll through the clip.
+  const py = (p - 0.5) * PARALLAX_AMT;
+  headline.style.setProperty('--py', (-py).toFixed(1) + 'px');
+  // gently fade the headline out as the sequence completes
+  headline.style.opacity = (1 - Math.min(1, p * 1.35)).toFixed(3);
+
+  progBar.style.width = (p * 100).toFixed(1) + '%';
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+
+video.addEventListener('seeked', () => { pendingSeek = false; texture.needsUpdate = true; });
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function start(){
+  duration = video.duration || 0;
+  resize();
+  layoutTrack();
+  window.addEventListener('resize', layoutTrack);
+
+  // reveal
+  veil.classList.add('hidden');
+  let f = 0;
+  (function fadeIn(){
+    f = Math.min(1, f + 0.04);
+    material.uniforms.uFade.value = f;
+    if (f < 1) requestAnimationFrame(fadeIn);
+  })();
+
+  requestAnimationFrame(tick);
+}
+
+if (video.readyState >= 1){ start(); }
+else { video.addEventListener('loadedmetadata', start, { once:true }); }
+
+// Nudge the decoder so the first frame is ready to scrub.
+video.addEventListener('loadeddata', () => { texture.needsUpdate = true; });
+video.load();
+</script>
+</body>
+</html>
