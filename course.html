@@ -72,7 +72,14 @@
     }
 
     function render(c, instructors){
-      document.title = c.title + ' — Meridian Finance Academy';
+      const desc = (c.description || `Enroll in ${c.title} — taught by ${c.instr}. Lifetime access, datasets and a verified certificate.`).slice(0, 158);
+      const url = pageUrl('course.html', 'slug=' + encodeURIComponent(c.slug || c.thinkificSlug));
+      applyMeta({ title: c.title + ' — Meridian Finance Academy', description: desc, url, type: 'website' });
+      setJsonLd({
+        '@context':'https://schema.org', '@type':'Course', name:c.title, description:desc,
+        provider:{ '@type':'Organization', name:'Meridian Finance Academy', sameAs:siteBase() },
+        offers:{ '@type':'Offer', price:c.price, priceCurrency:'USD', url:courseUrl(c) },
+      });
       const instr = (instructors || []).find(t => t.name === c.instr);
       const modules = (c.modules || []);
       const modulesHtml = modules.length ? modules.map((m,i) => `
