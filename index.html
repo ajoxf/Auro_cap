@@ -54,14 +54,18 @@
   #cine-vid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
   /* dark → cream dissolve so the hero melts into the page */
   #cine-fade { position:absolute; left:0; right:0; bottom:0; height:30vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(5,6,10,0), #ffffff 96%); }
-  .cine-headline { position:absolute; top:50%; left:clamp(24px,7vw,120px); transform:translateY(-50%); max-width:min(560px,80vw); text-align:left; z-index:3; }
+  .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; }
   .cine-inner { will-change:transform, opacity; }
-  .cine-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.26em; color:#f0d68f; display:inline-flex; align-items:center; gap:12px; margin-bottom:22px; }
-  .cine-eyebrow::before { content:""; width:30px; height:1px; background:#f0d68f; }
-  .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(40px,6.4vw,86px); line-height:1.02; letter-spacing:-.015em; color:#FBF9F3; text-shadow:0 2px 16px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
-  .cine-headline h1 em { font-style:italic; color:#f0d68f; }
-  .cine-headline p { margin:22px 0 0; max-width:42ch; font-size:clamp(15px,1.5vw,18px); line-height:1.65; color:#ece9e2; font-weight:400; text-shadow:0 1px 10px rgba(0,0,0,.7); }
-  .cine-cta { display:inline-flex; align-items:center; gap:9px; margin-top:30px; padding:13px 24px; border-radius:10px; background:#b08d3c; color:#1a241c; font-size:14px; font-weight:700; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+  /* frosted-glass panel keeps text legible over the bright clip */
+  .cine-panel { background:rgba(9,11,15,.46); backdrop-filter:blur(16px) saturate(120%); -webkit-backdrop-filter:blur(16px) saturate(120%); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:clamp(26px,3vw,40px); box-shadow:0 30px 80px rgba(0,0,0,.45); }
+  .cine-badge { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.07em; color:#f0d68f; background:rgba(255,255,255,.07); border:1px solid rgba(240,214,143,.34); padding:6px 13px; border-radius:7px; margin-bottom:20px; }
+  .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(32px,4.3vw,58px); line-height:1.05; letter-spacing:-.015em; color:#FBF9F3; }
+  .cine-headline p { margin:18px 0 0; max-width:46ch; font-size:clamp(14px,1.4vw,16.5px); line-height:1.62; color:#dcd9d2; font-weight:400; }
+  .cine-actions { display:flex; gap:13px; margin-top:28px; flex-wrap:wrap; }
+  .cine-btn-primary { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; border-radius:10px; background:#1f4733; color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,.35); transition:background .2s ease; }
+  .cine-btn-primary:hover { background:#163a29; }
+  .cine-btn-ghost { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; border-radius:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.4); color:#FBF9F3; font-size:14px; font-weight:600; text-decoration:none; transition:background .2s ease, border-color .2s ease; }
+  .cine-btn-ghost:hover { background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.62); }
   /* sound toggle */
   #cine-sound { position:absolute; top:84px; right:clamp(20px,5vw,44px); z-index:4; display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:9px 15px; border-radius:999px; border:1px solid rgba(240,236,228,.28); background:rgba(5,6,10,.42); backdrop-filter:blur(8px); color:#F0ECE4; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; transition:background .25s ease, border-color .25s ease; }
   #cine-sound:hover { background:rgba(5,6,10,.66); border-color:rgba(240,236,228,.5); }
@@ -118,10 +122,15 @@
 
     <div class="cine-headline" id="cine-headline">
       <div class="cine-inner" id="cine-inner">
-        <span class="cine-eyebrow">Meridian Finance</span>
-        <h1>Markets,<br><em>mastered.</em></h1>
-        <p>Finance courses taught the way the desk actually works — live data, real terminals, institutional rigor. Step onto the floor.</p>
-        <a href="#courses" class="cine-cta">Browse courses ↓</a>
+        <div class="cine-panel">
+          <span class="cine-badge">Accredited · CPE-eligible · Certificate-backed</span>
+          <h1>Master the numbers behind every market.</h1>
+          <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
+          <div class="cine-actions">
+            <a href="#courses" class="cine-btn-primary">Browse courses</a>
+            <a href="#instructors" class="cine-btn-ghost">Meet the faculty</a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -131,20 +140,14 @@
   <!-- ============ HERO ============ -->
   <header class="hero-grid" style="position:relative; max-width:1240px; margin:0 auto; padding:70px 44px 60px; display:grid; grid-template-columns:1.02fr .98fr; gap:56px; align-items:center;">
     <div>
-      <div style="display:inline-flex; align-items:center; gap:9px; padding:6px 14px; border-radius:7px; background:rgba(31,71,51,.07); border:1px solid rgba(31,71,51,.16); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.05em; color:#1f4733; margin-bottom:26px;">
-        Accredited · CPE-eligible · Certificate-backed
-      </div>
-      <h1 style="font-size:clamp(42px,5.2vw,74px); line-height:1.03; margin:0; color:#1a241c;">
-        Master the numbers behind every market.
-      </h1>
-      <p style="max-width:486px; margin:24px 0 0; font-size:17px; line-height:1.62; color:#4a5260;">
-        A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.
+      <div class="kicker">BY THE NUMBERS</div>
+      <h2 style="font-size:clamp(30px,3.6vw,48px); line-height:1.05; margin:0; color:#1a241c;">
+        Trusted by professionals worldwide.
+      </h2>
+      <p style="max-width:486px; margin:18px 0 0; font-size:16px; line-height:1.62; color:#4a5260;">
+        Analysts, portfolio managers and finance teams build real, durable market skill here — course by course, with no subscription required.
       </p>
-      <div style="display:flex; gap:13px; margin-top:32px; flex-wrap:wrap;">
-        <a href="#courses" class="btn-primary">Browse courses</a>
-        <a href="#instructors" class="btn-ghost">Meet the faculty</a>
-      </div>
-      <div class="grid-4" style="display:flex; gap:34px; margin-top:40px; padding-top:30px; border-top:1px solid #e4e2d9; flex-wrap:wrap;">
+      <div class="grid-4" style="display:flex; gap:34px; margin-top:36px; padding-top:30px; border-top:1px solid #e4e2d9; flex-wrap:wrap;">
         <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">250k+</div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">learners</div></div>
         <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">4.9<span style="color:#b08d3c; font-size:18px;">★</span></div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">avg rating</div></div>
         <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">120+</div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">courses</div></div>
