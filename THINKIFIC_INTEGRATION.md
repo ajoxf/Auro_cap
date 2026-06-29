@@ -39,10 +39,9 @@ needs **no API key, no server, and no secrets**. Host it anywhere static
 
 ## Seeing the portal (preview & deploy)
 
-This is a static site (`index.html` + `assets/scroll-sequence.mp4` + `vendor/`), so
-"the portal" is just those files served over **http/https**. It must be served, not
-opened from disk — the cinematic hero uses ES modules and a video, which browsers
-block on `file://`.
+This is a static site (`index.html` + `assets/bloomberg-hero.mp4` +
+`assets/bloomberg-poster.jpg`), so "the portal" is just those files served over
+**http/https**. Serve it rather than opening from disk so the hero video plays.
 
 **Locally (fastest):**
 ```bash
@@ -58,10 +57,10 @@ you want to publish; the site then lives at
 and `vendor/` onto the published branch. (Ask and I can push the current build to
 `gh-pages` for you.)
 
-> The cinematic Bloomberg hero needs a browser with **H.264** support — every normal
-> desktop/mobile browser has it. If the clip ever fails to load, the page detects it
-> and gracefully drops the cinematic act, showing the standard light hero instead, so
-> the portal is never blocked.
+> The Bloomberg hero autoplays muted (browsers require muted autoplay); the **Sound**
+> button unmutes it. It loops smoothly because it plays normally rather than being
+> scrubbed. If the clip can't load, the poster frame (`bloomberg-poster.jpg`) shows in
+> its place, so the hero never appears blank.
 
 ---
 
