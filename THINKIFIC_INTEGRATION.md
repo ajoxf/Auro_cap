@@ -5,20 +5,44 @@ not host courses, video, or payments itself — Thinkific does. The page's job i
 present the brand, the catalog, the faculty and the pricing story, then **hand the
 visitor off to Thinkific** to enrol, pay, and actually take the course.
 
-Everything Thinkific-related is driven by **one config block** near the top of the
-`<script>` in `index.html`:
+Everything Thinkific-related lives in **one file: `meridian.js`** — shared by
+`index.html` (home) and `course.html` (course detail). A developer sets it up
+**once**:
 
 ```js
 const THINKIFIC = {
   domain: 'YOUR-SCHOOL.thinkific.com',  // your Thinkific (or custom) domain
   signInPath: '/users/sign_in',
   useDirectEnroll: false,
+  catalogEndpoint: '',                  // ← set this to go fully dynamic (Step B)
 };
-const MERIDIAN_DATA = { courses: [ ... ], instructors: [ ... ], ... };
+const MERIDIAN_DATA = { courses, instructors, paths, logos, faqs };  // demo fallback only
 ```
 
-You should never need to touch the HTML or rendering code to keep the catalog in
-sync — only `THINKIFIC` and `MERIDIAN_DATA`.
+`MERIDIAN_DATA` is just pre-launch demo content. Once `catalogEndpoint` is set
+(Step B below), **the home page, course pages, learning-path bundles, instructor
+grid and the logo marquee all render live from Thinkific** — and nobody edits code
+again.
+
+---
+
+## ⭐ For the non-technical team (how you'll actually run this)
+
+**You manage everything inside the Thinkific admin portal. You never touch the
+website code.** Once a developer completes the one-time setup (Steps 1–3 + Step B),
+here's what flows automatically to the site on the next page refresh:
+
+| You do this in Thinkific… | …and the website shows it automatically |
+|---|---|
+| Publish a new **course** (with price) | New course card in the catalog + its own branded course page |
+| Edit a course's title, price, description, chapters | Updated everywhere, including the course page's curriculum |
+| Add/replace a course's **instructor (author)** | Instructor appears in the faculty grid + on the course page |
+| Create a **Bundle** (several courses, one price) | New card in the **Learning paths** section, linking to that bundle's checkout |
+| Unpublish / archive a course | It drops off the site |
+
+The only things that are *brand assets* (not course content) and so are set once by a
+developer in `meridian.js`: the hero video, the FAQ text, and the marquee logo list.
+Everything a learner buys is managed by you in Thinkific.
 
 ---
 
@@ -39,9 +63,9 @@ needs **no API key, no server, and no secrets**. Host it anywhere static
 
 ## Seeing the portal (preview & deploy)
 
-This is a static site (`index.html` + `assets/bloomberg-hero.mp4` +
-`assets/bloomberg-poster.jpg`), so "the portal" is just those files served over
-**http/https**. Serve it rather than opening from disk so the hero video plays.
+This is a static site — `index.html`, `course.html`, `meridian.js`, and
+`assets/` (the hero video + poster) — served over **http/https**. Serve it rather
+than opening from disk so the hero video plays and the data layer can fetch.
 
 **Locally (fastest):**
 ```bash
@@ -53,9 +77,9 @@ python3 -m http.server 8000
 **Live URL via GitHub Pages:** the repo has a `gh-pages` branch, so Pages is the
 natural host. In **GitHub → Settings → Pages**, set the source to the branch/folder
 you want to publish; the site then lives at
-`https://<user>.github.io/Auro_cap/`. Publishing = copying `index.html`, `assets/`,
-and `vendor/` onto the published branch. (Ask and I can push the current build to
-`gh-pages` for you.)
+`https://<user>.github.io/Auro_cap/`. Publishing = copying `index.html`,
+`course.html`, `meridian.js` and `assets/` onto the published branch. (Ask and I can
+push the current build to `gh-pages` for you.)
 
 > The Bloomberg hero autoplays muted (browsers require muted autoplay); the **Sound**
 > button unmutes it. It loops smoothly because it plays normally rather than being
@@ -145,11 +169,11 @@ server-side with your **API key as the secret** — never put that key in this p
 
 ### B. Live catalog from the Thinkific API (no more hand-editing) ✅ built in
 
-**The page already supports this.** New courses and instructors you add in Thinkific
-will appear here automatically once you point the page at a small proxy — no code
+**The page already supports this.** Courses, instructors, learning-path bundles and
+the logo marquee all render live once you point the site at a small proxy — no code
 edits, no redeploys. Two parts:
 
-**1. In `index.html`, set the endpoint:**
+**1. In `meridian.js`, set the endpoint:**
 
 ```js
 const THINKIFIC = {
@@ -159,29 +183,40 @@ const THINKIFIC = {
 };
 ```
 
-On load the page calls `loadCatalog()`, fetches that URL, and rebuilds the catalog,
-filter chips, and faculty grid from the response. If the endpoint is `''` or the
-fetch fails, it silently keeps the built-in `MERIDIAN_DATA` — so the page never
-breaks. The proxy must return:
+On load, both `index.html` and `course.html` call `fetchCatalog()` (in
+`meridian.js`), fetch that URL, and rebuild the catalog, filter chips, faculty grid,
+learning-path bundles, marquee and course pages from the response. If the endpoint is
+`''` or the fetch fails, the site silently keeps the built-in `MERIDIAN_DATA` — so it
+never breaks. The proxy returns:
 
 ```json
 {
   "courses": [
     { "title":"Trend Analysis", "cat":"Technical", "instr":"Marcus Chen",
       "price":349, "hours":"8.5", "lessons":62, "level":"Intermediate",
-      "rating":"4.9", "tag":"Bestseller", "slug":"trend-analysis", "id":123 }
+      "rating":"4.9", "tag":"Bestseller", "slug":"trend-analysis", "id":123,
+      "description":"Read trend and structure like a desk…",
+      "modules":[ { "title":"Foundations", "lessons":["What trend is","Structure"] } ] }
   ],
   "instructors": [
     { "name":"Marcus Chen", "role":"Technical Analysis", "cred":"Former GS Trader",
       "courses":4, "students":"32K", "photo":"https://..." }
-  ]
+  ],
+  "bundles": [
+    { "name":"Technical Trading Track", "desc":"Price action, indicators…",
+      "n":26, "price":899, "slug":"technical-trading-track" }
+  ],
+  "logos": ["Bloomberg","Goldman Sachs","BlackRock"]
 }
 ```
 
-Only `title` + (`slug` or `id`) are required per course; everything else gets a
-sensible default (an accent colour is auto-assigned, rating defaults to 5.0, etc.).
-Categories for the filter bar are derived automatically from the courses' `cat`
-values, so a new track in Thinkific becomes a new filter chip with no edits.
+Per course, only `title` + (`slug` or `id`) are required; everything else gets a
+sensible default (accent colour auto-assigned, rating defaults to 5.0, etc.).
+`description` + `modules` power the branded **course page** (`course.html`). `bundles`
+become the **Learning paths** cards (linking to each bundle's Thinkific checkout).
+`logos` feed the instructor marquee. Filter chips are derived automatically from the
+courses' `cat` values, so a new track in Thinkific becomes a new filter chip with no
+edits.
 
 **2. The proxy (holds your API key — never ships to the browser).** Example
 Cloudflare Worker:
@@ -198,9 +233,10 @@ export default {
       fetch('https://api.thinkific.com/api/public/v1/' + path, { headers: H })
         .then(r => r.json());
 
-    const [courses, users] = await Promise.all([
+    const [courses, users, bundles] = await Promise.all([
       api('courses?page=1&limit=50'),
       api('users?role=instructor&limit=50').catch(() => ({ items: [] })),
+      api('bundles?page=1&limit=50').catch(() => ({ items: [] })),
     ]);
 
     const instrById = Object.fromEntries((users.items || []).map(u => [u.id, u]));
@@ -213,15 +249,24 @@ export default {
           id: c.id,
           cat: (c.keywords || '').split(',')[0]?.trim() || 'Courses',
           instr: [u.first_name, u.last_name].filter(Boolean).join(' '),
-          // price/lessons/rating aren't in /courses — fetch /products & /chapters
+          description: c.description || c.card_text || '',
+          // price/lessons/rating + per-course modules aren't in /courses — fetch
+          // /products (price), /courses/{id}/chapters (modules & lesson counts)
           // here if you want them exact, or set marketing defaults:
-          price: 0, lessons: 0, rating: '5.0',
+          price: 0, lessons: 0, rating: '5.0', modules: [],
         };
       }),
       instructors: (users.items || []).map(u => ({
         name: [u.first_name, u.last_name].filter(Boolean).join(' '),
         role: u.headline || '', cred: u.bio || '', photo: u.avatar_url || '',
       })),
+      bundles: (bundles.items || []).map(b => ({
+        name: b.name, slug: b.slug, desc: b.description || '',
+        n: (b.product_ids || []).length, price: 0,   // pull price from /products
+      })),
+      // Brand logos for the marquee — usually a fixed list you keep in meridian.js,
+      // but you can serve them here too:
+      logos: ['Bloomberg','Goldman Sachs','BlackRock','Morgan Stanley','Fidelity'],
     };
     return new Response(JSON.stringify(out), {
       headers: {

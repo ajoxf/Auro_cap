@@ -33,6 +33,14 @@
   @keyframes fadeUp { from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
   .reveal { opacity:0; }
   .reveal.in { animation:fadeUp .6s ease both; }
+  /* logo marquee */
+  .marquee { overflow:hidden; -webkit-mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee-track { display:flex; align-items:center; gap:64px; width:max-content; animation:marquee 38s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state:paused; }
+  .logo-item { font-family:'Newsreader',serif; font-size:25px; font-weight:600; color:#9aa0ab; white-space:nowrap; letter-spacing:.01em; transition:color .2s ease; }
+  .logo-item:hover { color:#1f4733; }
+  @keyframes marquee { from{ transform:translateX(0) } to{ transform:translateX(-50%) } }
+  @media (prefers-reduced-motion:reduce){ .marquee-track{ animation:none; flex-wrap:wrap; justify-content:center } }
   /* responsive */
   @media (max-width:900px){
     .nav-links { display:none !important; }
@@ -171,25 +179,14 @@
     </div>
   </section>
 
-  <!-- ============ TESTIMONIALS ============ -->
-  <section style="max-width:1240px; margin:0 auto; padding:30px 44px 70px;">
-    <div style="text-align:center; margin-bottom:40px;">
-      <div class="kicker">PROOF</div>
-      <h2 style="font-size:clamp(30px,3.6vw,48px); margin:0;">Careers, changed.</h2>
+  <!-- ============ INSTRUCTOR EXPERIENCE MARQUEE ============ -->
+  <section style="max-width:1240px; margin:0 auto; padding:54px 44px 64px;">
+    <div style="text-align:center; margin-bottom:30px;">
+      <div class="kicker">INDUSTRY EXPERTS</div>
+      <h2 style="font-size:clamp(24px,2.8vw,34px); margin:0; color:#1a241c;">Our instructors bring experience from</h2>
     </div>
-    <div class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
-      <div style="background:#fff; border:1px solid #e4e2d9; border-radius:18px; padding:30px;">
-        <div class="serif" style="font-style:italic; font-size:18px; line-height:1.55; color:#2f3947; margin:0 0 22px;">“I went from spreadsheets to leading our FP&amp;A function in six months. The modeling course paid for itself ten times over.”</div>
-        <div style="display:flex; align-items:center; gap:12px;"><span class="serif" style="width:40px; height:40px; border-radius:50%; background:#1f4733; display:flex; align-items:center; justify-content:center; font-weight:600; color:#fff;">EV</span><div><div style="font-weight:700; font-size:14px;">Elena Vasquez</div><div style="font-size:12px; color:#8a92a0;">FP&amp;A Manager, SaaS</div></div></div>
-      </div>
-      <div style="background:#fff; border:1px solid #e4e2d9; border-radius:18px; padding:30px;">
-        <div class="serif" style="font-style:italic; font-size:18px; line-height:1.55; color:#2f3947; margin:0 0 22px;">“The quant track is the closest thing to a buy-side bootcamp I've found online. Rigorous, practical, zero fluff.”</div>
-        <div style="display:flex; align-items:center; gap:12px;"><span class="serif" style="width:40px; height:40px; border-radius:50%; background:#3c6b4f; display:flex; align-items:center; justify-content:center; font-weight:600; color:#fff;">TB</span><div><div style="font-weight:700; font-size:14px;">Tom Becker</div><div style="font-size:12px; color:#8a92a0;">Junior PM, Asset Mgmt</div></div></div>
-      </div>
-      <div style="background:#fff; border:1px solid #e4e2d9; border-radius:18px; padding:30px;">
-        <div class="serif" style="font-style:italic; font-size:18px; line-height:1.55; color:#2f3947; margin:0 0 22px;">“Started knowing nothing about investing. Now I manage my own portfolio with real confidence and a real framework.”</div>
-        <div style="display:flex; align-items:center; gap:12px;"><span class="serif" style="width:40px; height:40px; border-radius:50%; background:#5c7a5f; display:flex; align-items:center; justify-content:center; font-weight:600; color:#fff;">AR</span><div><div style="font-weight:700; font-size:14px;">Aisha Rahman</div><div style="font-size:12px; color:#8a92a0;">Software Engineer</div></div></div>
-      </div>
+    <div class="marquee">
+      <div class="marquee-track" id="marquee-track"></div>
     </div>
   </section>
 
@@ -313,137 +310,39 @@
 
 </div>
 
+<script src="meridian.js"></script>
 <script>
-/* ============================================================================
-   MERIDIAN_DATA  — SINGLE SOURCE OF TRUTH
-   ----------------------------------------------------------------------------
-   This is the ONLY block you edit to keep the page in sync with Thinkific.
-   Every course below maps to one Thinkific course via `thinkificSlug` (the
-   slug in your Thinkific course URL) OR `enrollUrl` (a full checkout link).
-   See THINKIFIC_INTEGRATION.md for the exact steps.
-   ============================================================================ */
-const THINKIFIC = {
-  // Your Thinkific domain — e.g. 'meridian.thinkific.com' or a custom domain.
-  domain: 'YOUR-SCHOOL.thinkific.com',
-  // Sign-in path on Thinkific (default works for all schools):
-  signInPath: '/users/sign_in',
-  // How "Enroll" resolves a course URL. Built as:
-  //   https://{domain}/courses/{thinkificSlug}        (course landing page), or
-  //   https://{domain}/enroll/{thinkificCourseId}     (direct enroll), or
-  //   a full `enrollUrl` on the course (takes priority).
-  useDirectEnroll: false,
-  // ---- LIVE SYNC (optional) ----------------------------------------------
-  // Set this to your proxy URL to pull courses + instructors from Thinkific at
-  // runtime so anything you add in Thinkific shows up here automatically.
-  // The proxy must return JSON: { courses:[...], instructors:[...] } and holds
-  // your API key server-side. Leave '' to use the built-in MERIDIAN_DATA below.
-  // Full proxy code is in THINKIFIC_INTEGRATION.md.
-  catalogEndpoint: '',
-};
-
-const MERIDIAN_DATA = {
-  // --- Live market ticker (purely decorative; not from Thinkific) ----------
-  ticker: [
-    { sym:'S&P 500',  val:'5,431.20', chg:'+0.82%', up:true,  spark:'2,18 14,12 26,15 38,7 50,10 60,4'  },
-    { sym:'NASDAQ',   val:'17,862',   chg:'+1.14%', up:true,  spark:'2,20 14,14 26,16 38,9 50,6 60,3'   },
-    { sym:'10Y YIELD',val:'4.21%',    chg:'-0.06%', up:false, spark:'2,6 14,9 26,7 38,12 50,14 60,18'   },
-    { sym:'GOLD',     val:'$2,341',   chg:'+0.41%', up:true,  spark:'2,16 14,12 26,14 38,10 50,12 60,6' },
-    { sym:'BTC',      val:'$71,480',  chg:'-1.92%', up:false, spark:'2,4 14,8 26,6 38,11 50,9 60,16'    },
-  ],
-
-  // --- Learning paths → map to Thinkific Collections/Categories ------------
-  // `href` should point to a Thinkific collection page or filter this catalog.
-  paths: [
-    { name:'Technical Trading',   n:26, desc:'Price action, indicators, chart patterns, market structure.', tile:'#1f4733', href:'#courses' },
-    { name:'Systematic Trading',  n:21, desc:'Rules-based systems, backtesting, execution, risk.',          tile:'#3c6b4f', href:'#courses' },
-    { name:'Quantitative Trading',n:24, desc:'Statistics, factor models, Python, strategy research.',        tile:'#b08d3c', href:'#courses' },
-    { name:'AI & Machine Learning',n:18,desc:'ML models, feature engineering, alpha from data.',             tile:'#5c7a5f', href:'#courses' },
-  ],
-
-  // --- Courses → ONE Thinkific course each --------------------------------
-  // thinkificSlug:    the slug in https://{domain}/courses/{slug}
-  // thinkificCourseId:numeric id (used when THINKIFIC.useDirectEnroll = true)
-  // enrollUrl:        OPTIONAL full URL; overrides the two fields above.
-  courses: [
-    { title:'Trend Analysis',                cat:'Technical', instr:'Marcus Chen',    initials:'MC', price:349, hours:'8.5', lessons:62, level:'Intermediate', rating:'4.9', tag:'Bestseller', accent:'#1f4733', thinkificSlug:'trend-analysis',          thinkificCourseId:'', enrollUrl:'' },
-    { title:'Chart Pattern Analysis',        cat:'Technical', instr:'Priya Nair',     initials:'PN', price:299, hours:'7',   lessons:52, level:'Beginner',     rating:'5.0', tag:'Popular',    accent:'#3c6b4f', thinkificSlug:'chart-pattern-analysis',  thinkificCourseId:'', enrollUrl:'' },
-    { title:'Technical Indicators',          cat:'Technical', instr:'Marcus Chen',    initials:'MC', price:329, hours:'9',   lessons:64, level:'Intermediate', rating:'4.8', tag:'',           accent:'#5c7a5f', thinkificSlug:'technical-indicators',    thinkificCourseId:'', enrollUrl:'' },
-    { title:'Statistics for Technicians',    cat:'Quant',     instr:'Sofia Reyes',    initials:'SR', price:399, hours:'11',  lessons:78, level:'Advanced',     rating:'4.9', tag:'Bestseller', accent:'#b08d3c', thinkificSlug:'statistics-for-technicians', thinkificCourseId:'', enrollUrl:'' },
-    { title:'Cycle Analysis',                cat:'Systematic',instr:'James Whitfield',initials:'JW', price:379, hours:'9',   lessons:58, level:'Advanced',     rating:'4.7', tag:'',           accent:'#547a5c', thinkificSlug:'cycle-analysis',          thinkificCourseId:'', enrollUrl:'' },
-    { title:'Behavioral Finance & Sentiment',cat:'AI',        instr:'David Brenner',  initials:'DB', price:449, hours:'12',  lessons:84, level:'Advanced',     rating:'4.9', tag:'New',        accent:'#2e6047', thinkificSlug:'behavioral-finance',      thinkificCourseId:'', enrollUrl:'' },
-  ],
-
-  // --- Instructors → map to Thinkific Authors -----------------------------
-  instructors: [
-    { name:'Marcus Chen',      initials:'MC', role:'Technical Analysis & Price Action', cred:'Former Goldman Sachs Trader',     courses:4, students:'32K', photo:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&crop=faces&w=520&h=620&q=80' },
-    { name:'Dr. Amara Okafor', initials:'AO', role:'Systematic & Quant Trading',        cred:'Ex-BlackRock Quant PM',           courses:3, students:'27K', photo:'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&crop=faces&w=520&h=620&q=80' },
-    { name:'Sofia Reyes',      initials:'SR', role:'Quant Trading & Python',            cred:'CFA · Quant Researcher',          courses:5, students:'41K', photo:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&crop=faces&w=520&h=620&q=80' },
-    { name:'James Whitfield',  initials:'JW', role:'Algorithmic & Systematic Trading',  cred:'Systematic Hedge Fund Founder',   courses:2, students:'19K', photo:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&crop=faces&w=520&h=620&q=80' },
-    { name:'Priya Nair',       initials:'PN', role:'Technical Trading & Chart Patterns',cred:'Prop Trader & Educator',          courses:6, students:'58K', photo:'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&crop=faces&w=520&h=620&q=80' },
-    { name:'David Brenner',    initials:'DB', role:'AI & Machine Learning for Trading', cred:'Ex-Two Sigma ML Engineer',        courses:4, students:'23K', photo:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&crop=faces&w=520&h=620&q=80' },
-  ],
-
-  stats: [
-    { n:'250k+', l:'Learners worldwide', color:'#1f4733' },
-    { n:'120+',  l:'Expert-led courses', color:'#3c6b4f' },
-    { n:'4.9',   l:'Average rating',     color:'#b08d3c' },
-    { n:'92%',   l:'Completion rate',    color:'#5c7a5f' },
-  ],
-
-  faqs: [
-    { q:'Can I buy just one course?', a:'Yes — that’s how Meridian works by default. Tick any courses you want, build a custom bundle, and check out. Or open a single course and enroll directly. No subscription required.' },
-    { q:'Do I need a finance background?', a:'No. Courses are tiered from Beginner to Advanced, and every instructor builds from first principles.' },
-    { q:'Are the certificates recognized?', a:'You earn a verified certificate for every completed course, shareable to LinkedIn. Many learners use them to support CFA, FMVA and promotion cases.' },
-    { q:'Do you offer team or university pricing?', a:'Yes. See the For Organizations section for corporate seat licensing, academic pricing, and fully custom programs.' },
-    { q:'What if a course isn’t right for me?', a:'Every purchase is backed by a 30-day money-back guarantee — no questions asked.' },
-  ],
-};
-
-/* ============================================================================
-   THINKIFIC LINK RESOLUTION  — the only place URLs are built.
-   ============================================================================ */
-function courseUrl(c){
-  if (c.enrollUrl) return c.enrollUrl;
-  const base = 'https://' + THINKIFIC.domain;
-  if (THINKIFIC.useDirectEnroll && c.thinkificCourseId) return base + '/enroll/' + c.thinkificCourseId;
-  return base + '/courses/' + (c.thinkificSlug || '');
-}
-function signInUrl(){ return 'https://' + THINKIFIC.domain + THINKIFIC.signInPath; }
-
-// Wire the Log in link
-document.querySelectorAll('[data-thinkific="signin"]').forEach(a => a.href = signInUrl());
+/* PAGE LOGIC — Thinkific config + all content come from meridian.js. */
 
 /* ============================================================================
    STATE + RENDERING
    ============================================================================ */
 const state = { filter:'All', selected:{}, faqOpen:0, modalMode:null, modalCourse:null, step:1 };
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-function renderTicker(){
-  $('ticker').innerHTML = MERIDIAN_DATA.ticker.map(k => {
-    const color = k.up ? '#2f7d5b' : '#b4453b';
-    return `<div style="display:flex; align-items:center; gap:12px; flex:1; min-width:180px;">
-      <div>
-        <div class="mono" style="font-size:11px; color:#8a92a0;">${esc(k.sym)}</div>
-        <div class="serif" style="font-size:18px; color:#1a241c;">${esc(k.val)}</div>
-      </div>
-      <svg viewBox="0 0 60 24" style="width:60px; height:24px;"><polyline points="${k.spark}" fill="none" stroke="${color}" stroke-width="2"></polyline></svg>
-      <span style="font-size:12px; font-weight:600; color:${color};">${esc(k.chg)}</span>
-    </div>`;
-  }).join('');
-}
-
+// Learning paths === Thinkific bundles; each links to its bundle checkout.
 function renderPaths(){
   $('paths-grid').innerHTML = MERIDIAN_DATA.paths.map(p => `
-    <a href="${esc(p.href)}" class="card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:24px;">
+    <a href="${esc(bundleUrl(p))}" target="_blank" rel="noopener" class="card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:24px;">
       <div style="width:44px; height:44px; border-radius:11px; background:${p.tile}; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
         <svg viewBox="0 0 24 18" style="width:23px; height:17px;"><polyline points="1,15 7,9 12,12 17,4 23,7" fill="none" stroke="#fff" stroke-width="2.2"></polyline></svg>
       </div>
       <h3 style="font-size:20px; margin:0 0 8px; line-height:1.15;">${esc(p.name)}</h3>
       <p style="font-size:13px; line-height:1.55; color:#6a7280; margin:0 0 16px;">${esc(p.desc)}</p>
-      <div class="mono" style="font-size:12px; color:#9aa0ab;">${p.n} courses →</div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span class="mono" style="font-size:12px; color:#9aa0ab;">${p.n} courses</span>
+        ${p.price ? `<span class="serif" style="font-size:17px; color:#1f4733;">$${p.price}</span>` : `<span class="mono" style="font-size:12px; color:#1f4733;">View bundle →</span>`}
+      </div>
     </a>`).join('');
+}
+
+// Marquee of institutions (duplicated once for a seamless loop).
+function renderLogos(){
+  const track = $('marquee-track'); if (!track) return;
+  const one = (MERIDIAN_DATA.logos || []).map(normalizeLogo).map(l => l.img
+    ? `<img class="logo-item" src="${esc(l.img)}" alt="${esc(l.name)}" style="height:30px; width:auto; object-fit:contain; opacity:.7;">`
+    : `<span class="logo-item">${esc(l.name)}</span>`).join('');
+  track.innerHTML = one + one;
 }
 
 function categoryList(){
@@ -464,7 +363,7 @@ function renderCourses(){
   $('courses-grid').innerHTML = list.map(c => {
     const sel = !!state.selected[c.title];
     const thumbBg = `linear-gradient(150deg, ${hexA(c.accent,.10)}, #ffffff)`;
-    return `<div class="card-hover" style="position:relative; cursor:pointer; background:#fff; border:1px solid #e4e2d9; border-radius:16px; overflow:hidden;" onclick="openCourse('${esc(c.title)}')">
+    return `<div class="card-hover" style="position:relative; cursor:pointer; background:#fff; border:1px solid #e4e2d9; border-radius:16px; overflow:hidden;" onclick="location.href='${coursePageUrl(c)}'">
       <div style="position:absolute; inset:0; border-radius:16px; border:1.5px solid ${sel?c.accent:'transparent'}; pointer-events:none; z-index:4;"></div>
       <div style="position:relative; height:150px; overflow:hidden; background:${thumbBg}; border-bottom:1px solid #e8e6dd;">
         <svg viewBox="0 0 360 150" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
@@ -648,60 +547,17 @@ function subscribe(){
   $('newsletter').innerHTML = `<div style="display:inline-flex; align-items:center; gap:10px; padding:15px 28px; border-radius:10px; background:rgba(47,125,91,.1); border:1px solid rgba(47,125,91,.35); color:#2f7d5b; font-weight:700;">✓ You're in. Check your inbox.</div>`;
 }
 
-/* ============================================================================
-   LIVE THINKIFIC SYNC — pulls courses + instructors from your proxy so new
-   content added in Thinkific appears here with no code edits. Falls back to
-   the built-in MERIDIAN_DATA if no endpoint is set or the fetch fails.
-   ============================================================================ */
-const ACCENTS = ['#1f4733','#3c6b4f','#b08d3c','#5c7a5f','#547a5c','#2e6047'];
-function initialsOf(name){ return String(name||'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
-
-function normalizeCourse(c, i){
-  return {
-    title: c.title || c.name || 'Untitled course',
-    cat: c.cat || c.category || 'Courses',
-    instr: c.instr || c.instructor || '',
-    initials: c.initials || initialsOf(c.instr || c.instructor || ''),
-    price: Number(c.price) || 0,
-    hours: c.hours || '',
-    lessons: c.lessons || 0,
-    level: c.level || 'All levels',
-    rating: c.rating || '5.0',
-    tag: c.tag || '',
-    accent: c.accent || ACCENTS[i % ACCENTS.length],
-    thinkificSlug: c.thinkificSlug || c.slug || '',
-    thinkificCourseId: c.thinkificCourseId || c.id || '',
-    enrollUrl: c.enrollUrl || '',
-  };
-}
-function normalizeInstructor(t, i){
-  return {
-    name: t.name || ((t.first_name||'') + ' ' + (t.last_name||'')).trim() || 'Instructor',
-    initials: t.initials || initialsOf(t.name || ((t.first_name||'')+' '+(t.last_name||''))),
-    role: t.role || t.title || '',
-    cred: t.cred || t.bio || '',
-    courses: t.courses || 0,
-    students: t.students || '—',
-    photo: t.photo || t.avatar_url || '',
-  };
-}
-async function loadCatalog(){
-  if (!THINKIFIC.catalogEndpoint) return;            // stay on built-in data
-  try {
-    const res = await fetch(THINKIFIC.catalogEndpoint, { headers:{ 'Accept':'application/json' } });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    if (Array.isArray(data.courses) && data.courses.length)
-      MERIDIAN_DATA.courses = data.courses.map(normalizeCourse);
-    if (Array.isArray(data.instructors) && data.instructors.length)
-      MERIDIAN_DATA.instructors = data.instructors.map(normalizeInstructor);
-    renderFilters(); renderCourses(); renderInstructors();
-  } catch (e) {
-    console.warn('[Thinkific] live catalog unavailable — using built-in data.', e);
-  }
+async function applyCatalog(){
+  const data = await fetchCatalog();   // from meridian.js; null when no endpoint / on failure
+  if (!data) return;                   // keep built-in demo content
+  if (data.courses)     MERIDIAN_DATA.courses     = data.courses;
+  if (data.instructors) MERIDIAN_DATA.instructors = data.instructors;
+  if (data.paths)       MERIDIAN_DATA.paths       = data.paths;
+  if (data.logos)       MERIDIAN_DATA.logos       = data.logos;
+  renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos();
 }
 
-/* ---- cinematic hero: nav state, scroll parallax, sound toggle ---- */
+/* ---- cinematic hero/* ---- cinematic hero: nav state, scroll parallax, sound toggle ---- */
 function toggleSound(){
   const v = document.getElementById('cine-vid');
   if (!v) return;
@@ -737,7 +593,6 @@ function initHero(){
 }
 
 /* ---- util ---- */
-function hexA(hex,a){ const h=hex.replace('#',''); const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; }
 
 /* ---- scroll reveal ---- */
 function initReveal(){
@@ -748,10 +603,9 @@ function initReveal(){
 }
 
 /* ---- boot ---- */
-renderPaths(); renderFilters(); renderCourses();   /* renderTicker() removed — re-add when the ticker section returns */
-renderInstructors(); renderFaq(); renderSelbar(); initReveal(); initHero();
+renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos(); renderFaq(); renderSelbar(); initReveal(); initHero();
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-loadCatalog();   // auto-sync from Thinkific when THINKIFIC.catalogEndpoint is set
+applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is set
 </script>
 </body>
 </html>
