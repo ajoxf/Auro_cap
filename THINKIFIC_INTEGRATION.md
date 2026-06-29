@@ -37,6 +37,34 @@ needs **no API key, no server, and no secrets**. Host it anywhere static
 
 ---
 
+## Seeing the portal (preview & deploy)
+
+This is a static site (`index.html` + `assets/scroll-sequence.mp4` + `vendor/`), so
+"the portal" is just those files served over **http/https**. It must be served, not
+opened from disk — the cinematic hero uses ES modules and a video, which browsers
+block on `file://`.
+
+**Locally (fastest):**
+```bash
+cd Auro_cap
+python3 -m http.server 8000
+# open http://localhost:8000
+```
+
+**Live URL via GitHub Pages:** the repo has a `gh-pages` branch, so Pages is the
+natural host. In **GitHub → Settings → Pages**, set the source to the branch/folder
+you want to publish; the site then lives at
+`https://<user>.github.io/Auro_cap/`. Publishing = copying `index.html`, `assets/`,
+and `vendor/` onto the published branch. (Ask and I can push the current build to
+`gh-pages` for you.)
+
+> The cinematic Bloomberg hero needs a browser with **H.264** support — every normal
+> desktop/mobile browser has it. If the clip ever fails to load, the page detects it
+> and gracefully drops the cinematic act, showing the standard light hero instead, so
+> the portal is never blocked.
+
+---
+
 ## Step 1 — Create the courses in Thinkific
 
 1. In Thinkific Admin, build each course under **Manage Learning Content → Courses**.
@@ -116,17 +144,105 @@ user into Thinkific by redirecting to
 `https://{domain}/api/sso/v2/sso/jwt?jwt=...&return_to=...`. The JWT must be signed
 server-side with your **API key as the secret** — never put that key in this page.
 
-### B. Live catalog from the Thinkific API (no more hand-editing)
-On Grow/Advanced plans you can pull courses automatically instead of maintaining
-`MERIDIAN_DATA.courses` by hand:
+### B. Live catalog from the Thinkific API (no more hand-editing) ✅ built in
 
-- Endpoint: `GET https://api.thinkific.com/api/public/v1/courses`
-- Auth headers: `X-Auth-API-Key: <key>` and `X-Auth-Subdomain: <subdomain>`
+**The page already supports this.** New courses and instructors you add in Thinkific
+will appear here automatically once you point the page at a small proxy — no code
+edits, no redeploys. Two parts:
 
-**The API key must stay server-side.** Add a tiny proxy (Cloudflare Worker, Vercel
-function, etc.) that holds the key, calls Thinkific, and returns JSON; have the page
-`fetch()` your proxy and build `MERIDIAN_DATA.courses` from the response. This keeps
-the catalog always in sync and the price/slug fields correct by construction.
+**1. In `index.html`, set the endpoint:**
+
+```js
+const THINKIFIC = {
+  domain: 'meridian.thinkific.com',
+  catalogEndpoint: 'https://your-proxy.workers.dev/catalog',  // ← your proxy URL
+  // ...
+};
+```
+
+On load the page calls `loadCatalog()`, fetches that URL, and rebuilds the catalog,
+filter chips, and faculty grid from the response. If the endpoint is `''` or the
+fetch fails, it silently keeps the built-in `MERIDIAN_DATA` — so the page never
+breaks. The proxy must return:
+
+```json
+{
+  "courses": [
+    { "title":"Trend Analysis", "cat":"Technical", "instr":"Marcus Chen",
+      "price":349, "hours":"8.5", "lessons":62, "level":"Intermediate",
+      "rating":"4.9", "tag":"Bestseller", "slug":"trend-analysis", "id":123 }
+  ],
+  "instructors": [
+    { "name":"Marcus Chen", "role":"Technical Analysis", "cred":"Former GS Trader",
+      "courses":4, "students":"32K", "photo":"https://..." }
+  ]
+}
+```
+
+Only `title` + (`slug` or `id`) are required per course; everything else gets a
+sensible default (an accent colour is auto-assigned, rating defaults to 5.0, etc.).
+Categories for the filter bar are derived automatically from the courses' `cat`
+values, so a new track in Thinkific becomes a new filter chip with no edits.
+
+**2. The proxy (holds your API key — never ships to the browser).** Example
+Cloudflare Worker:
+
+```js
+export default {
+  async fetch(request, env) {
+    const H = {
+      'X-Auth-API-Key': env.THINKIFIC_API_KEY,     // set as a Worker secret
+      'X-Auth-Subdomain': env.THINKIFIC_SUBDOMAIN,  // e.g. 'meridian'
+      'Content-Type': 'application/json',
+    };
+    const api = (path) =>
+      fetch('https://api.thinkific.com/api/public/v1/' + path, { headers: H })
+        .then(r => r.json());
+
+    const [courses, users] = await Promise.all([
+      api('courses?page=1&limit=50'),
+      api('users?role=instructor&limit=50').catch(() => ({ items: [] })),
+    ]);
+
+    const instrById = Object.fromEntries((users.items || []).map(u => [u.id, u]));
+    const out = {
+      courses: (courses.items || []).map(c => {
+        const u = instrById[c.user_id] || {};
+        return {
+          title: c.name,
+          slug: c.slug,
+          id: c.id,
+          cat: (c.keywords || '').split(',')[0]?.trim() || 'Courses',
+          instr: [u.first_name, u.last_name].filter(Boolean).join(' '),
+          // price/lessons/rating aren't in /courses — fetch /products & /chapters
+          // here if you want them exact, or set marketing defaults:
+          price: 0, lessons: 0, rating: '5.0',
+        };
+      }),
+      instructors: (users.items || []).map(u => ({
+        name: [u.first_name, u.last_name].filter(Boolean).join(' '),
+        role: u.headline || '', cred: u.bio || '', photo: u.avatar_url || '',
+      })),
+    };
+    return new Response(JSON.stringify(out), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',          // or lock to your domain
+        'Cache-Control': 'public, max-age=300',       // 5-min cache
+      },
+    });
+  },
+};
+```
+
+Notes:
+- Thinkific's `/courses` endpoint does **not** include price, lesson count, or
+  ratings. If you want those exact, have the proxy also call `/products` (price)
+  and `/courses/{id}/chapters` (lesson count) and merge them in. Ratings aren't a
+  Thinkific concept — keep them as a marketing field.
+- The API key requires a **Grow/Advanced plan**. Set it as a Worker secret
+  (`wrangler secret put THINKIFIC_API_KEY`) — it must never appear in `index.html`.
+- Same pattern works on Vercel/Netlify functions or any tiny server.
 
 ### C. Embedding *inside* Thinkific instead of linking out
 If you'd rather this design live on your Thinkific domain:

@@ -45,32 +45,89 @@
     .grid-4 { grid-template-columns:1fr !important; }
     nav, header, section, footer > div { padding-left:20px !important; padding-right:20px !important; }
   }
+  [id]{ scroll-margin-top:84px; }
+
+  /* ============ CINEMATIC SCROLL HERO (Bloomberg clip, scroll-scrubbed) ============ */
+  #cine-track { position:relative; width:100%; background:#05060A; }
+  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#05060A; }
+  #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
+  #cine-stage::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(130% 130% at 50% 50%, rgba(5,6,10,0) 52%, rgba(5,6,10,.78) 100%); mix-blend-mode:multiply; }
+  /* dark → cream dissolve so the cinematic act melts into the page */
+  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:36vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(5,6,10,0), #f4f3ec 94%); }
+  .cine-headline { position:absolute; top:50%; left:clamp(24px,7vw,120px); transform:translateY(-50%); max-width:min(560px,80vw); text-align:left; z-index:3; --py:0px; }
+  .cine-inner { transform:translate3d(0,var(--py),0); will-change:transform; }
+  .cine-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.26em; color:#d8b25f; display:inline-flex; align-items:center; gap:12px; margin-bottom:22px; }
+  .cine-eyebrow::before { content:""; width:30px; height:1px; background:#d8b25f; }
+  .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(40px,6.4vw,86px); line-height:1.02; letter-spacing:-.015em; color:#F0ECE4; }
+  .cine-headline h1 em { font-style:italic; color:#e8c97a; }
+  .cine-headline p { margin:22px 0 0; max-width:42ch; font-size:clamp(15px,1.5vw,18px); line-height:1.65; color:#a7a2b4; font-weight:400; }
+  .cine-cta { display:inline-flex; align-items:center; gap:9px; margin-top:30px; padding:13px 24px; border-radius:10px; background:#b08d3c; color:#1a241c; font-size:14px; font-weight:700; text-decoration:none; }
+  .cine-cue { position:absolute; left:clamp(24px,7vw,120px); bottom:36px; z-index:3; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:#a7a2b4; display:flex; align-items:center; gap:14px; }
+  .cine-cue .bar { position:relative; width:120px; height:1px; background:rgba(240,236,228,.18); }
+  .cine-cue .bar span { position:absolute; inset:0; width:0%; background:#d8b25f; transition:width .12s linear; }
+  .cine-cue .dot { width:6px; height:6px; border-radius:50%; background:#d8b25f; animation:pulse 2.4s cubic-bezier(.16,1,.3,1) infinite; }
+  @keyframes pulse { 0%,100%{opacity:.35; transform:scale(.8)} 50%{opacity:1; transform:scale(1)} }
+  #cine-veil { position:fixed; inset:0; z-index:90; display:grid; place-items:center; background:#05060A; transition:opacity .8s ease, visibility .8s ease; }
+  #cine-veil.hidden { opacity:0; visibility:hidden; }
+  #cine-veil .ring { width:42px; height:42px; border-radius:50%; border:2px solid rgba(176,141,60,.25); border-top-color:#d8b25f; animation:spin 1s linear infinite; }
+  @keyframes spin { to{ transform:rotate(360deg) } }
+  @media (prefers-reduced-motion:reduce){ .cine-cue .dot{ animation:none } #cine-veil .ring{ animation:none } }
+  @media (max-width:640px){ .cine-headline{ top:44% } .cine-cue .bar{ width:84px } }
+
+  /* ============ NAV — transparent over hero, solid over content ============ */
+  #nav { position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:transparent; border-bottom:1px solid transparent; transition:background .3s ease, border-color .3s ease; }
+  #nav.nav--solid { background:rgba(244,243,236,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9; }
+  #nav .nav-link, #nav .nav-login { text-decoration:none; font-size:14px; font-weight:500; transition:color .3s ease; }
+  #nav .nav-login { font-weight:600; white-space:nowrap; }
+  #nav .brand-text, #nav .nav-link, #nav .nav-login { color:rgba(240,236,228,.92); }
+  #nav.nav--solid .brand-text, #nav.nav--solid .nav-login { color:#1a241c; }
+  #nav.nav--solid .nav-link { color:#4a5260; }
 </style>
 </head>
 <body>
 <div style="min-height:100vh; background:#f4f3ec;">
 
   <!-- ============ NAV ============ -->
-  <nav style="position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:rgba(244,243,236,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9;">
-    <a href="#top" style="display:flex; align-items:center; gap:11px; text-decoration:none; color:#1a241c;">
+  <nav id="nav">
+    <a href="#top" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
       <span style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
-      <span style="font-family:'Newsreader',serif; font-weight:600; font-size:22px;">Meridian</span>
+      <span class="brand-text" style="font-family:'Newsreader',serif; font-weight:600; font-size:22px;">Meridian</span>
     </a>
     <div class="nav-links" style="display:flex; gap:30px; align-items:center;">
-      <a href="#paths" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Learning paths</a>
-      <a href="#courses" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Courses</a>
-      <a href="#instructors" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Instructors</a>
-      <a href="#pricing" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Pricing</a>
-      <a href="#organizations" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">For organizations</a>
+      <a href="#paths" class="nav-link">Learning paths</a>
+      <a href="#courses" class="nav-link">Courses</a>
+      <a href="#instructors" class="nav-link">Instructors</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="#organizations" class="nav-link">For organizations</a>
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex:none;">
       <!-- THINKIFIC: login deep-links to your Thinkific sign-in page -->
-      <a data-thinkific="signin" href="#" style="text-decoration:none; color:#1a241c; font-size:14px; font-weight:600; white-space:nowrap;">Log in</a>
+      <a data-thinkific="signin" href="#" class="nav-login">Log in</a>
       <a href="#courses" style="text-decoration:none; padding:10px 19px; border-radius:9px; background:#1f4733; color:#fff; font-size:14px; font-weight:600; white-space:nowrap;">Get started</a>
     </div>
   </nav>
 
   <div id="top"></div>
+
+  <!-- ============ CINEMATIC SCROLL HERO ============ -->
+  <div id="cine-veil"><div class="ring"></div></div>
+  <div id="cine-track">
+    <div id="cine-stage">
+      <canvas id="cine-gl"></canvas>
+      <div class="cine-headline" id="cine-headline">
+        <div class="cine-inner">
+          <span class="cine-eyebrow">Meridian Finance</span>
+          <h1>Markets,<br><em>mastered.</em></h1>
+          <p>Finance courses taught the way the desk actually works — live data, real terminals, institutional rigor. Scroll to step onto the floor.</p>
+          <a href="#courses" class="cine-cta">Browse courses ↓</a>
+        </div>
+      </div>
+      <div class="cine-cue"><span class="dot"></span><span>Scroll</span><span class="bar"><span id="cine-prog"></span></span></div>
+      <div id="cine-fade"></div>
+    </div>
+  </div>
+  <!-- Hidden source clip — never "played"; we scrub currentTime from scroll. -->
+  <video id="cine-src" src="assets/scroll-sequence.mp4" muted playsinline preload="auto" style="display:none"></video>
 
   <!-- ============ HERO ============ -->
   <header class="hero-grid" style="position:relative; max-width:1240px; margin:0 auto; padding:70px 44px 60px; display:grid; grid-template-columns:1.02fr .98fr; gap:56px; align-items:center;">
@@ -368,6 +425,13 @@ const THINKIFIC = {
   //   https://{domain}/enroll/{thinkificCourseId}     (direct enroll), or
   //   a full `enrollUrl` on the course (takes priority).
   useDirectEnroll: false,
+  // ---- LIVE SYNC (optional) ----------------------------------------------
+  // Set this to your proxy URL to pull courses + instructors from Thinkific at
+  // runtime so anything you add in Thinkific shows up here automatically.
+  // The proxy must return JSON: { courses:[...], instructors:[...] } and holds
+  // your API key server-side. Leave '' to use the built-in MERIDIAN_DATA below.
+  // Full proxy code is in THINKIFIC_INTEGRATION.md.
+  catalogEndpoint: '',
 };
 
 const MERIDIAN_DATA = {
@@ -475,8 +539,13 @@ function renderPaths(){
     </a>`).join('');
 }
 
+function categoryList(){
+  const cats = [...new Set(MERIDIAN_DATA.courses.map(c => c.cat).filter(Boolean))];
+  return ['All', ...cats];
+}
 function renderFilters(){
-  const names = ['All','Technical','Systematic','Quant','AI'];
+  const names = categoryList();
+  if (!names.includes(state.filter)) state.filter = 'All';
   $('filters').innerHTML = names.map(f => {
     const on = state.filter === f;
     return `<button onclick="setFilter('${f}')" style="cursor:pointer; padding:9px 16px; border-radius:9px; border:1px solid ${on?'#1f4733':'#d9d7cd'}; background:${on?'#1f4733':'#fff'}; color:${on?'#fff':'#4a5260'}; font-size:13px; font-weight:600;">${esc(f)}</button>`;
@@ -681,6 +750,72 @@ function subscribe(){
   $('newsletter').innerHTML = `<div style="display:inline-flex; align-items:center; gap:10px; padding:15px 28px; border-radius:10px; background:rgba(47,125,91,.1); border:1px solid rgba(47,125,91,.35); color:#2f7d5b; font-weight:700;">✓ You're in. Check your inbox.</div>`;
 }
 
+/* ============================================================================
+   LIVE THINKIFIC SYNC — pulls courses + instructors from your proxy so new
+   content added in Thinkific appears here with no code edits. Falls back to
+   the built-in MERIDIAN_DATA if no endpoint is set or the fetch fails.
+   ============================================================================ */
+const ACCENTS = ['#1f4733','#3c6b4f','#b08d3c','#5c7a5f','#547a5c','#2e6047'];
+function initialsOf(name){ return String(name||'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+
+function normalizeCourse(c, i){
+  return {
+    title: c.title || c.name || 'Untitled course',
+    cat: c.cat || c.category || 'Courses',
+    instr: c.instr || c.instructor || '',
+    initials: c.initials || initialsOf(c.instr || c.instructor || ''),
+    price: Number(c.price) || 0,
+    hours: c.hours || '',
+    lessons: c.lessons || 0,
+    level: c.level || 'All levels',
+    rating: c.rating || '5.0',
+    tag: c.tag || '',
+    accent: c.accent || ACCENTS[i % ACCENTS.length],
+    thinkificSlug: c.thinkificSlug || c.slug || '',
+    thinkificCourseId: c.thinkificCourseId || c.id || '',
+    enrollUrl: c.enrollUrl || '',
+  };
+}
+function normalizeInstructor(t, i){
+  return {
+    name: t.name || ((t.first_name||'') + ' ' + (t.last_name||'')).trim() || 'Instructor',
+    initials: t.initials || initialsOf(t.name || ((t.first_name||'')+' '+(t.last_name||''))),
+    role: t.role || t.title || '',
+    cred: t.cred || t.bio || '',
+    courses: t.courses || 0,
+    students: t.students || '—',
+    photo: t.photo || t.avatar_url || '',
+  };
+}
+async function loadCatalog(){
+  if (!THINKIFIC.catalogEndpoint) return;            // stay on built-in data
+  try {
+    const res = await fetch(THINKIFIC.catalogEndpoint, { headers:{ 'Accept':'application/json' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (Array.isArray(data.courses) && data.courses.length)
+      MERIDIAN_DATA.courses = data.courses.map(normalizeCourse);
+    if (Array.isArray(data.instructors) && data.instructors.length)
+      MERIDIAN_DATA.instructors = data.instructors.map(normalizeInstructor);
+    renderFilters(); renderCourses(); renderInstructors();
+  } catch (e) {
+    console.warn('[Thinkific] live catalog unavailable — using built-in data.', e);
+  }
+}
+
+/* ---- nav: transparent over the cinematic hero, solid over content ---- */
+function initNav(){
+  const nav = $('nav');
+  function onScroll(){
+    const track = document.getElementById('cine-track');     // removed if video fails
+    const h = track ? track.offsetHeight : 0;
+    nav.classList.toggle('nav--solid', !track || window.scrollY > (h - 90));
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+}
+
 /* ---- util ---- */
 function hexA(hex,a){ const h=hex.replace('#',''); const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; }
 
@@ -694,8 +829,131 @@ function initReveal(){
 
 /* ---- boot ---- */
 renderTicker(); renderPaths(); renderFilters(); renderCourses();
-renderInstructors(); renderStats(); renderFaq(); renderSelbar(); initReveal();
+renderInstructors(); renderStats(); renderFaq(); renderSelbar(); initReveal(); initNav();
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+loadCatalog();   // auto-sync from Thinkific when THINKIFIC.catalogEndpoint is set
+</script>
+
+<!-- ============ CINEMATIC SCROLL HERO ENGINE (Three.js video scrubber) ============ -->
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* CONFIG — tuned as a homepage intro: a few screens of scrub, then content. */
+const SCROLL_SPEED   = 0.75;  // 1.0 = baseline; <1 = slower scrub.
+const VIEWPORTS_BASE = 2.4;   // baseline scroll length in viewport heights.
+const SMOOTHING      = 0.085; // lerp factor: lower = smoother / heavier.
+const PARALLAX_AMT   = 90;    // px the headline drifts over the full scroll.
+
+const video    = document.getElementById('cine-src');
+const trackEl  = document.getElementById('cine-track');
+const headline = document.getElementById('cine-headline');
+const progBar  = document.getElementById('cine-prog');
+const veil     = document.getElementById('cine-veil');
+const canvas   = document.getElementById('cine-gl');
+
+let started = false;
+// Fail-safe: never let the loading veil trap the page if the clip stalls.
+const failSafe = setTimeout(cineFallback, 6000);
+
+function cineFallback(){
+  clearTimeout(failSafe);
+  if (veil) veil.classList.add('hidden');
+  if (trackEl && trackEl.parentNode) trackEl.remove();   // drop the cinematic act
+  const nav = document.getElementById('nav');
+  if (nav) nav.classList.add('nav--solid');              // page reverts to light hero
+  window.dispatchEvent(new Event('scroll'));
+}
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+} catch(e){ cineFallback(); }
+
+if (renderer){
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene  = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const texture = new THREE.VideoTexture(video);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter  = THREE.LinearFilter;
+  texture.magFilter  = THREE.LinearFilter;
+
+  const material = new THREE.ShaderMaterial({
+    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 } },
+    vertexShader:`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader:`
+      precision highp float;
+      varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
+      void main(){
+        vec2 uv = (vUv - 0.5) * uScale + 0.5;
+        vec3 c = texture2D(uTex, uv).rgb;
+        c = (c - 0.5) * 1.06 + 0.5;        // contrast
+        c *= vec3(0.99, 1.0, 1.03);        // cool the shadows a touch
+        vec2 e = step(0.0, uv) * step(uv, vec2(1.0));
+        gl_FragColor = vec4(c * (e.x * e.y) * uFade, 1.0);
+      }`,
+  });
+  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
+
+  function fitCover(){
+    const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
+    const sw = window.innerWidth, sh = window.innerHeight;
+    const videoAR = vw/vh, screenAR = sw/sh, s = material.uniforms.uScale.value;
+    if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
+  }
+  function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitCover(); }
+  window.addEventListener('resize', resize);
+
+  let duration = 0, targetT = 0, currentT = 0, pendingSeek = false;
+
+  function layoutTrack(){
+    const vh = window.innerHeight;
+    trackEl.style.height = ((VIEWPORTS_BASE / SCROLL_SPEED) * vh + vh) + 'px';
+  }
+  function scrollProgress(){
+    const max = trackEl.offsetHeight - window.innerHeight;
+    if (max <= 0) return 0;
+    return Math.min(1, Math.max(0, window.scrollY / max));
+  }
+  function tick(){
+    if (!trackEl.parentNode) return;       // cinematic act was removed
+    const p = scrollProgress();
+    targetT = p * duration;
+    currentT += (targetT - currentT) * SMOOTHING;   // scroll up = reverse, for free
+    if (duration > 0 && Math.abs(video.currentTime - currentT) > 0.001 && !pendingSeek){
+      pendingSeek = true;
+      video.currentTime = Math.min(duration - 0.001, Math.max(0, currentT));
+    }
+    texture.needsUpdate = true;
+    headline.style.setProperty('--py', (-((p - 0.5) * PARALLAX_AMT)).toFixed(1) + 'px');
+    headline.style.opacity = (1 - Math.min(1, p * 1.35)).toFixed(3);
+    progBar.style.width = (p * 100).toFixed(1) + '%';
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  video.addEventListener('seeked', () => { pendingSeek = false; texture.needsUpdate = true; });
+
+  function start(){
+    if (started) return; started = true;
+    clearTimeout(failSafe);
+    duration = video.duration || 0;
+    resize(); layoutTrack();
+    window.addEventListener('resize', layoutTrack);
+    veil.classList.add('hidden');
+    let f = 0; (function fadeIn(){ f = Math.min(1, f + 0.04); material.uniforms.uFade.value = f; if (f < 1) requestAnimationFrame(fadeIn); })();
+    requestAnimationFrame(tick);
+  }
+
+  video.addEventListener('error', cineFallback);
+  if (video.readyState >= 1) start();
+  else video.addEventListener('loadedmetadata', start, { once:true });
+  video.addEventListener('loadeddata', () => { texture.needsUpdate = true; });
+  video.load();
+}
 </script>
 </body>
 </html>
