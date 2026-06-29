@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instructor — Meridian Finance Academy</title>
+<meta name="description" content="Meet a Meridian instructor — a practitioner teaching what actually worked.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:linear-gradient(180deg,#ffffff 0%,#eef1f4 100%) fixed; background-color:#fbfcfd; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  h1,h2,h3 { font-family:'Newsreader',serif; font-weight:500; letter-spacing:-.01em; }
+  .serif { font-family:'Newsreader',serif; }
+  .mono { font-family:'IBM Plex Mono',monospace; }
+  .kicker { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.16em; }
+  nav { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:rgba(251,252,253,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 44px; }
+  .card { background:#fff; border:1px solid #e4e2d9; border-radius:16px; }
+  .card-hover { transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  .card-hover:hover { transform:translateY(-3px); box-shadow:0 22px 44px rgba(20,30,45,.1); border-color:#d4d1c5; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  /* dark hero */
+  .hero { background:radial-gradient(120% 130% at 85% 0%, #235138 0%, rgba(35,81,56,0) 55%), linear-gradient(160deg,#163a29 0%,#1f4733 60%,#15311f 100%); color:#eef2ee; }
+  .hero-inner { max-width:1080px; margin:0 auto; padding:56px 44px 60px; display:flex; gap:34px; align-items:center; flex-wrap:wrap; }
+  .avatar { width:150px; height:150px; border-radius:18px; object-fit:cover; flex:none; border:1px solid rgba(255,255,255,.2); background:#0e2417; }
+  .stat { font-family:'Newsreader',serif; font-size:30px; color:#fff; line-height:1; }
+  @media (max-width:820px){ .grid-3 { grid-template-columns:1fr; } nav,.hero-inner,.wrap { padding-left:20px; padding-right:20px; } }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
+      <span style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
+      <span class="serif" style="font-weight:600; font-size:22px;">Meridian</span>
+    </a>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <a href="index.html#instructors" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">All instructors</a>
+      <a href="index.html#courses" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Courses</a>
+      <a data-thinkific="signin" href="#" style="text-decoration:none; color:#1a241c; font-size:14px; font-weight:600;">Log in</a>
+    </div>
+  </nav>
+
+  <main id="app">
+    <div style="text-align:center; padding:90px 0; color:#8a92a0;">Loading instructor…</div>
+  </main>
+
+  <footer style="border-top:1px solid #e4e2d9; padding:34px 44px; background:#f6f8fb;">
+    <div style="max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <span class="serif" style="font-weight:600; font-size:18px;">Meridian</span>
+      <span class="mono" style="font-size:13px; color:#9aa0ab;">Powered by Thinkific</span>
+    </div>
+  </footer>
+
+  <script src="meridian.js"></script>
+  <script>
+    const slug = new URLSearchParams(location.search).get('slug') || '';
+    const app = document.getElementById('app');
+
+    function notFound(){
+      app.innerHTML = `<div style="text-align:center; padding:80px 20px;">
+        <div class="kicker" style="color:#1f4733; margin-bottom:12px;">INSTRUCTOR NOT FOUND</div>
+        <h1 style="font-size:34px; margin:0 0 14px;">We couldn't find that instructor.</h1>
+        <a href="index.html#instructors" style="text-decoration:none; color:#1f4733; font-weight:700;">See all instructors →</a>
+      </div>`;
+    }
+
+    function courseCard(c){
+      return `<a href="${coursePageUrl(c)}" class="card card-hover" style="text-decoration:none; color:#1a241c; display:block; overflow:hidden;">
+        <div style="height:120px; background:linear-gradient(150deg, ${hexA(c.accent,.12)}, #fff); border-bottom:1px solid #e8e6dd; position:relative;">
+          <svg viewBox="0 0 360 120" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
+            <polyline points="0,96 60,80 120,88 180,52 240,64 300,30 360,42" fill="none" stroke="${c.accent}" stroke-width="2.5"></polyline>
+          </svg>
+          <span class="mono" style="position:absolute; bottom:10px; left:12px; padding:4px 9px; border-radius:6px; background:rgba(255,255,255,.9); border:1px solid #e4e2d9; font-size:11px; color:#4a5260;">${esc(c.cat)}</span>
+        </div>
+        <div style="padding:16px 18px 18px;">
+          <h3 style="font-size:19px; line-height:1.15; margin:0 0 12px;">${esc(c.title)}</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid #ece9e0;">
+            <span style="font-size:12px; color:#8a92a0;">${esc(c.hours)} hrs · ${c.lessons} lessons</span>
+            <span class="serif" style="font-size:18px; color:#1a241c;">$${c.price}</span>
+          </div>
+        </div>
+      </a>`;
+    }
+
+    function render(t, theirCourses){
+      const bio = t.bio || `${t.name} teaches ${t.role || 'finance'} at Meridian — a practitioner sharing exactly what worked in the markets, built from first principles.`;
+      const desc = bio.slice(0,158);
+      const url = pageUrl('instructor.html', 'slug=' + encodeURIComponent(t.slug || slugify(t.name)));
+      applyMeta({ title: t.name + ' — Meridian Instructor', description: desc, url, image: t.photo || undefined });
+      setJsonLd({ '@context':'https://schema.org', '@type':'Person', name:t.name, jobTitle:t.role,
+        description:desc, image:t.photo || '', worksFor:{ '@type':'Organization', name:'Meridian Finance Academy', sameAs:siteBase() } });
+
+      app.innerHTML = `
+        <section class="hero">
+          <div class="hero-inner">
+            ${t.photo ? `<img class="avatar" src="${esc(t.photo)}" alt="${esc(t.name)}">`
+                      : `<div class="avatar serif" style="display:flex; align-items:center; justify-content:center; font-size:54px; color:#cbb46a;">${esc(t.initials)}</div>`}
+            <div style="min-width:260px; flex:1;">
+              <a href="index.html#instructors" style="text-decoration:none; color:#bcd2c2; font-size:13px;">← All instructors</a>
+              <h1 style="font-size:clamp(32px,4.4vw,52px); margin:14px 0 8px; color:#fff;">${esc(t.name)}</h1>
+              <div class="mono" style="font-size:13px; color:#cbb46a; margin-bottom:6px;">${esc(t.cred)}</div>
+              <div style="font-size:16px; color:#cfe0d4;">${esc(t.role)}</div>
+              <div style="display:flex; gap:30px; margin-top:22px;">
+                <div><div class="stat">${theirCourses.length || t.courses}</div><div style="font-size:12px; color:#9fc0a8; margin-top:4px;">courses</div></div>
+                <div><div class="stat">${esc(t.students)}</div><div style="font-size:12px; color:#9fc0a8; margin-top:4px;">students</div></div>
+                <div><div class="stat">✓</div><div style="font-size:12px; color:#9fc0a8; margin-top:4px;">verified</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="wrap" style="padding-top:48px; padding-bottom:20px;">
+          <h2 style="font-size:26px; margin:0 0 12px;">About</h2>
+          <p style="font-size:17px; line-height:1.7; color:#3a424f; max-width:70ch; margin:0;">${esc(bio)}</p>
+        </section>
+
+        <section class="wrap" style="padding-top:34px; padding-bottom:80px;">
+          <div class="kicker" style="color:#1f4733; margin-bottom:12px;">COURSES BY ${esc(t.name).toUpperCase()}</div>
+          <h2 style="font-size:clamp(26px,3vw,38px); margin:0 0 26px;">${theirCourses.length} course${theirCourses.length===1?'':'s'}</h2>
+          <div class="grid-3">${theirCourses.map(courseCard).join('') || '<p style="color:#6a7280;">Courses appear here as they are published in Thinkific.</p>'}</div>
+        </section>`;
+    }
+
+    (async function(){
+      const data = await fetchCatalog();
+      const instructors = (data && data.instructors) || MERIDIAN_DATA.instructors;
+      const courses = (data && data.courses) || MERIDIAN_DATA.courses;
+      const t = instructors.find(x => (x.slug || slugify(x.name)) === slug);
+      if (!t) return notFound();
+      const theirCourses = courses.filter(c => c.instr === t.name);
+      render(t, theirCourses);
+    })();
+  </script>
+</body>
+</html>

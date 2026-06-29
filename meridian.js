@@ -120,6 +120,7 @@ function bundleUrl(p){
 // Internal branded detail pages (our pages — never Thinkific's marketing pages).
 function coursePageUrl(c){ return 'course.html?slug=' + encodeURIComponent(c.slug || c.thinkificSlug || slugify(c.title)); }
 function bundlePageUrl(p){ return 'bundle.html?slug=' + encodeURIComponent(p.slug || p.thinkificSlug || slugify(p.name)); }
+function instructorPageUrl(t){ return 'instructor.html?slug=' + encodeURIComponent(t.slug || slugify(t.name)); }
 function signInUrl(){ return 'https://' + THINKIFIC.domain + THINKIFIC.signInPath; }
 
 /* ---------- SEO / share helpers (so OUR pages get indexed, not Thinkific's) ---------- */
@@ -191,9 +192,11 @@ function normalizeInstructor(t, i){
   const name = t.name || ((t.first_name||'') + ' ' + (t.last_name||'')).trim() || 'Instructor';
   return {
     name,
+    slug: t.slug || slugify(name),
     initials: t.initials || initialsOf(name),
     role: t.role || t.title || '',
-    cred: t.cred || t.bio || '',
+    cred: t.cred || t.headline || '',
+    bio: t.bio || '',
     courses: t.courses || 0,
     students: t.students || '—',
     photo: t.photo || t.avatar_url || '',

@@ -411,7 +411,7 @@ function renderInstructors(){
           <div style="font-size:13px; color:#8a92a0;"><span style="color:#1a241c; font-weight:700;">${t.courses}</span> courses</div>
           <div style="font-size:13px; color:#8a92a0;"><span style="color:#1a241c; font-weight:700;">${esc(t.students)}</span> students</div>
         </div>
-        <button onclick="openInstructor('${esc(t.name)}')" style="margin-top:16px; cursor:pointer; width:100%; text-align:left; border:none; background:transparent; color:#1f4733; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:space-between; padding:0;">View courses <span>→</span></button>
+        <button onclick="location.href='${instructorPageUrl(t)}'" style="margin-top:16px; cursor:pointer; width:100%; text-align:left; border:none; background:transparent; color:#1f4733; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:space-between; padding:0;">View profile <span>→</span></button>
       </div>
     </div>`).join('');
 }
@@ -454,10 +454,6 @@ function renderSelbar(){
 
 /* ---- enroll modal ---- */
 function openCourse(title){ state.modalMode='single'; state.modalCourse=findCourse(title); state.step=1; renderModal(); }
-function openInstructor(name){
-  const c = MERIDIAN_DATA.courses.find(cc => cc.instr === name) || MERIDIAN_DATA.courses[0];
-  if (c) location.href = coursePageUrl(c);   // surface our course page, not Thinkific's
-}
 function openBundle(){ if(selectedArr().length){ state.modalMode='bundle'; state.step=1; renderModal(); } }
 function closeModal(e){ if(e && e.target && e.target.id!=='modal' && e.type==='click') {} state.modalMode=null; $('modal').style.display='none'; }
 function modalNext(){ state.step = Math.min(3, state.step+1); renderModal(); }

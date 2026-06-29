@@ -36,7 +36,7 @@ here's what flows automatically to the site on the next page refresh:
 |---|---|
 | Publish a new **course** (with price) | New course card in the catalog + its own branded course page |
 | Edit a course's title, price, description, chapters | Updated everywhere, including the course page's curriculum |
-| Add/replace a course's **instructor (author)** | Instructor appears in the faculty grid + on the course page |
+| Add/replace a course's **instructor (author)** | Instructor appears in the faculty grid, gets their own branded profile page (`instructor.html`), and shows on the course page |
 | Create a **Bundle** (several courses, one price) | New **Learning path** card → its own branded bundle landing page (`bundle.html`) → Thinkific bundle checkout |
 | Unpublish / archive a course | It drops off the site |
 
@@ -63,7 +63,7 @@ needs **no API key, no server, and no secrets**. Host it anywhere static
 
 ## Seeing the portal (preview & deploy)
 
-This is a static site — `index.html`, `course.html`, `bundle.html`, `meridian.js`,
+This is a static site — `index.html`, `course.html`, `bundle.html`, `instructor.html`, `meridian.js`,
 and `assets/` (the hero video + poster) — served over **http/https**. Serve it
 rather than opening from disk so the hero video plays and the data layer can fetch.
 
@@ -78,7 +78,7 @@ python3 -m http.server 8000
 natural host. In **GitHub → Settings → Pages**, set the source to the branch/folder
 you want to publish; the site then lives at
 `https://<user>.github.io/Auro_cap/`. Publishing = copying `index.html`,
-`course.html`, `bundle.html`, `meridian.js` and `assets/` onto the published branch.
+`course.html`, `bundle.html`, `instructor.html`, `meridian.js` and `assets/` onto the published branch.
 (Ask and I can push the current build to `gh-pages` for you.)
 
 > **Keeping search engines on your pages, not Thinkific's.** Every page sets a
