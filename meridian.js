@@ -12,10 +12,16 @@
 const THINKIFIC = {
   // Your Thinkific domain — e.g. 'meridian.thinkific.com' or a custom domain.
   domain: 'YOUR-SCHOOL.thinkific.com',
+  // Public URL where THIS site is hosted (used for canonical + share tags).
+  // Leave '' to auto-detect from the browser. Set it once you have a final
+  // domain, e.g. 'https://academy.meridian.com'.
+  siteUrl: '',
   // Sign-in path on Thinkific (default works for all schools):
   signInPath: '/users/sign_in',
-  // Course "Enroll" target: course landing page (default) or direct enroll.
-  useDirectEnroll: false,
+  // Enroll target. true = go straight to Thinkific CHECKOUT (/enroll/{id}) so
+  // their marketing landing page is never surfaced. Needs each course's `id`
+  // from the live feed; falls back to the course URL if an id isn't present.
+  useDirectEnroll: true,
   // ---- LIVE SYNC (turn the whole site dynamic) ---------------------------
   // Point this at your proxy URL and the catalog, instructors, learning-path
   // bundles and logos all render from Thinkific at runtime — add a course in
@@ -33,10 +39,22 @@ const THINKIFIC = {
 const MERIDIAN_DATA = {
   // Learning paths === Thinkific BUNDLES (several courses sold together).
   paths: [
-    { name:'Technical Trading Track',   n:26, desc:'Price action, indicators, chart patterns, market structure.', tile:'#1f4733', price:899,  slug:'technical-trading-track' },
-    { name:'Systematic Trading Track',  n:21, desc:'Rules-based systems, backtesting, execution, risk.',          tile:'#3c6b4f', price:949,  slug:'systematic-trading-track' },
-    { name:'Quantitative Track',        n:24, desc:'Statistics, factor models, Python, strategy research.',        tile:'#b08d3c', price:1099, slug:'quantitative-track' },
-    { name:'AI & Machine Learning',     n:18, desc:'ML models, feature engineering, alpha from data.',             tile:'#5c7a5f', price:1199, slug:'ai-ml-track' },
+    { name:'Technical Trading Track',  n:26, price:899,  tile:'#1f4733', slug:'technical-trading-track',
+      desc:'Price action, indicators, chart patterns, market structure.',
+      blurb:'Go from chart-blind to reading any market with confidence. A complete, ordered path through price action, indicators, patterns and market structure — built so each course compounds on the last.',
+      courses:['trend-analysis','chart-pattern-analysis','technical-indicators'] },
+    { name:'Systematic Trading Track', n:21, price:949,  tile:'#3c6b4f', slug:'systematic-trading-track',
+      desc:'Rules-based systems, backtesting, execution, risk.',
+      blurb:'Turn discretion into rules. Design, backtest and run systematic strategies with disciplined execution and risk control — the way a systematic desk actually operates.',
+      courses:['cycle-analysis'] },
+    { name:'Quantitative Track',       n:24, price:1099, tile:'#b08d3c', slug:'quantitative-track',
+      desc:'Statistics, factor models, Python, strategy research.',
+      blurb:'The quant core: statistics that matter, factor models, Python and rigorous strategy research — the closest thing to a buy-side research bootcamp online.',
+      courses:['statistics-for-technicians'] },
+    { name:'AI & Machine Learning',    n:18, price:1199, tile:'#5c7a5f', slug:'ai-ml-track',
+      desc:'ML models, feature engineering, alpha from data.',
+      blurb:'Apply modern machine learning to markets — feature engineering, sentiment and behavioral signals, and building models that find real, durable alpha.',
+      courses:['behavioral-finance'] },
   ],
 
   courses: [
@@ -99,9 +117,52 @@ function bundleUrl(p){
   if (p.enrollUrl) return p.enrollUrl;
   return 'https://' + THINKIFIC.domain + '/bundles/' + (p.thinkificSlug || p.slug || '');
 }
-// Internal branded detail page for a course.
+// Internal branded detail pages (our pages — never Thinkific's marketing pages).
 function coursePageUrl(c){ return 'course.html?slug=' + encodeURIComponent(c.slug || c.thinkificSlug || slugify(c.title)); }
+function bundlePageUrl(p){ return 'bundle.html?slug=' + encodeURIComponent(p.slug || p.thinkificSlug || slugify(p.name)); }
 function signInUrl(){ return 'https://' + THINKIFIC.domain + THINKIFIC.signInPath; }
+
+/* ---------- SEO / share helpers (so OUR pages get indexed, not Thinkific's) ---------- */
+function siteBase(){ return (THINKIFIC.siteUrl || location.origin).replace(/\/$/,''); }
+// Absolute URL to a page on this site, honouring THINKIFIC.siteUrl or the current dir.
+function pageUrl(file, query){
+  const q = query ? ('?' + query) : '';
+  if (THINKIFIC.siteUrl) return siteBase() + '/' + file + q;
+  const dir = location.pathname.replace(/[^/]*$/, '');
+  return location.origin + dir + file + q;
+}
+function setCanonical(url){
+  let l = document.querySelector('link[rel="canonical"]');
+  if (!l){ l = document.createElement('link'); l.rel = 'canonical'; document.head.appendChild(l); }
+  l.href = url;
+}
+function setMeta(attr, key, val){
+  let m = document.head.querySelector(`meta[${attr}="${key}"]`);
+  if (!m){ m = document.createElement('meta'); m.setAttribute(attr, key); document.head.appendChild(m); }
+  m.setAttribute('content', val);
+}
+// Apply title + description + Open Graph + Twitter + canonical in one call.
+function applyMeta({ title, description, url, image, type='website' }){
+  if (title) document.title = title;
+  const img = image || pageUrl('assets/bloomberg-poster.jpg', '');
+  setCanonical(url);
+  setMeta('name','description', description || '');
+  setMeta('property','og:type', type);
+  setMeta('property','og:title', title || '');
+  setMeta('property','og:description', description || '');
+  setMeta('property','og:url', url);
+  setMeta('property','og:image', img);
+  setMeta('property','og:site_name', 'Meridian Finance Academy');
+  setMeta('name','twitter:card', 'summary_large_image');
+  setMeta('name','twitter:title', title || '');
+  setMeta('name','twitter:description', description || '');
+  setMeta('name','twitter:image', img);
+}
+function setJsonLd(obj){
+  let s = document.getElementById('ld-json');
+  if (!s){ s = document.createElement('script'); s.type = 'application/ld+json'; s.id = 'ld-json'; document.head.appendChild(s); }
+  s.textContent = JSON.stringify(obj);
+}
 
 /* ---------- normalizers (map raw Thinkific-ish objects → our shape) ---------- */
 function normalizeCourse(c, i){
@@ -139,15 +200,20 @@ function normalizeInstructor(t, i){
   };
 }
 function normalizePath(p, i){
+  // `courses` = member-course slugs/ids/objects, used to render "what's included".
+  const courses = Array.isArray(p.courses) ? p.courses
+                : Array.isArray(p.course_slugs) ? p.course_slugs : [];
   return {
     name: p.name || p.title || 'Learning path',
     desc: p.desc || p.description || '',
-    n: p.n || p.courses_count || (Array.isArray(p.courses) ? p.courses.length : 0),
+    blurb: p.blurb || p.long_description || p.desc || p.description || '',
+    n: p.n || p.courses_count || courses.length || 0,
     tile: p.tile || ACCENTS[i % ACCENTS.length],
     price: Number(p.price) || 0,
     slug: p.slug || p.thinkificSlug || slugify(p.name || p.title),
     thinkificSlug: p.thinkificSlug || p.slug || '',
     enrollUrl: p.enrollUrl || '',
+    courses,
   };
 }
 function normalizeLogo(l){ return (typeof l === 'string') ? { name:l, img:'' } : { name:l.name||'', img:l.img||l.logo||'' }; }

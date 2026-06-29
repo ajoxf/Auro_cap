@@ -323,7 +323,7 @@ const $ = (id) => document.getElementById(id);
 // Learning paths === Thinkific bundles; each links to its bundle checkout.
 function renderPaths(){
   $('paths-grid').innerHTML = MERIDIAN_DATA.paths.map(p => `
-    <a href="${esc(bundleUrl(p))}" target="_blank" rel="noopener" class="card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:24px;">
+    <a href="${bundlePageUrl(p)}" class="card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:24px;">
       <div style="width:44px; height:44px; border-radius:11px; background:${p.tile}; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
         <svg viewBox="0 0 24 18" style="width:23px; height:17px;"><polyline points="1,15 7,9 12,12 17,4 23,7" fill="none" stroke="#fff" stroke-width="2.2"></polyline></svg>
       </div>
@@ -456,7 +456,7 @@ function renderSelbar(){
 function openCourse(title){ state.modalMode='single'; state.modalCourse=findCourse(title); state.step=1; renderModal(); }
 function openInstructor(name){
   const c = MERIDIAN_DATA.courses.find(cc => cc.instr === name) || MERIDIAN_DATA.courses[0];
-  state.modalMode='single'; state.modalCourse=c; state.step=1; renderModal();
+  if (c) location.href = coursePageUrl(c);   // surface our course page, not Thinkific's
 }
 function openBundle(){ if(selectedArr().length){ state.modalMode='bundle'; state.step=1; renderModal(); } }
 function closeModal(e){ if(e && e.target && e.target.id!=='modal' && e.type==='click') {} state.modalMode=null; $('modal').style.display='none'; }
@@ -605,6 +605,11 @@ function initReveal(){
 /* ---- boot ---- */
 renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos(); renderFaq(); renderSelbar(); initReveal(); initHero();
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+applyMeta({
+  title: 'Meridian Finance Academy — Master the numbers behind every market',
+  description: 'A professional finance curriculum taught by analysts, portfolio managers and CFOs. Pay per course, own it for life.',
+  url: THINKIFIC.siteUrl ? siteBase() + '/' : (location.origin + location.pathname),
+});
 applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is set
 </script>
 </body>
