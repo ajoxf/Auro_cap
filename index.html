@@ -48,9 +48,10 @@
   [id]{ scroll-margin-top:84px; }
 
   /* ============ CINEMATIC HERO (Bloomberg clip, smooth autoplay loop) ============ */
-  #cine-hero { position:relative; width:100%; height:86vh; height:86svh; overflow:hidden; background:#05060A; }
-  /* contain = show the ENTIRE video frame (no cropping), centered on the dark stage */
-  #cine-vid { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; will-change:transform; }
+  /* Hero matches the clip's 16:9 shape and fills it (cover) — no black bands,
+     and on ~16:9 screens almost the whole frame stays visible. */
+  #cine-hero { position:relative; width:100%; aspect-ratio:16 / 9; max-height:100svh; min-height:70svh; overflow:hidden; background:#05060A; }
+  #cine-vid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
   /* dark → cream dissolve so the hero melts into the page */
   #cine-fade { position:absolute; left:0; right:0; bottom:0; height:30vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(5,6,10,0), #ffffff 96%); }
   .cine-headline { position:absolute; top:50%; left:clamp(24px,7vw,120px); transform:translateY(-50%); max-width:min(560px,80vw); text-align:left; z-index:3; }
