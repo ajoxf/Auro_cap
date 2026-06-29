@@ -48,22 +48,16 @@
   [id]{ scroll-margin-top:84px; }
 
   /* ============ CINEMATIC HERO (Bloomberg clip, smooth autoplay loop) ============ */
-  #cine-hero { position:relative; width:100%; height:100vh; height:100svh; overflow:hidden; background:#05060A; }
+  #cine-hero { position:relative; width:100%; height:86vh; height:86svh; overflow:hidden; background:#05060A; }
   #cine-vid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
-  /* left scrim (headline legibility) + soft vignette — light touch so the clip stays bright */
-  #cine-scrim { position:absolute; inset:0; pointer-events:none; z-index:1; background:
-      linear-gradient(90deg, rgba(5,6,10,.72) 0%, rgba(5,6,10,.40) 38%, rgba(5,6,10,.06) 66%, rgba(5,6,10,0) 100%),
-      radial-gradient(125% 125% at 50% 46%, rgba(5,6,10,0) 58%, rgba(5,6,10,.50) 100%); }
-  /* dark → cream dissolve so the hero melts into the page */
-  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:30vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(5,6,10,0), #f4f3ec 96%); }
   .cine-headline { position:absolute; top:50%; left:clamp(24px,7vw,120px); transform:translateY(-50%); max-width:min(560px,80vw); text-align:left; z-index:3; }
   .cine-inner { will-change:transform, opacity; }
-  .cine-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.26em; color:#e8c97a; display:inline-flex; align-items:center; gap:12px; margin-bottom:22px; }
-  .cine-eyebrow::before { content:""; width:30px; height:1px; background:#e8c97a; }
-  .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(40px,6.4vw,86px); line-height:1.02; letter-spacing:-.015em; color:#F6F3EC; text-shadow:0 2px 30px rgba(0,0,0,.35); }
-  .cine-headline h1 em { font-style:italic; color:#e8c97a; }
-  .cine-headline p { margin:22px 0 0; max-width:42ch; font-size:clamp(15px,1.5vw,18px); line-height:1.65; color:#d7d3cb; font-weight:400; text-shadow:0 1px 18px rgba(0,0,0,.4); }
-  .cine-cta { display:inline-flex; align-items:center; gap:9px; margin-top:30px; padding:13px 24px; border-radius:10px; background:#b08d3c; color:#1a241c; font-size:14px; font-weight:700; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+  .cine-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.26em; color:#f0d68f; display:inline-flex; align-items:center; gap:12px; margin-bottom:22px; }
+  .cine-eyebrow::before { content:""; width:30px; height:1px; background:#f0d68f; }
+  .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(40px,6.4vw,86px); line-height:1.02; letter-spacing:-.015em; color:#FBF9F3; text-shadow:0 2px 16px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
+  .cine-headline h1 em { font-style:italic; color:#f0d68f; }
+  .cine-headline p { margin:22px 0 0; max-width:42ch; font-size:clamp(15px,1.5vw,18px); line-height:1.65; color:#ece9e2; font-weight:400; text-shadow:0 1px 10px rgba(0,0,0,.7); }
+  .cine-cta { display:inline-flex; align-items:center; gap:9px; margin-top:30px; padding:13px 24px; border-radius:10px; background:#b08d3c; color:#1a241c; font-size:14px; font-weight:700; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,.4); }
   /* sound toggle */
   #cine-sound { position:absolute; top:84px; right:clamp(20px,5vw,44px); z-index:4; display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:9px 15px; border-radius:999px; border:1px solid rgba(240,236,228,.28); background:rgba(5,6,10,.42); backdrop-filter:blur(8px); color:#F0ECE4; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; transition:background .25s ease, border-color .25s ease; }
   #cine-sound:hover { background:rgba(5,6,10,.66); border-color:rgba(240,236,228,.5); }
@@ -78,9 +72,9 @@
   #nav.nav--solid { background:rgba(244,243,236,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9; }
   #nav .nav-link, #nav .nav-login { text-decoration:none; font-size:14px; font-weight:500; transition:color .3s ease; }
   #nav .nav-login { font-weight:600; white-space:nowrap; }
-  #nav .brand-text, #nav .nav-link, #nav .nav-login { color:rgba(240,236,228,.92); }
-  #nav.nav--solid .brand-text, #nav.nav--solid .nav-login { color:#1a241c; }
-  #nav.nav--solid .nav-link { color:#4a5260; }
+  #nav .brand-text, #nav .nav-link, #nav .nav-login { color:#FBF9F3; text-shadow:0 1px 8px rgba(0,0,0,.55); }
+  #nav.nav--solid .brand-text, #nav.nav--solid .nav-login { color:#1a241c; text-shadow:none; }
+  #nav.nav--solid .nav-link { color:#4a5260; text-shadow:none; }
 </style>
 </head>
 <body>
@@ -114,8 +108,6 @@
     <video id="cine-vid" autoplay muted loop playsinline preload="auto" poster="assets/bloomberg-poster.jpg">
       <source src="assets/bloomberg-hero.mp4" type="video/mp4">
     </video>
-    <div id="cine-scrim"></div>
-    <div id="cine-fade"></div>
 
     <button id="cine-sound" onclick="toggleSound()"><span id="cine-sound-ico">🔇</span> <span id="cine-sound-txt">Sound off</span></button>
 
