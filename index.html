@@ -57,7 +57,7 @@
   .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; }
   .cine-inner { will-change:transform, opacity; }
   /* frosted-glass panel keeps text legible over the bright clip */
-  .cine-panel { background:rgba(9,11,15,.46); backdrop-filter:blur(16px) saturate(120%); -webkit-backdrop-filter:blur(16px) saturate(120%); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:clamp(26px,3vw,40px); box-shadow:0 30px 80px rgba(0,0,0,.45); }
+  .cine-panel { background:rgba(9,11,15,.75); backdrop-filter:blur(16px) saturate(120%); -webkit-backdrop-filter:blur(16px) saturate(120%); border:1px solid rgba(255,255,255,.16); border-radius:22px; padding:clamp(26px,3vw,40px); box-shadow:0 30px 80px rgba(0,0,0,.5); }
   .cine-badge { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.07em; color:#f0d68f; background:rgba(255,255,255,.07); border:1px solid rgba(240,214,143,.34); padding:6px 13px; border-radius:7px; margin-bottom:20px; }
   .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(32px,4.3vw,58px); line-height:1.05; letter-spacing:-.015em; color:#FBF9F3; }
   .cine-headline p { margin:18px 0 0; max-width:46ch; font-size:clamp(14px,1.4vw,16.5px); line-height:1.62; color:#dcd9d2; font-weight:400; }
@@ -98,7 +98,6 @@
       <a href="#paths" class="nav-link">Learning paths</a>
       <a href="#courses" class="nav-link">Courses</a>
       <a href="#instructors" class="nav-link">Instructors</a>
-      <a href="#pricing" class="nav-link">Pricing</a>
       <a href="#organizations" class="nav-link">For organizations</a>
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex:none;">
@@ -123,7 +122,6 @@
     <div class="cine-headline" id="cine-headline">
       <div class="cine-inner" id="cine-inner">
         <div class="cine-panel">
-          <span class="cine-badge">Accredited · CPE-eligible · Certificate-backed</span>
           <h1>Master the numbers behind every market.</h1>
           <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
           <div class="cine-actions">
@@ -135,62 +133,6 @@
     </div>
 
     <div class="cine-cue"><span class="dot"></span><span>Scroll to explore</span></div>
-  </header>
-
-  <!-- ============ HERO ============ -->
-  <header class="hero-grid" style="position:relative; max-width:1240px; margin:0 auto; padding:70px 44px 60px; display:grid; grid-template-columns:1.02fr .98fr; gap:56px; align-items:center;">
-    <div>
-      <div class="kicker">BY THE NUMBERS</div>
-      <h2 style="font-size:clamp(30px,3.6vw,48px); line-height:1.05; margin:0; color:#1a241c;">
-        Trusted by professionals worldwide.
-      </h2>
-      <p style="max-width:486px; margin:18px 0 0; font-size:16px; line-height:1.62; color:#4a5260;">
-        Analysts, portfolio managers and finance teams build real, durable market skill here — course by course, with no subscription required.
-      </p>
-      <div class="grid-4" style="display:flex; gap:34px; margin-top:36px; padding-top:30px; border-top:1px solid #e4e2d9; flex-wrap:wrap;">
-        <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">250k+</div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">learners</div></div>
-        <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">4.9<span style="color:#b08d3c; font-size:18px;">★</span></div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">avg rating</div></div>
-        <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">120+</div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">courses</div></div>
-        <div><div class="serif" style="font-size:30px; line-height:1; color:#1a241c;">92%</div><div style="font-size:12px; color:#8a92a0; margin-top:4px;">completion</div></div>
-      </div>
-    </div>
-
-    <!-- Hero data-viz cluster -->
-    <div class="hero-viz" style="position:relative; height:460px;">
-      <div style="position:absolute; top:18px; left:0; width:360px; background:#fff; border:1px solid #e4e2d9; border-radius:18px; padding:24px; box-shadow:0 24px 50px rgba(20,30,45,.1);">
-        <div style="display:flex; justify-content:space-between; align-items:start;">
-          <div>
-            <div class="mono" style="font-size:10px; letter-spacing:.08em; color:#8a92a0;">PORTFOLIO · YTD</div>
-            <div class="serif" style="font-size:36px; line-height:1.1; color:#1f4733;">+34.8%</div>
-          </div>
-          <span style="padding:5px 11px; border-radius:7px; background:rgba(47,125,91,.1); color:#2f7d5b; font-size:11px; font-weight:600;">▲ Outperform</span>
-        </div>
-        <svg viewBox="0 0 312 120" style="width:100%; height:120px; margin-top:14px;">
-          <defs><linearGradient id="hgA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f4733" stop-opacity=".16"></stop><stop offset="1" stop-color="#1f4733" stop-opacity="0"></stop></linearGradient></defs>
-          <polyline points="0,96 40,84 80,90 120,58 160,68 200,34 240,44 280,16 312,8" fill="none" stroke="#1f4733" stroke-width="2.5"></polyline>
-          <polyline points="0,96 40,84 80,90 120,58 160,68 200,34 240,44 280,16 312,8 312,120 0,120" fill="url(#hgA)" stroke="none"></polyline>
-          <polyline points="0,104 40,100 80,106 120,92 160,98 200,80 240,90 280,72 312,68" fill="none" stroke="#3c6b4f" stroke-width="2" opacity=".85"></polyline>
-        </svg>
-        <div style="display:flex; gap:18px; margin-top:8px;">
-          <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#4a5260;"><span style="width:10px; height:3px; border-radius:2px; background:#1f4733;"></span> Your track</div>
-          <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#4a5260;"><span style="width:10px; height:3px; border-radius:2px; background:#3c6b4f;"></span> Benchmark</div>
-        </div>
-      </div>
-      <div style="position:absolute; bottom:6px; right:0; width:226px; background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:18px; box-shadow:0 20px 44px rgba(20,30,45,.1);">
-        <div class="mono" style="font-size:10px; letter-spacing:.08em; color:#8a92a0;">ALLOCATION</div>
-        <svg viewBox="0 0 190 78" style="width:100%; height:78px; margin-top:12px;">
-          <rect x="6" y="42" width="24" height="36" rx="3" fill="#1f4733"></rect>
-          <rect x="42" y="26" width="24" height="52" rx="3" fill="#3c6b4f"></rect>
-          <rect x="78" y="48" width="24" height="30" rx="3" fill="#5c7a5f"></rect>
-          <rect x="114" y="16" width="24" height="62" rx="3" fill="#1f4733"></rect>
-          <rect x="150" y="36" width="24" height="42" rx="3" fill="#b08d3c"></rect>
-        </svg>
-      </div>
-      <div style="position:absolute; top:-6px; right:24px; background:#fff; border:1px solid #e4e2d9; border-radius:12px; padding:11px 15px; box-shadow:0 16px 34px rgba(20,30,45,.1); display:flex; align-items:center; gap:10px;">
-        <span style="width:34px; height:34px; border-radius:9px; background:rgba(192,138,45,.12); display:flex; align-items:center; justify-content:center; color:#b08d3c; font-size:15px;">★</span>
-        <div><div class="serif" style="font-size:18px; line-height:1; color:#1a241c;">4.9 / 5.0</div><div style="font-size:11px; color:#8a92a0;">18,000+ reviews</div></div>
-      </div>
-    </div>
   </header>
 
   <!-- ============ MARKET TICKER ============ -->
@@ -234,11 +176,6 @@
     </div>
   </section>
 
-  <!-- ============ STATS ============ -->
-  <section style="max-width:1240px; margin:0 auto; padding:70px 44px 50px;">
-    <div id="stats-grid" class="grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;"></div>
-  </section>
-
   <!-- ============ TESTIMONIALS ============ -->
   <section style="max-width:1240px; margin:0 auto; padding:30px 44px 70px;">
     <div style="text-align:center; margin-bottom:40px;">
@@ -257,32 +194,6 @@
       <div style="background:#fff; border:1px solid #e4e2d9; border-radius:18px; padding:30px;">
         <div class="serif" style="font-style:italic; font-size:18px; line-height:1.55; color:#2f3947; margin:0 0 22px;">“Started knowing nothing about investing. Now I manage my own portfolio with real confidence and a real framework.”</div>
         <div style="display:flex; align-items:center; gap:12px;"><span class="serif" style="width:40px; height:40px; border-radius:50%; background:#5c7a5f; display:flex; align-items:center; justify-content:center; font-weight:600; color:#fff;">AR</span><div><div style="font-weight:700; font-size:14px;">Aisha Rahman</div><div style="font-size:12px; color:#8a92a0;">Software Engineer</div></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ PRICING ============ -->
-  <section id="pricing" style="max-width:880px; margin:0 auto; padding:50px 44px;">
-    <div style="text-align:center; margin-bottom:44px;">
-      <div class="kicker">PLANS</div>
-      <h2 style="font-size:clamp(30px,3.6vw,48px); margin:0;">Pay once. Own it for life.</h2>
-      <p style="font-size:15px; color:#6a7280; margin:14px auto 0; max-width:460px;">Simple per-course pricing — no subscription. Buy a single course or build a custom multi-course bundle.</p>
-    </div>
-    <div style="max-width:520px; margin:0 auto;">
-      <div style="position:relative; background:#fff; border-radius:20px; padding:40px 36px; border:1.5px solid #1f4733; box-shadow:0 30px 60px rgba(31,71,51,.16);">
-        <span style="position:absolute; top:-13px; left:36px; padding:6px 16px; border-radius:999px; background:#1f4733; color:#fff; font-size:11px; font-weight:700; letter-spacing:.04em;">PER COURSE</span>
-        <div style="display:flex; align-items:baseline; gap:8px; margin:8px 0 6px;"><span class="serif" style="font-size:62px; line-height:1; color:#1a241c;">$199+</span><span style="font-size:15px; color:#8a92a0;">one-time, per course</span></div>
-        <p style="font-size:15px; color:#6a7280; margin:6px 0 26px;">Choose exactly the courses you need. Each one is yours to keep, forever.</p>
-        <div class="grid-3" style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px 18px; margin-bottom:30px;">
-          <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> Lifetime access</div>
-          <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> No subscription</div>
-          <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> Custom multi-course bundles</div>
-          <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> Verified certificate</div>
-          <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> Templates &amp; datasets</div>
-          <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> 30-day guarantee</div>
-        </div>
-        <a href="#courses" style="display:block; text-align:center; text-decoration:none; padding:15px; border-radius:10px; background:#1f4733; color:#fff; font-size:15px; font-weight:700;">Choose your courses</a>
-        <div style="text-align:center; font-size:13px; color:#8a92a0; margin-top:16px;">Training a team or class? <a href="#organizations" style="color:#1f4733; font-weight:600; text-decoration:none;">See organization plans →</a></div>
       </div>
     </div>
   </section>
@@ -380,7 +291,6 @@
       <div style="display:flex; gap:26px; flex-wrap:wrap;">
         <a href="#courses" style="text-decoration:none; color:#6a7280; font-size:14px;">Courses</a>
         <a href="#instructors" style="text-decoration:none; color:#6a7280; font-size:14px;">Instructors</a>
-        <a href="#pricing" style="text-decoration:none; color:#6a7280; font-size:14px;">Pricing</a>
         <a href="#organizations" style="text-decoration:none; color:#6a7280; font-size:14px;">For organizations</a>
         <a href="#faq" style="text-decoration:none; color:#6a7280; font-size:14px;">FAQ</a>
       </div>
@@ -609,15 +519,6 @@ function renderInstructors(){
         </div>
         <button onclick="openInstructor('${esc(t.name)}')" style="margin-top:16px; cursor:pointer; width:100%; text-align:left; border:none; background:transparent; color:#1f4733; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:space-between; padding:0;">View courses <span>→</span></button>
       </div>
-    </div>`).join('');
-}
-
-function renderStats(){
-  $('stats-grid').innerHTML = MERIDIAN_DATA.stats.map(s => `
-    <div style="background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:24px;">
-      <div class="serif" style="font-size:42px; line-height:1; color:#1f4733;">${esc(s.n)}</div>
-      <div style="font-size:13px; color:#6a7280; margin:8px 0 12px;">${esc(s.l)}</div>
-      <svg viewBox="0 0 120 24" style="width:100%; height:24px;"><g fill="${s.color}" opacity=".8"><rect x="2" y="14" width="10" height="10" rx="2"></rect><rect x="18" y="9" width="10" height="15" rx="2"></rect><rect x="34" y="12" width="10" height="12" rx="2"></rect><rect x="50" y="5" width="10" height="19" rx="2"></rect><rect x="66" y="8" width="10" height="16" rx="2"></rect><rect x="82" y="2" width="10" height="22" rx="2"></rect><rect x="98" y="6" width="10" height="18" rx="2"></rect></g></svg>
     </div>`).join('');
 }
 
@@ -853,7 +754,7 @@ function initReveal(){
 
 /* ---- boot ---- */
 renderTicker(); renderPaths(); renderFilters(); renderCourses();
-renderInstructors(); renderStats(); renderFaq(); renderSelbar(); initReveal(); initHero();
+renderInstructors(); renderFaq(); renderSelbar(); initReveal(); initHero();
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 loadCatalog();   // auto-sync from Thinkific when THINKIFIC.catalogEndpoint is set
 </script>
