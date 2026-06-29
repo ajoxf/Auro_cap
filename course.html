@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course — Meridian Finance Academy</title>
+<meta name="description" content="Meridian Finance course detail — enroll on Thinkific.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:linear-gradient(180deg,#ffffff 0%,#eef1f4 100%) fixed; background-color:#fbfcfd; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  h1,h2,h3 { font-family:'Newsreader',serif; font-weight:500; letter-spacing:-.01em; }
+  .serif { font-family:'Newsreader',serif; }
+  .mono { font-family:'IBM Plex Mono',monospace; }
+  .kicker { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.14em; color:#1f4733; }
+  nav { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:rgba(251,252,253,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9; }
+  .btn-primary { display:inline-block; text-decoration:none; padding:14px 26px; border-radius:10px; background:#1f4733; color:#fff; font-size:15px; font-weight:600; border:none; cursor:pointer; text-align:center; }
+  .btn-primary:hover { background:#163a29; }
+  .wrap { max-width:1080px; margin:0 auto; padding:36px 44px 80px; }
+  .grid { display:grid; grid-template-columns:1fr 360px; gap:40px; align-items:start; }
+  .chip { display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#4a5260; background:#fff; border:1px solid #e4e2d9; border-radius:7px; padding:6px 11px; }
+  .card { background:#fff; border:1px solid #e4e2d9; border-radius:16px; }
+  .enroll { position:sticky; top:90px; padding:26px; box-shadow:0 22px 50px rgba(20,30,45,.08); }
+  .mod { border:1px solid #e4e2d9; border-radius:13px; background:#fff; overflow:hidden; margin-bottom:10px; }
+  .mod h3 { margin:0; font-size:17px; }
+  .mod button { cursor:pointer; width:100%; text-align:left; border:none; background:transparent; padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px; color:#1a241c; }
+  .mod ul { margin:0; padding:0 20px 18px 40px; }
+  .mod li { font-size:14px; line-height:1.9; color:#5a626f; }
+  @media (max-width:820px){ .grid { grid-template-columns:1fr; } .enroll { position:static; } nav { padding:14px 20px; } .wrap { padding:24px 20px 60px; } }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
+      <span style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
+      <span class="serif" style="font-weight:600; font-size:22px;">Meridian</span>
+    </a>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <a href="index.html#courses" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">All courses</a>
+      <a data-thinkific="signin" href="#" style="text-decoration:none; color:#1a241c; font-size:14px; font-weight:600;">Log in</a>
+    </div>
+  </nav>
+
+  <main class="wrap" id="app">
+    <div style="text-align:center; padding:80px 0; color:#8a92a0;">Loading course…</div>
+  </main>
+
+  <footer style="border-top:1px solid #e4e2d9; padding:34px 44px; background:#f6f8fb;">
+    <div style="max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <span class="serif" style="font-weight:600; font-size:18px;">Meridian</span>
+      <span class="mono" style="font-size:13px; color:#9aa0ab;">Powered by Thinkific</span>
+    </div>
+  </footer>
+
+  <script src="meridian.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug') || '';
+    const app = document.getElementById('app');
+
+    function notFound(){
+      app.innerHTML = `<div style="text-align:center; padding:70px 0;">
+        <div class="kicker" style="margin-bottom:12px;">COURSE NOT FOUND</div>
+        <h1 style="font-size:34px; margin:0 0 14px;">We couldn't find that course.</h1>
+        <p style="color:#6a7280; margin:0 0 26px;">It may have been renamed or removed in Thinkific.</p>
+        <a class="btn-primary" href="index.html#courses">Browse all courses</a>
+      </div>`;
+    }
+
+    function render(c, instructors){
+      document.title = c.title + ' — Meridian Finance Academy';
+      const instr = (instructors || []).find(t => t.name === c.instr);
+      const modules = (c.modules || []);
+      const modulesHtml = modules.length ? modules.map((m,i) => `
+        <div class="mod">
+          <button onclick="this.parentNode.classList.toggle('open'); const u=this.nextElementSibling; u.style.display = u.style.display==='block'?'none':'block';">
+            <h3>${esc(m.title)}</h3>
+            <span class="mono" style="font-size:12px; color:#8a92a0;">${(m.lessons||[]).length} lessons</span>
+          </button>
+          <ul style="display:${i===0?'block':'none'};">${(m.lessons||[]).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>
+        </div>`).join('') :
+        `<p style="color:#6a7280;">Full curriculum is available on the Thinkific course page.</p>`;
+
+      app.innerHTML = `
+        <a href="index.html#courses" style="text-decoration:none; color:#6a7280; font-size:13px;">← All courses</a>
+        <div class="grid" style="margin-top:18px;">
+          <div>
+            <div class="kicker" style="margin-bottom:12px;">${esc(c.cat).toUpperCase()} · ${esc(c.level).toUpperCase()}</div>
+            <h1 style="font-size:clamp(32px,4.4vw,52px); line-height:1.05; margin:0 0 16px;">${esc(c.title)}</h1>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:22px;">
+              <span class="serif" style="width:34px; height:34px; border-radius:50%; background:#eef0ec; border:1px solid #e0ddd2; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; color:#1f4733;">${esc(c.initials)}</span>
+              <span style="font-size:14px; color:#4a5260;">Taught by <strong>${esc(c.instr)}</strong>${instr?` · ${esc(instr.cred)}`:''}</span>
+            </div>
+            <div style="display:flex; gap:9px; flex-wrap:wrap; margin-bottom:28px;">
+              <span class="chip">${esc(c.hours)} hrs</span>
+              <span class="chip">${c.lessons} lessons</span>
+              <span class="chip">${esc(c.level)}</span>
+              <span class="chip" style="color:#b08d3c;">★ ${esc(c.rating)}</span>
+            </div>
+            <p style="font-size:17px; line-height:1.65; color:#3a424f; margin:0 0 34px; max-width:60ch;">${esc(c.description || 'A professional finance course taught by industry practitioners. Enroll to get lifetime access, datasets and a verified certificate.')}</p>
+
+            <h2 style="font-size:26px; margin:0 0 16px;">What you'll cover</h2>
+            ${modulesHtml}
+
+            ${instr ? `
+            <h2 style="font-size:26px; margin:36px 0 16px;">Your instructor</h2>
+            <div class="card" style="display:flex; gap:18px; align-items:center; padding:20px;">
+              ${instr.photo?`<img src="${esc(instr.photo)}" alt="${esc(instr.name)}" style="width:72px; height:72px; border-radius:12px; object-fit:cover; flex:none;">`:''}
+              <div>
+                <div class="serif" style="font-size:20px; font-weight:600;">${esc(instr.name)}</div>
+                <div class="mono" style="font-size:12px; color:#1f4733; margin:4px 0 6px;">${esc(instr.cred)}</div>
+                <div style="font-size:13px; color:#6a7280;">${esc(instr.role)}</div>
+              </div>
+            </div>` : ''}
+          </div>
+
+          <aside>
+            <div class="card enroll">
+              <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px;">
+                <span class="serif" style="font-size:42px; color:#1a241c;">$${c.price}</span>
+                <span style="font-size:14px; color:#8a92a0;">one-time</span>
+              </div>
+              <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">Lifetime access · pay once, own it forever.</div>
+              <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">Enroll on Thinkific →</a>
+              <div style="display:flex; flex-direction:column; gap:9px; margin-top:22px;">
+                <div style="font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> Verified certificate</div>
+                <div style="font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> Templates &amp; datasets</div>
+                <div style="font-size:14px; color:#3a424f;"><span style="color:#1f4733;">✓</span> 30-day money-back guarantee</div>
+              </div>
+              <div style="font-size:12px; color:#9aa0ab; margin-top:18px; text-align:center;">Secure checkout on Thinkific</div>
+            </div>
+          </aside>
+        </div>`;
+    }
+
+    (async function(){
+      const data = await fetchCatalog();                                  // live Thinkific (or null)
+      const courses = (data && data.courses) || MERIDIAN_DATA.courses;
+      const instructors = (data && data.instructors) || MERIDIAN_DATA.instructors;
+      const c = courses.find(x => (x.slug||x.thinkificSlug) === slug || x.thinkificSlug === slug);
+      if (!c) return notFound();
+      render(c, instructors);
+    })();
+  </script>
+</body>
+</html>
