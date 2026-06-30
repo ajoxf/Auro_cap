@@ -15,13 +15,13 @@ which is included on your **Grow plan**.
   Thinkific admin (team edits here)
         │   Admin API (secret key)
         ▼
-  thinkific-proxy.js  ── caches + reshapes ──►  meridian.js (fetchCatalog)
-   (Cloudflare Worker)                              │
-                                                    ▼
-                          index.html · course.html · bundle.html · courses.html
-                                                    │  "Enroll"
-                                                    ▼
-                                            Thinkific checkout
+  api/catalog.js  ── caches + reshapes ──►  meridian.js (fetchCatalog)
+  (Vercel function)                             │
+                                                ▼
+                       index.html · course.html · bundle.html · courses.html
+                                                │  "Enroll"
+                                                ▼
+                                        Thinkific checkout
 ```
 
 Two files matter to a developer; the team touches neither:
@@ -29,7 +29,7 @@ Two files matter to a developer; the team touches neither:
 | File | Role |
 |---|---|
 | `meridian.js` | One config block (`THINKIFIC`) + the data layer + demo fallback. |
-| `thinkific-proxy.js` | The serverless Worker that holds the API key and serves the live catalog. |
+| `api/catalog.js` | The Vercel serverless function that holds the API key and serves the live catalog. |
 
 ---
 
@@ -42,27 +42,33 @@ Create an **API key**. Note two values:
 - **Subdomain** — the part before `.thinkific.com` in your school URL
   (`meridian.thinkific.com` → subdomain is `meridian`).
 
-### Step 2 — Deploy the proxy (Cloudflare Workers, free)
-1. [cloudflare.com](https://cloudflare.com) → **Workers & Pages → Create → Worker**.
-2. Replace the starter code with the contents of **`thinkific-proxy.js`** and **Deploy**.
-3. Worker → **Settings → Variables and Secrets** → add two **Secrets**:
+### Step 2 — Deploy the function (Vercel, free)
+The endpoint lives at **`api/catalog.js`** in this repo. Vercel auto-detects the
+`api/` folder, so deploying the repo gives you the endpoint `/api/catalog`.
+1. [vercel.com](https://vercel.com) → **Add New → Project** → import this repo
+   (or run `npx vercel` from the repo root). No build step needed — it's a static
+   site plus one function.
+2. Project → **Settings → Environment Variables** → add to **Production + Preview**:
    - `THINKIFIC_API_KEY` = the key from Step 1
    - `THINKIFIC_SUBDOMAIN` = your subdomain (e.g. `meridian`)
-4. Copy the Worker URL, e.g. `https://meridian-thinkific.<you>.workers.dev`.
-5. **Test it:** open that URL in a browser. You should see JSON with `courses`,
-   `instructors`, `bundles`, `logos`. (First load is slower; after that it's cached.)
+3. **Deploy.** Your endpoint is `https://<project>.vercel.app/api/catalog`.
+4. **Test it:** open that URL in a browser. You should see JSON with `courses`,
+   `instructors`, `bundles`, `logos`. (First load is slower; after that it's CDN-cached.)
 
-> Prefer Vercel/Netlify? The fetch + reshape logic in `thinkific-proxy.js` is
-> host-agnostic — only the `export default { fetch }` wrapper changes. Ask and I'll
-> hand you a Vercel/Netlify version.
+> **Where does the static site live?** Two fine options:
+> - **Keep it on GitHub Pages** (current setup) and use Vercel *only* for the
+>   function. CORS is open, so the github.io site can call the vercel.app endpoint.
+> - **Host the whole site on Vercel** too (it serves the static files + the
+>   function from one origin — simplest, and same-origin means no CORS at all).
+>   If you go this route you can retire the gh-pages workflow.
 
-### Step 3 — Point the site at the proxy
+### Step 3 — Point the site at the function
 In **`meridian.js`**, set two fields:
 
 ```js
 const THINKIFIC = {
   domain: 'meridian.thinkific.com',                         // your school (or custom) domain
-  catalogEndpoint: 'https://meridian-thinkific.<you>.workers.dev',  // ← the Worker URL
+  catalogEndpoint: 'https://<project>.vercel.app/api/catalog',  // ← the Vercel endpoint
   useDirectEnroll: true,                                     // Enroll → Thinkific checkout directly
   // ...
 };
@@ -74,13 +80,13 @@ pages and bundle pages from Thinkific. If the endpoint is blank or a fetch fails
 site silently falls back to the demo data in `meridian.js`, so it never breaks.
 
 ### Step 4 — Verify field mapping against your real data
-Thinkific accounts vary slightly. Open the Worker URL JSON and sanity-check:
-- **Prices** show correctly (the Worker reads `course.price`; adjust `priceOf()` if
+Thinkific accounts vary slightly. Open the `/api/catalog` JSON and sanity-check:
+- **Prices** show correctly (the function reads `course.price`; adjust `priceOf()` if
   your account nests price under a product).
-- **Instructor names** resolve on courses (the Worker matches `course.user_id` →
+- **Instructor names** resolve on courses (the function matches `course.user_id` →
   instructor; some accounts use `instructor_id` — both are handled, but confirm).
 
-These are 1-line tweaks in `thinkific-proxy.js`, called out in its comments. Everything
+These are 1-line tweaks in `api/catalog.js`, called out in its comments. Everything
 else is automatic.
 
 ---
@@ -115,7 +121,7 @@ All optional — leave them out and the course still shows with sensible default
 `featured-2, cat:Quant, level:Advanced, hours:11, tag:Bestseller`
 
 > Brand-only items a developer sets once (not course content): the hero clips,
-> the FAQ text, and the institutions marquee list (in `thinkific-proxy.js` → `CONFIG.logos`).
+> the FAQ text, and the institutions marquee list (in `api/catalog.js` → `CONFIG.logos`).
 
 ---
 
@@ -134,7 +140,7 @@ landing page canonical to your `course.html?slug=…`.
 **Sitemap.** `sitemap.xml` + `robots.txt` are included. Regenerate from the **live**
 Thinkific feed so they always match what's published:
 ```bash
-node build-sitemap.mjs https://your-final-domain https://meridian-thinkific.<you>.workers.dev
+node build-sitemap.mjs https://your-final-domain https://<project>.vercel.app/api/catalog
 ```
 Run it on a schedule (e.g. a nightly GitHub Action) once live sync is on.
 
@@ -152,7 +158,7 @@ GitHub Pages, add a `CNAME` file, and set `siteUrl: 'https://academy.meridian.co
 - **Lesson counts / curriculum:** the basic `/courses` payload may not include lesson
   counts; the card hides the "lessons" stat when absent. To show exact curriculum on
   `course.html`, extend the proxy to call `/courses/{id}/chapters` and attach `modules`
-  (commented in `thinkific-proxy.js`).
+  (commented in `api/catalog.js`).
 - **Instructors listing:** the homepage faculty grid and the all-instructors listing
   are **retired for now** (per request). `instructor.html` and the instructor data
   remain in place, so restoring is a markup-only change — see the comment block where
@@ -167,10 +173,10 @@ GitHub Pages, add a `CNAME` file, and set `siteUrl: 'https://academy.meridian.co
 
 - [ ] Courses + prices created in Thinkific; Bundles created for learning paths
 - [ ] API key generated (Settings → Code & Analytics → API)
-- [ ] `thinkific-proxy.js` deployed; `THINKIFIC_API_KEY` + `THINKIFIC_SUBDOMAIN` set as secrets
-- [ ] Worker URL returns JSON with courses/instructors/bundles
+- [ ] Repo deployed to Vercel; `THINKIFIC_API_KEY` + `THINKIFIC_SUBDOMAIN` set as env vars
+- [ ] `https://<project>.vercel.app/api/catalog` returns JSON with courses/instructors/bundles
 - [ ] `meridian.js` → `domain` + `catalogEndpoint` set; site redeployed
-- [ ] Spot-check prices + instructor names in the Worker JSON
+- [ ] Spot-check prices + instructor names in the `/api/catalog` JSON
 - [ ] (Optional) Featured/category/level tokens added to course Keywords
 - [ ] (Optional) custom domain + `siteUrl`; scheduled `build-sitemap.mjs`
 

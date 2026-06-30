@@ -23,11 +23,12 @@ const THINKIFIC = {
   // from the live feed; falls back to the course URL if an id isn't present.
   useDirectEnroll: true,
   // ---- LIVE SYNC (turn the whole site dynamic) ---------------------------
-  // Point this at the deployed `thinkific-proxy.js` Worker URL and the catalog,
-  // instructors, learning-path bundles and logos all render from Thinkific at
-  // runtime — add a course in Thinkific, it appears here on refresh, zero code
-  // edits. The Worker holds your API key server-side (Grow plan Admin API).
-  // Leave '' to use the built-in demo data below. See THINKIFIC_INTEGRATION.md.
+  // Point this at the deployed Vercel function (api/catalog.js), e.g.
+  // 'https://your-project.vercel.app/api/catalog'. Then the catalog, instructors,
+  // learning-path bundles and logos all render from Thinkific at runtime — add a
+  // course in Thinkific, it appears here on refresh, zero code edits. The function
+  // holds your API key server-side (Grow plan Admin API). Leave '' to use the
+  // built-in demo data below. See THINKIFIC_INTEGRATION.md.
   catalogEndpoint: '',
 };
 

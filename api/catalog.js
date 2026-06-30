@@ -1,26 +1,28 @@
 /* ============================================================================
-   thinkific-proxy.js  —  Cloudflare Worker
+   api/catalog.js  —  Vercel Serverless Function
    ----------------------------------------------------------------------------
    The bridge that makes the whole site Thinkific-driven.
 
    Why it exists:
      • The Thinkific Admin API needs a secret API key, which must NEVER live in
        front-end code, and the API does not allow direct browser calls (CORS).
-     • So this tiny Worker sits in the middle: it calls Thinkific with the secret
-       key (stored server-side), reshapes the data into the format meridian.js
-       expects, caches it, and serves it to the site with CORS enabled.
+     • So this function sits in the middle: it calls Thinkific with the secret key
+       (a Vercel env var), reshapes the data into the format meridian.js expects,
+       caches it on Vercel's CDN, and serves it to the site with CORS enabled.
 
    Result: the non-technical team manages EVERYTHING inside the Thinkific admin
    (courses, prices, instructors, bundles, what's featured) and the marketing
    site reflects it automatically — no code changes, ever.
 
-   ── Deploy (≈10 min) ──────────────────────────────────────────────────────
-   1. cloudflare.com → Workers & Pages → Create → Worker. Paste this file.
-   2. Settings → Variables and Secrets → add two SECRETS:
+   ── Deploy on Vercel (≈10 min) ────────────────────────────────────────────
+   1. Put this repo on Vercel: vercel.com → Add New → Project → import the repo
+      (or run `npx vercel` from the repo root). The `api/` folder is detected
+      automatically — this becomes the endpoint  /api/catalog.
+   2. Project → Settings → Environment Variables → add (Production + Preview):
         THINKIFIC_API_KEY    = (Thinkific → Settings → Code & Analytics → API)
         THINKIFIC_SUBDOMAIN  = your-school   (the part before .thinkific.com)
-   3. Deploy. Copy the Worker URL, e.g. https://meridian-thinkific.<you>.workers.dev
-   4. In meridian.js set:  catalogEndpoint: 'https://…workers.dev'
+   3. Deploy. Your endpoint is  https://<project>.vercel.app/api/catalog
+   4. In meridian.js set:  catalogEndpoint: 'https://<project>.vercel.app/api/catalog'
    Done. See THINKIFIC_INTEGRATION.md for the full portal playbook.
 
    ── How the team controls marketing fields (all inside Thinkific) ──────────
@@ -41,8 +43,8 @@
 const CONFIG = {
   // Lock this to your site origin in production, e.g. 'https://ajoxf.github.io'.
   allowOrigin: '*',
-  // Edge-cache the assembled catalog this long. Team edits in Thinkific appear
-  // on the site within this window. 600s = 10 min (≤ ~144 Thinkific hits/day).
+  // CDN-cache the assembled catalog this long (seconds). Team edits in Thinkific
+  // appear on the site within this window. 600 = 10 min (≤ ~144 Thinkific hits/day).
   cacheSeconds: 600,
   // Institutions marquee (instructor firms aren't structured data in Thinkific).
   logos: ['Bloomberg','Goldman Sachs','BlackRock','Morgan Stanley','J.P. Morgan',
@@ -53,35 +55,35 @@ const CONFIG = {
 
 const API = 'https://api.thinkific.com/api/public/v1';
 
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }));
+module.exports = async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', CONFIG.allowOrigin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  if (req.method === 'OPTIONS') return res.status(204).end();
 
-    const cache = caches.default;
-    const cacheKey = new Request(new URL('/catalog', request.url).toString(), { method: 'GET' });
-    const cached = await cache.match(cacheKey);
-    if (cached) return cors(cached);
-
-    if (!env.THINKIFIC_API_KEY || !env.THINKIFIC_SUBDOMAIN) {
-      return cors(json({ error: 'Missing THINKIFIC_API_KEY / THINKIFIC_SUBDOMAIN secrets' }, 500));
-    }
-    try {
-      const data = await buildCatalog(env);
-      const res = json(data, 200, { 'cache-control': `public, max-age=${CONFIG.cacheSeconds}` });
-      ctx.waitUntil(cache.put(cacheKey, res.clone()));
-      return cors(res);
-    } catch (e) {
-      return cors(json({ error: String(e && e.message || e) }, 502));
-    }
-  },
-};
+  const KEY = process.env.THINKIFIC_API_KEY, SUB = process.env.THINKIFIC_SUBDOMAIN;
+  if (!KEY || !SUB) {
+    return res.status(500).json({ error: 'Missing THINKIFIC_API_KEY / THINKIFIC_SUBDOMAIN env vars' });
+  }
+  try {
+    const data = await buildCatalog(KEY, SUB);
+    // Vercel's CDN serves this cached copy for cacheSeconds, then revalidates in the
+    // background — so Thinkific is hit ~once per window no matter the traffic.
+    res.setHeader('Cache-Control',
+      `public, s-maxage=${CONFIG.cacheSeconds}, stale-while-revalidate=${CONFIG.cacheSeconds * 2}`);
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(502).json({ error: String((e && e.message) || e) });
+  }
+}
 
 /* ---- assemble the normalized catalog the site expects ---- */
-async function buildCatalog(env) {
+async function buildCatalog(KEY, SUB) {
   const [courses, instructors, bundles] = await Promise.all([
-    tkAll(env, 'courses'),
-    tkAll(env, 'instructors'),
-    tkAll(env, 'bundles'),
+    tkAll(KEY, SUB, 'courses'),
+    tkAll(KEY, SUB, 'instructors'),
+    tkAll(KEY, SUB, 'bundles'),
   ]);
 
   const instrName = {};
@@ -96,7 +98,7 @@ async function buildCatalog(env) {
     .filter(b => b.published !== false)
     .map(async (b, i) => {
       let members = [];
-      try { members = await tkAll(env, `bundles/${b.id}/courses`); } catch (_) {}
+      try { members = await tkAll(KEY, SUB, `bundles/${b.id}/courses`); } catch (_) {}
       return mapBundle(b, i, members);
     }));
 
@@ -106,15 +108,15 @@ async function buildCatalog(env) {
 }
 
 /* ---- Thinkific fetch with pagination ---- */
-async function tkAll(env, resource) {
+async function tkAll(KEY, SUB, resource) {
   const out = [];
   let page = 1;
   for (;;) {
     const sep = resource.includes('?') ? '&' : '?';
     const r = await fetch(`${API}/${resource}${sep}page=${page}&limit=100`, {
       headers: {
-        'X-Auth-API-Key': env.THINKIFIC_API_KEY,
-        'X-Auth-Subdomain': env.THINKIFIC_SUBDOMAIN,
+        'X-Auth-API-Key': KEY,
+        'X-Auth-Subdomain': SUB,
         'Content-Type': 'application/json',
       },
     });
@@ -202,16 +204,4 @@ function priceOf(o) {
 }
 function slugify(s) {
   return String(s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
-function json(obj, status = 200, extra = {}) {
-  return new Response(JSON.stringify(obj), {
-    status, headers: { 'content-type': 'application/json; charset=utf-8', ...extra },
-  });
-}
-function cors(res) {
-  const h = new Headers(res.headers);
-  h.set('Access-Control-Allow-Origin', CONFIG.allowOrigin);
-  h.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  h.set('Access-Control-Allow-Headers', 'Content-Type, Accept');
-  return new Response(res.body, { status: res.status, headers: h });
 }
