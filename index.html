@@ -13,10 +13,10 @@
 <style>
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
-  body { margin:0; background:linear-gradient(180deg,#ffffff 0%,#eef1f4 100%) fixed; background-color:#fbfcfd; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  body { margin:0; background:#ffffff; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
   ::selection { background:rgba(31,71,51,.15); }
   ::-webkit-scrollbar { width:12px; }
-  ::-webkit-scrollbar-track { background:#eef1f4; }
+  ::-webkit-scrollbar-track { background:#f2f2f2; }
   ::-webkit-scrollbar-thumb { background:#cfccc0; border-radius:6px; border:3px solid #eef1f4; }
   input, button { font-family:'IBM Plex Sans',sans-serif; }
   a { color:inherit; }
@@ -66,7 +66,6 @@
       linear-gradient(160deg, #060f0b 0%, #0a1b13 48%, #040907 100%); }
   #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
   #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
-  #cine-stage::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(135% 135% at 50% 50%, rgba(4,9,7,0) 62%, rgba(4,9,7,.42) 100%); }
   /* white → video → white dissolves so the band reads as part of the same page */
   #cine-fade-top { position:absolute; left:0; right:0; top:0; height:26vh; pointer-events:none; z-index:2; background:linear-gradient(to top, rgba(6,15,11,0), #ffffff 96%); }
   #cine-fade { position:absolute; left:0; right:0; bottom:0; height:26vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(6,15,11,0), #ffffff 96%); }
@@ -97,7 +96,7 @@
 
   /* ============ NAV — solid by default; transparent over the dark cinematic section ============ */
   #nav { position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:transparent; border-bottom:1px solid transparent; transition:background .3s ease, border-color .3s ease; }
-  #nav.nav--solid { background:rgba(244,243,236,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9; }
+  #nav.nav--solid { background:rgba(255,255,255,.88); backdrop-filter:blur(14px); border-bottom:1px solid #ececec; }
   #nav .nav-link, #nav .nav-login { text-decoration:none; font-size:14px; font-weight:500; transition:color .3s ease; }
   #nav .nav-login { font-weight:600; white-space:nowrap; }
   #nav .brand-text, #nav .nav-link, #nav .nav-login { color:#FBF9F3; text-shadow:0 1px 8px rgba(0,0,0,.55); }
@@ -131,7 +130,6 @@
 
   <!-- ============ HERO CARD ============ -->
   <header class="topcard">
-    <span class="topcard-badge">Accredited · CPE-eligible · Certificate-backed</span>
     <h1>Master the numbers<br>behind every market.</h1>
     <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
     <div class="topcard-actions">
@@ -178,7 +176,7 @@
   </section>
 
   <!-- ============ INSTRUCTORS ============ -->
-  <section id="instructors" style="background:#f6f8fb; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
+  <section id="instructors" style="background:#ffffff; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
     <div style="max-width:1240px; margin:0 auto; padding:80px 44px;">
       <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:36px;">
         <div>
@@ -286,7 +284,7 @@
   </section>
 
   <!-- ============ FOOTER ============ -->
-  <footer style="border-top:1px solid #e4e2d9; padding:48px 44px 36px; background:#f6f8fb;">
+  <footer style="border-top:1px solid #e4e2d9; padding:48px 44px 36px; background:#ffffff;">
     <div style="max-width:1240px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px;">
       <div style="display:flex; align-items:center; gap:11px;">
         <span class="serif" style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; color:#fff;">M</span>
