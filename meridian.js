@@ -112,6 +112,8 @@ const esc  = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&a
 const hexA = (hex,a) => { const h=String(hex||'#8a6d1f').replace('#',''); const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; };
 const initialsOf = (name) => String(name||'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const slugify = (s) => String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+// "New" badge window: created within the last 30 days.
+const isRecent = (iso) => { if(!iso) return false; const t = Date.parse(iso); return !isNaN(t) && (Date.now() - t) < 30*864e5; };
 
 /* ---------- Thinkific URL resolution (the only place URLs are built) ---------- */
 function courseUrl(c){
@@ -182,17 +184,23 @@ function setJsonLd(obj){
 /* ---------- normalizers (map raw Thinkific-ish objects → our shape) ---------- */
 function normalizeCourse(c, i){
   const slug = c.slug || c.thinkificSlug || slugify(c.title || c.name);
+  const price = Number(c.price) || 0;
+  const featured = c.featured === true || /(^|,)\s*featured/i.test(c.keywords || '');
+  // Corner badge: a manual `tag:` keyword wins; otherwise auto — Free (price 0),
+  // then Featured, then New (created in the last 30 days).
+  const tag = c.tag || (price === 0 ? 'Free' : (featured ? 'Featured' : (isRecent(c.createdAt) ? 'New' : '')));
   return {
     title: c.title || c.name || 'Untitled course',
     cat: c.cat || c.category || 'Courses',
     instr: c.instr || c.instructor || '',
     initials: c.initials || initialsOf(c.instr || c.instructor || ''),
-    price: Number(c.price) || 0,
+    price,
     hours: c.hours || '',
     lessons: c.lessons || 0,
     level: c.level || 'All levels',
     rating: c.rating || '',          // only show a rating when there's a real one (no fake default)
-    tag: c.tag || '',
+    tag,
+    createdAt: c.createdAt || '',
     accent: c.accent || ACCENTS[i % ACCENTS.length],
     slug,
     thinkificSlug: c.thinkificSlug || c.slug || '',
@@ -204,7 +212,7 @@ function normalizeCourse(c, i){
     modules: Array.isArray(c.modules) ? c.modules : [],
     // HOME-PAGE CURATION (controlled from Thinkific): add the keyword `featured`
     // to a course to put it on the home page; `featured-2`, `featured-3`… set order.
-    featured: c.featured === true || /(^|,)\s*featured/i.test(c.keywords || ''),
+    featured,
     order: Number(c.order) || (function(){ const m=/featured-(\d+)/i.exec(c.keywords||''); return m?+m[1]:0; })(),
   };
 }
@@ -218,7 +226,7 @@ function courseCardHtml(c){
         : `<svg viewBox="0 0 360 140" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
         <polyline points="0,110 60,94 120,102 180,66 240,80 300,42 360,54" fill="none" stroke="${c.accent}" stroke-width="2.5"></polyline>
       </svg>`}
-      ${c.tag ? `<span style="position:absolute; top:12px; right:12px; padding:5px 11px; border-radius:6px; background:${c.accent}; color:#fff; font-size:11px; font-weight:700;">${esc(c.tag)}</span>`:''}
+      ${c.tag ? `<span style="position:absolute; top:12px; right:12px; padding:5px 11px; border-radius:6px; background:${c.tag==='Free'?'#2f7d4e':c.accent}; color:#fff; font-size:11px; font-weight:700;">${esc(c.tag)}</span>`:''}
       <span class="mono" style="position:absolute; bottom:11px; left:13px; padding:4px 9px; border-radius:6px; background:rgba(255,255,255,.9); border:1px solid #e4e2d9; font-size:11px; color:#4a5260;">${esc(c.cat)}</span>
       <span class="mono" style="position:absolute; bottom:11px; right:13px; font-size:11px; color:#6a7280;">${esc(c.level)}</span>
     </div>
@@ -235,7 +243,7 @@ function courseCardHtml(c){
           ].filter(Boolean).join('<span>·</span>')}
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid #ece9e0;">
-        <div class="serif" style="font-size:24px; color:#1a241c;">$${c.price}</div>
+        <div class="serif" style="font-size:24px; color:#1a241c;">${c.price>0 ? '$'+c.price : 'Free'}</div>
         <span style="padding:9px 16px; border-radius:8px; border:1px solid #8a6d1f; color:#8a6d1f; font-size:13px; font-weight:600;">View course</span>
       </div>
     </div>

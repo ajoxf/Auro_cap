@@ -154,8 +154,8 @@
           <aside>
             <div class="card enroll">
               <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px;">
-                <span class="serif" style="font-size:42px; color:#1a241c;">$${c.price}</span>
-                <span style="font-size:14px; color:#8a92a0;">one-time</span>
+                <span class="serif" style="font-size:42px; color:#1a241c;">${c.price>0 ? '$'+c.price : 'Free'}</span>
+                ${c.price>0 ? `<span style="font-size:14px; color:#8a92a0;">one-time</span>` : ''}
               </div>
               <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">Lifetime access · pay once, own it forever.</div>
               <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">Enroll now →</a>
