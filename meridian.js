@@ -11,7 +11,7 @@
 
 const THINKIFIC = {
   // Your Thinkific domain — e.g. 'meridian.thinkific.com' or a custom domain.
-  domain: 'YOUR-SCHOOL.thinkific.com',
+  domain: 'ankit-s-site-31c5.thinkific.com',
   // Public URL where THIS site is hosted (used for canonical + share tags).
   // Leave '' to auto-detect from the browser. Set it once you have a final
   // domain, e.g. 'https://academy.meridian.com'.
