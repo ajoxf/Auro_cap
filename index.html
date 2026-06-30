@@ -60,8 +60,8 @@
   #cine-track { position:relative; width:100%; }
   /* the intro act (hero card + scroll clip) shares the clip's studio-grey backdrop,
      so the zoomed-out margins blend in and the two read as one section */
-  #intro { background:#ececec; }
-  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ececec; }
+  #intro { background:#ffffff; }
+  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; }
   #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
   #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
   /* dissolve from the grey intro into the white page below */
@@ -793,13 +793,12 @@ function initVideoScrub(cfg){
   video.load();
 }
 
-// Top hero — clip sits on a near-white (#ececec) stage that matches the clip's own
-// white backdrop, so the 30% zoom-out margins blend invisibly. Nav stays solid (dark
-// text) since the backdrop is light. Mobile fills width; sides stay crisp, top/bottom
-// feather into the matched backdrop.
+// Top hero — clip sits on a pure-white stage that matches the clip's own white
+// backdrop, so the 35% zoom-out margins are invisible. clean:true = crisp edges (no
+// feather/gradient border). Nav stays solid (dark text) since the backdrop is light.
 initScrubHero({ video:'cine-src', track:'cine-track', stage:'cine-stage',
                 canvas:'cine-gl', poster:'cine-poster', headline:'cine-headline',
-                zoom:1.3 });
+                zoom:1.35, clean:true });
 
 // Mid-page band (Trader) — plain <video> cover-filling a crisp rounded card, scrubbed by
 // scroll. No WebGL needed; reliable everywhere.
