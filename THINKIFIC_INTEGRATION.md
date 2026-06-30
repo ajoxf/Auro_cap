@@ -38,7 +38,8 @@ here's what flows automatically to the site on the next page refresh:
 | Edit a course's title, price, description, chapters | Updated everywhere, including the course page's curriculum |
 | Add/replace a course's **instructor (author)** | Instructor appears in the faculty grid, gets their own branded profile page (`instructor.html`), and shows on the course page |
 | Create a **Bundle** (several courses, one price) | New **Learning path** card → its own branded bundle landing page (`bundle.html`) → Thinkific bundle checkout |
-| Unpublish / archive a course | It drops off the site |
+| Add the keyword **`featured`** to a course (use `featured-2`, `featured-3`… to order) | It appears in the home page's **Featured courses** row, in that order |
+| Unpublish / archive a course | It drops off the site (home, full catalog, bundles) |
 
 The only things that are *brand assets* (not course content) and so are set once by a
 developer in `meridian.js`: the hero video, the FAQ text, and the marquee logo list.
@@ -63,7 +64,7 @@ needs **no API key, no server, and no secrets**. Host it anywhere static
 
 ## Seeing the portal (preview & deploy)
 
-This is a static site — `index.html`, `course.html`, `bundle.html`, `instructor.html`, `meridian.js`,
+This is a static site — `index.html`, `courses.html`, `course.html`, `bundle.html`, `instructor.html`, `meridian.js`,
 and `assets/` (the hero video + poster) — served over **http/https**. Serve it
 rather than opening from disk so the hero video plays and the data layer can fetch.
 
@@ -78,7 +79,7 @@ python3 -m http.server 8000
 natural host. In **GitHub → Settings → Pages**, set the source to the branch/folder
 you want to publish; the site then lives at
 `https://<user>.github.io/Auro_cap/`. Publishing = copying `index.html`,
-`course.html`, `bundle.html`, `instructor.html`, `meridian.js` and `assets/` onto the published branch.
+`courses.html`, `course.html`, `bundle.html`, `instructor.html`, `meridian.js` and `assets/` onto the published branch.
 (Ask and I can push the current build to `gh-pages` for you.)
 
 > **Keeping search engines on your pages, not Thinkific's.** Every page sets a
@@ -89,10 +90,11 @@ you want to publish; the site then lives at
 > Thinkific set each course's landing page to redirect, and add a canonical there
 > pointing back to your `course.html?slug=…`.
 
-> The Bloomberg hero autoplays muted (browsers require muted autoplay); the **Sound**
-> button unmutes it. It loops smoothly because it plays normally rather than being
-> scrubbed. If the clip can't load, the poster frame (`bloomberg-poster.jpg`) shows in
-> its place, so the hero never appears blank.
+> The Bloomberg hero is a **scroll-driven Three.js frame animation** — the clip
+> advances as you scroll down and reverses as you scroll up. It uses an all-intra
+> clip (`bloomberg-scrub.mp4`) for smooth seeking and needs **H.264** + WebGL (every
+> normal browser has both). If either is unavailable, it falls back to the poster
+> frame (`bloomberg-poster.jpg`), so the hero never appears blank.
 
 ---
 
@@ -106,7 +108,7 @@ you want to publish; the site then lives at
 
 ## Step 2 — Point this page at your school
 
-In `index.html`, set your domain:
+In `meridian.js`, set your domain:
 
 ```js
 const THINKIFIC = {
@@ -258,6 +260,7 @@ export default {
           cat: (c.keywords || '').split(',')[0]?.trim() || 'Courses',
           instr: [u.first_name, u.last_name].filter(Boolean).join(' '),
           description: c.description || c.card_text || '',
+          keywords: c.keywords || '',   // carries the `featured` / `featured-2` home-curation tags
           // price/lessons/rating + per-course modules aren't in /courses — fetch
           // /products (price), /courses/{id}/chapters (modules & lesson counts)
           // here if you want them exact, or set marketing defaults:

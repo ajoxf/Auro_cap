@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All Courses — Meridian Finance Academy</title>
+<meta name="description" content="Browse every Meridian finance course — pay per course, own it for life.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:linear-gradient(180deg,#ffffff 0%,#eef1f4 100%) fixed; background-color:#fbfcfd; color:#1a241c; font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  h1,h2,h3 { font-family:'Newsreader',serif; font-weight:500; letter-spacing:-.01em; }
+  .serif { font-family:'Newsreader',serif; }
+  .mono { font-family:'IBM Plex Mono',monospace; }
+  .kicker { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.14em; color:#1f4733; }
+  nav { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:rgba(251,252,253,.86); backdrop-filter:blur(14px); border-bottom:1px solid #e4e2d9; }
+  .wrap { max-width:1240px; margin:0 auto; padding:44px 44px 80px; }
+  .card-hover { transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+  .card-hover:hover { transform:translateY(-3px); box-shadow:0 22px 44px rgba(20,30,45,.1); border-color:#d4d1c5; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media (max-width:900px){ .grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .grid { grid-template-columns:1fr; } nav,.wrap { padding-left:20px; padding-right:20px; } }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
+      <span style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
+      <span class="serif" style="font-weight:600; font-size:22px;">Meridian</span>
+    </a>
+    <div style="display:flex; gap:24px; align-items:center;">
+      <a href="index.html#paths" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Learning paths</a>
+      <a href="index.html#instructors" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">Instructors</a>
+      <a data-thinkific="signin" href="#" style="text-decoration:none; color:#1a241c; font-size:14px; font-weight:600;">Log in</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <div style="margin-bottom:26px;">
+      <div class="kicker" style="margin-bottom:12px;">CATALOG</div>
+      <h1 style="font-size:clamp(34px,4.4vw,56px); margin:0 0 8px;">All courses</h1>
+      <p id="count" style="font-size:15px; color:#6a7280; margin:0;">Pay per course — own each one for life.</p>
+    </div>
+    <div id="filters" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px;"></div>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer style="border-top:1px solid #e4e2d9; padding:34px 44px; background:#f6f8fb;">
+    <div style="max-width:1240px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <span class="serif" style="font-weight:600; font-size:18px;">Meridian</span>
+      <span class="mono" style="font-size:13px; color:#9aa0ab;">Powered by Thinkific</span>
+    </div>
+  </footer>
+
+  <script src="meridian.js"></script>
+  <script>
+    let COURSES = MERIDIAN_DATA.courses;
+    let filter = new URLSearchParams(location.search).get('cat') || 'All';
+
+    function categories(){ return ['All', ...new Set(COURSES.map(c => c.cat).filter(Boolean))]; }
+
+    function renderFilters(){
+      const cats = categories();
+      if (!cats.includes(filter)) filter = 'All';
+      document.getElementById('filters').innerHTML = cats.map(f => {
+        const on = f === filter;
+        return `<button onclick="setFilter('${f.replace(/'/g,"\\'")}')" style="cursor:pointer; padding:9px 16px; border-radius:9px; border:1px solid ${on?'#1f4733':'#d9d7cd'}; background:${on?'#1f4733':'#fff'}; color:${on?'#fff':'#4a5260'}; font-size:13px; font-weight:600;">${esc(f)}</button>`;
+      }).join('');
+    }
+    function renderGrid(){
+      const list = COURSES.filter(c => filter === 'All' || c.cat === filter);
+      document.getElementById('grid').innerHTML = list.map(courseCardHtml).join('') ||
+        '<p style="color:#6a7280;">No courses in this category yet.</p>';
+      document.getElementById('count').textContent =
+        `${list.length} course${list.length===1?'':'s'}${filter!=='All'?` in ${filter}`:''} — pay per course, own each one for life.`;
+    }
+    function setFilter(f){ filter = f; renderFilters(); renderGrid(); }
+
+    applyMeta({ title:'All Courses — Meridian Finance Academy',
+      description:'Browse every Meridian finance course — pay per course, own it for life.',
+      url: pageUrl('courses.html', '') });
+
+    function boot(){ renderFilters(); renderGrid(); }
+    boot();
+    (async function(){
+      const data = await fetchCatalog();
+      if (data && data.courses){ COURSES = data.courses; boot(); }
+    })();
+  </script>
+</body>
+</html>

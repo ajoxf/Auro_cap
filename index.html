@@ -157,15 +157,15 @@
     <div id="paths-grid" class="grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;"></div>
   </section>
 
-  <!-- ============ COURSES ============ -->
+  <!-- ============ FEATURED COURSES ============ -->
   <section id="courses" style="max-width:1240px; margin:0 auto; padding:56px 44px 44px;">
     <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:28px;">
       <div>
         <div class="kicker">CATALOG</div>
-        <h2 style="font-size:clamp(30px,3.6vw,48px); margin:0;">Choose your courses</h2>
-        <p style="font-size:14px; color:#6a7280; margin:8px 0 0;">Pay per course — select any combination to build a custom track, or open one to enroll.</p>
+        <h2 style="font-size:clamp(30px,3.6vw,48px); margin:0;">Featured courses</h2>
+        <p style="font-size:14px; color:#6a7280; margin:8px 0 0;">A hand-picked place to start — pay per course, own it for life.</p>
       </div>
-      <div id="filters" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      <a href="courses.html" id="view-all" class="btn-ghost" style="white-space:nowrap;">View all courses →</a>
     </div>
     <div id="courses-grid" class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;"></div>
   </section>
@@ -355,6 +355,7 @@ function categoryList(){
   return ['All', ...cats];
 }
 function renderFilters(){
+  if (!$('filters')) return;   // home has no filter bar (full catalog lives on courses.html)
   const names = categoryList();
   if (!names.includes(state.filter)) state.filter = 'All';
   $('filters').innerHTML = names.map(f => {
@@ -363,39 +364,11 @@ function renderFilters(){
   }).join('');
 }
 
+// Home shows the FEATURED set (curated in Thinkific); full list lives on courses.html.
 function renderCourses(){
-  const list = MERIDIAN_DATA.courses.filter(c => state.filter === 'All' || c.cat === state.filter);
-  $('courses-grid').innerHTML = list.map(c => {
-    const sel = !!state.selected[c.title];
-    const thumbBg = `linear-gradient(150deg, ${hexA(c.accent,.10)}, #ffffff)`;
-    return `<div class="card-hover" style="position:relative; cursor:pointer; background:#fff; border:1px solid #e4e2d9; border-radius:16px; overflow:hidden;" onclick="location.href='${coursePageUrl(c)}'">
-      <div style="position:absolute; inset:0; border-radius:16px; border:1.5px solid ${sel?c.accent:'transparent'}; pointer-events:none; z-index:4;"></div>
-      <div style="position:relative; height:150px; overflow:hidden; background:${thumbBg}; border-bottom:1px solid #e8e6dd;">
-        <svg viewBox="0 0 360 150" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
-          <polyline points="0,118 60,102 120,110 180,72 240,86 300,46 360,58" fill="none" stroke="${c.accent}" stroke-width="2.5"></polyline>
-          <g fill="${c.accent}" opacity=".12"><rect x="26" y="96" width="24" height="48"></rect><rect x="88" y="80" width="24" height="64"></rect><rect x="150" y="88" width="24" height="56"></rect><rect x="212" y="58" width="24" height="86"></rect><rect x="274" y="72" width="24" height="72"></rect></g>
-        </svg>
-        <button onclick="event.stopPropagation(); toggleSelect('${esc(c.title)}')" style="position:absolute; top:12px; left:12px; z-index:5; cursor:pointer; width:26px; height:26px; border-radius:7px; border:1.5px solid ${sel?c.accent:'rgba(20,30,45,.28)'}; background:${sel?c.accent:'rgba(255,255,255,.85)'}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; padding:0;">${sel?'✓':''}</button>
-        ${c.tag ? `<span style="position:absolute; top:12px; right:12px; padding:5px 11px; border-radius:6px; background:${c.accent}; color:#fff; font-size:11px; font-weight:700;">${esc(c.tag)}</span>`:''}
-        <span class="mono" style="position:absolute; bottom:11px; left:13px; padding:4px 9px; border-radius:6px; background:rgba(255,255,255,.9); border:1px solid #e4e2d9; font-size:11px; color:#4a5260;">${esc(c.cat)}</span>
-        <span class="mono" style="position:absolute; bottom:11px; right:13px; font-size:11px; color:#6a7280;">${esc(c.level)}</span>
-      </div>
-      <div style="padding:18px 20px 20px;">
-        <div style="display:flex; align-items:center; gap:9px; margin-bottom:11px;">
-          <span class="serif" style="width:26px; height:26px; flex:none; border-radius:50%; background:#eef0ec; border:1px solid #e0ddd2; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#1f4733;">${esc(c.initials)}</span>
-          <span style="font-size:13px; color:#6a7280;">${esc(c.instr)}</span>
-        </div>
-        <h3 style="font-size:21px; line-height:1.16; margin:0 0 12px;">${esc(c.title)}</h3>
-        <div style="display:flex; gap:9px; font-size:12px; color:#8a92a0; margin-bottom:16px; flex-wrap:wrap;">
-          <span>${esc(c.hours)} hrs</span><span>·</span><span>${c.lessons} lessons</span><span>·</span><span style="color:#b08d3c;">★ ${esc(c.rating)}</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid #ece9e0;">
-          <div class="serif" style="font-size:24px; color:#1a241c;">$${c.price}</div>
-          <span style="padding:9px 16px; border-radius:8px; border:1px solid #1f4733; color:#1f4733; font-size:13px; font-weight:600;">Enroll</span>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  const list = featuredCourses(MERIDIAN_DATA.courses, 6);
+  $('courses-grid').innerHTML = list.map(courseCardHtml).join('');
+  const va = $('view-all'); if (va) va.textContent = `View all ${MERIDIAN_DATA.courses.length} courses →`;
 }
 
 function renderInstructors(){
