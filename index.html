@@ -83,6 +83,16 @@
   @media (prefers-reduced-motion:reduce){ .cine-cue .dot{ animation:none } }
   @media (max-width:640px){ .cine-headline{ top:46% } .cine-cue .bar{ width:84px } }
 
+  /* ============ SECOND SCROLL HERO (Trader clip, mid-page band) ============ */
+  /* full-bleed band whose grey matches the trader clip's studio backdrop, so the
+     zoomed-out (45%) margins blend; fades top & bottom dissolve it into the white page. */
+  #cine2-track { position:relative; width:100%; }
+  #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:linear-gradient(180deg,#bcbbb9 0%,#6e6e6c 100%); }
+  #cine2-gl { position:absolute; inset:0; width:100%; height:100%; }
+  #cine2-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
+  #cine2-fade-top { position:absolute; left:0; right:0; top:0; height:20vh; pointer-events:none; z-index:2; background:linear-gradient(to top, rgba(255,255,255,0), #ffffff 96%); }
+  #cine2-fade { position:absolute; left:0; right:0; bottom:0; height:20vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(255,255,255,0), #ffffff 96%); }
+
   /* ============ HERO CARD (top of page, leads into the cinematic section) ============ */
   .topcard { max-width:1000px; margin:0 auto; padding:clamp(76px,12vh,150px) 44px clamp(44px,7vh,90px); text-align:center; }
   .topcard-badge { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; color:#8a6d1f; background:rgba(138,109,31,.07); border:1px solid rgba(138,109,31,.16); padding:6px 14px; border-radius:7px; margin-bottom:24px; }
@@ -169,6 +179,17 @@
     </div>
     <div id="courses-grid" class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;"></div>
   </section>
+
+  <!-- ============ SECOND SCROLL-DRIVEN CINEMATIC BAND (Trader clip scrubbed by scroll) ============ -->
+  <div id="cine2-track">
+    <div id="cine2-stage">
+      <canvas id="cine2-gl"></canvas>
+      <img id="cine2-poster" src="assets/trader-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
+      <div id="cine2-fade-top"></div>
+      <div id="cine2-fade"></div>
+    </div>
+  </div>
+  <video id="cine2-src" src="assets/trader-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
 
   <!-- ============ INSTRUCTORS ============ -->
   <section id="instructors" style="background:#ffffff; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
@@ -559,43 +580,51 @@ applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is 
 <script type="module">
 import * as THREE from 'three';
 
-/* CONFIG */
+/* CONFIG (shared by every scroll-hero band) */
 const SCRUB_SCREENS  = 3;     // viewport-heights of scrolling to play the whole clip (↓ = shorter band).
 const SMOOTHING      = 0.085; // lerp factor — lower = smoother / heavier.
 const PARALLAX_AMT   = 90;    // px the (optional) caption drifts over the full scroll.
 
-const video    = document.getElementById('cine-src');
-const trackEl   = document.getElementById('cine-track');
-const headline = document.getElementById('cine-headline');
-const progBar  = document.getElementById('cine-prog');
-const canvas   = document.getElementById('cine-gl');
-const poster   = document.getElementById('cine-poster');
-const nav      = document.getElementById('nav');
-const stageEl  = document.getElementById('cine-stage');
+const nav = document.getElementById('nav');
 
-// Nav is solid (dark text) everywhere except while the dark cinematic stage
-// covers the top of the viewport — then it goes transparent (light text).
-function navUpdate(){
-  const r = stageEl.getBoundingClientRect();
-  const overDark = r.top <= 2 && r.bottom >= 90;
-  nav.classList.toggle('nav--solid', !overDark);
-}
+/* One scroll-scrubbed video band. Pass element IDs + zoom; reused for every band. */
+function initScrubHero(cfg){
+  const video    = document.getElementById(cfg.video);
+  const trackEl  = document.getElementById(cfg.track);
+  const canvas   = document.getElementById(cfg.canvas);
+  const poster   = document.getElementById(cfg.poster);
+  const stageEl  = document.getElementById(cfg.stage);
+  const headline = cfg.headline ? document.getElementById(cfg.headline) : null;
+  const progBar  = cfg.prog ? document.getElementById(cfg.prog) : null;
+  const ZOOM     = cfg.zoom || 1.35;                 // COVER-fit then zoom OUT by this factor.
+  const controlsNav = !!cfg.controlsNav;
+  if (!video || !trackEl || !stageEl) return;
 
-/* Graceful fallback: no WebGL / can't decode → static poster hero, page stays usable. */
-function fallback(){
-  if (poster) poster.style.display = 'block';
-  if (canvas) canvas.style.display = 'none';
-  trackEl.style.height = '100svh';
-  window.addEventListener('scroll', navUpdate, { passive:true });
-  window.addEventListener('resize', navUpdate);
-  navUpdate();
-}
+  // Only the top band drives the nav: solid (dark text) everywhere except while its
+  // stage covers the top of the viewport — then transparent (light text).
+  function navUpdate(){
+    if (!controlsNav) return;
+    const r = stageEl.getBoundingClientRect();
+    const overDark = r.top <= 2 && r.bottom >= 90;
+    nav.classList.toggle('nav--solid', !overDark);
+  }
 
-let renderer;
-try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, premultipliedAlpha:false }); }
-catch(e){ fallback(); }
+  /* Graceful fallback: no WebGL / can't decode → static poster, page stays usable. */
+  function fallback(){
+    if (poster) poster.style.display = 'block';
+    if (canvas) canvas.style.display = 'none';
+    trackEl.style.height = '100svh';
+    if (controlsNav){
+      window.addEventListener('scroll', navUpdate, { passive:true });
+      window.addEventListener('resize', navUpdate);
+      navUpdate();
+    }
+  }
 
-if (renderer){
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, premultipliedAlpha:false }); }
+  catch(e){ fallback(); return; }
+
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
   const scene  = new THREE.Scene();
@@ -614,7 +643,7 @@ if (renderer){
       precision highp float;
       varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
       void main(){
-        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // cover, zoomed out 20%
+        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // cover, then zoomed out
         vec3 c = texture2D(uTex, clamp(uv, 0.0, 1.0)).rgb;
         c = (c - 0.5) * 1.03 + 0.5;                      // slight contrast
         vec2 e = step(0.0, uv) * step(uv, vec2(1.0));    // outside the frame → transparent → grey stage shows
@@ -623,10 +652,8 @@ if (renderer){
   });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
 
-  // CONTAIN: scale so the whole video frame fits inside the viewport, centered.
-  // COVER-fit, then zoom OUT ~20%; the margins reveal the grey stage that matches
-  // the clip's own studio backdrop, so it blends seamlessly.
-  const ZOOM = 1.2;
+  // COVER-fit, then zoom OUT; the margins reveal the grey stage that matches the
+  // clip's own studio backdrop, so it blends seamlessly.
   function fitCover(){
     const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
     const sw = window.innerWidth, sh = window.innerHeight;
@@ -643,9 +670,12 @@ if (renderer){
     const vh = window.innerHeight;
     trackEl.style.height = ((SCRUB_SCREENS + 1) * vh) + 'px';   // +1 vh for the sticky stage
   }
+  // progress 0→1 across this band's own track (its position within the page).
   function progress(){
+    const rect = trackEl.getBoundingClientRect();
     const max = trackEl.offsetHeight - window.innerHeight;
-    return max <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / max));
+    if (max <= 0) return 0;
+    return Math.min(1, Math.max(0, -rect.top / max));
   }
 
   function tick(){
@@ -657,7 +687,6 @@ if (renderer){
       video.currentTime = Math.min(duration - 0.001, Math.max(0, currentT));
     }
     texture.needsUpdate = true;
-    // subtle headline parallax + fade
     if (headline){
       headline.style.setProperty('--py', (-((p - 0.5) * PARALLAX_AMT)).toFixed(1) + 'px');
       headline.style.opacity = (1 - Math.min(1, p * 1.5)).toFixed(3);
@@ -678,7 +707,7 @@ if (renderer){
     requestAnimationFrame(tick);
   }
 
-  // If the clip can't decode (e.g. no H.264), fall back to the poster hero.
+  // If the clip can't decode (e.g. no H.264), fall back to the poster.
   const failSafe = setTimeout(() => { if (!started) fallback(); }, 6000);
   video.addEventListener('error', () => { clearTimeout(failSafe); fallback(); });
   video.addEventListener('loadeddata', () => { texture.needsUpdate = true; });
@@ -686,6 +715,15 @@ if (renderer){
   else video.addEventListener('loadedmetadata', () => { clearTimeout(failSafe); start(); }, { once:true });
   video.load();
 }
+
+// Top hero (Bloomberg) — drives the nav, zoom out 35%.
+initScrubHero({ video:'cine-src', track:'cine-track', stage:'cine-stage',
+                canvas:'cine-gl', poster:'cine-poster', headline:'cine-headline',
+                zoom:1.35, controlsNav:true });
+
+// Mid-page band (Trader) — same engine, zoom out 45%.
+initScrubHero({ video:'cine2-src', track:'cine2-track', stage:'cine2-stage',
+                canvas:'cine2-gl', poster:'cine2-poster', zoom:1.45 });
 </script>
 </body>
 </html>
