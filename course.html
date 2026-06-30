@@ -71,6 +71,37 @@
       </div>`;
     }
 
+    // Build the "What you'll cover" list from modules (chapter title + lesson count,
+    // and per-lesson names when present).
+    function curriculumHtml(modules, c){
+      const list = Array.isArray(modules) ? modules : [];
+      if (!list.length)
+        return `<p style="color:#6a7280;">Full curriculum is on the <a href="${esc(courseUrl(c))}" target="_blank" rel="noopener" style="color:#8a6d1f; font-weight:600;">course page →</a></p>`;
+      return list.map((m,i) => {
+        const names = Array.isArray(m.lessons) ? m.lessons : [];
+        const count = names.length || Number(m.count) || 0;
+        return `<div class="mod">
+          <button onclick="const u=this.nextElementSibling; if(u){ u.style.display = u.style.display==='block'?'none':'block'; }">
+            <h3>${esc(m.title)}</h3>
+            <span class="mono" style="font-size:12px; color:#8a92a0;">${count} lesson${count===1?'':'s'}</span>
+          </button>
+          ${names.length ? `<ul style="display:${i===0?'block':'none'};">${names.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+        </div>`; }).join('');
+    }
+
+    // Curriculum isn't in the bulk catalog (kept fast); fetch it on demand for this course.
+    function loadCurriculum(c){
+      if (!THINKIFIC.catalogEndpoint || !c.thinkificCourseId) return;
+      fetch(THINKIFIC.catalogEndpoint + '?course=' + encodeURIComponent(c.thinkificCourseId), { headers:{ 'Accept':'application/json' } })
+        .then(r => r.json())
+        .then(d => {
+          if (d && Array.isArray(d.modules) && d.modules.length){
+            const el = document.getElementById('curriculum');
+            if (el) el.innerHTML = curriculumHtml(d.modules, c);
+          }
+        }).catch(()=>{});
+    }
+
     function render(c, instructors){
       const desc = (c.description || `Enroll in ${c.title} — taught by ${c.instr}. Lifetime access, datasets and a verified certificate.`).slice(0, 158);
       const url = pageUrl('course.html', 'slug=' + encodeURIComponent(c.slug || c.thinkificSlug));
@@ -81,18 +112,7 @@
         offers:{ '@type':'Offer', price:c.price, priceCurrency:'USD', url:courseUrl(c) },
       });
       const instr = (instructors || []).find(t => t.name === c.instr);
-      const modules = (c.modules || []);
-      const modulesHtml = modules.length ? modules.map((m,i) => {
-        const names = Array.isArray(m.lessons) ? m.lessons : [];
-        const count = names.length || Number(m.count) || 0;
-        return `<div class="mod">
-          <button onclick="const u=this.nextElementSibling; if(u){ u.style.display = u.style.display==='block'?'none':'block'; }">
-            <h3>${esc(m.title)}</h3>
-            <span class="mono" style="font-size:12px; color:#8a92a0;">${count} lesson${count===1?'':'s'}</span>
-          </button>
-          ${names.length ? `<ul style="display:${i===0?'block':'none'};">${names.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>` : ''}
-        </div>`; }).join('') :
-        `<p style="color:#6a7280;">Full curriculum is on the <a href="${esc(courseUrl(c))}" target="_blank" rel="noopener" style="color:#8a6d1f; font-weight:600;">course page →</a></p>`;
+      const modulesHtml = curriculumHtml(c.modules, c);
 
       app.innerHTML = `
         <a href="index.html#courses" style="text-decoration:none; color:#6a7280; font-size:13px;">← All courses</a>
@@ -114,7 +134,7 @@
             <p style="font-size:17px; line-height:1.65; color:#3a424f; margin:0 0 34px; max-width:60ch;">${esc(c.description || 'A professional finance course taught by industry practitioners. Enroll to get lifetime access, datasets and a verified certificate.')}</p>
 
             <h2 style="font-size:26px; margin:0 0 16px;">What you'll cover</h2>
-            ${modulesHtml}
+            <div id="curriculum">${modulesHtml}</div>
 
             ${instr ? `
             <h2 style="font-size:26px; margin:36px 0 16px;">Your instructor</h2>
@@ -156,6 +176,7 @@
       const c = courses.find(x => (x.slug||x.thinkificSlug) === slug || x.thinkificSlug === slug);
       if (!c) return notFound();
       render(c, instructors);
+      loadCurriculum(c);
     })();
   </script>
 </body>

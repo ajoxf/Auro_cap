@@ -67,6 +67,20 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Missing THINKIFIC_API_KEY / THINKIFIC_SUBDOMAIN env vars' });
   }
   try {
+    // ?course=ID → just that course's curriculum (lazy; keeps the main catalog fast).
+    if (req.query && req.query.course) {
+      let modules = [];
+      try {
+        const chs = await tkAll(KEY, SUB, `courses/${encodeURIComponent(req.query.course)}/chapters`);
+        modules = chs.map(ch => ({
+          title: ch.name || ch.title || 'Section',
+          count: Array.isArray(ch.content_ids) ? ch.content_ids.length : Number(ch.contents_count || ch.lessons_count || 0),
+        }));
+      } catch (_) { /* no chapters */ }
+      res.setHeader('Cache-Control', `public, s-maxage=${CONFIG.cacheSeconds}, stale-while-revalidate=${CONFIG.cacheSeconds * 2}`);
+      return res.status(200).json({ modules });
+    }
+
     // ?probe=1 → raw field samples (your own catalog data, not secrets) to confirm the
     // price_id field name for direct checkout. Remove once mapping is verified.
     if (req.query && req.query.probe) {
@@ -120,27 +134,14 @@ async function buildCatalog(KEY, SUB) {
     }
   }
 
-  // Curriculum (chapters) per course — best-effort, parallel. Skip when the catalog is
-  // large to respect the 120 req/min limit (the full curriculum lives on Thinkific too).
-  const modulesByCourse = {};
-  if (courses.length <= 40) {
-    await Promise.all(courses.map(async c => {
-      try {
-        const chs = await tkAll(KEY, SUB, `courses/${c.id}/chapters`);
-        modulesByCourse[c.id] = chs.map(ch => ({
-          title: ch.name || ch.title || 'Section',
-          count: Array.isArray(ch.content_ids) ? ch.content_ids.length : Number(ch.contents_count || ch.lessons_count || 0),
-        }));
-      } catch (_) { /* no chapters for this course */ }
-    }));
-  }
-
+  // NOTE: curriculum (chapters) is fetched lazily per course via ?course=ID (see handler),
+  // NOT here — fetching every course's chapters made the whole catalog slow to build.
   const instrName = {};
   instructors.forEach(t => { instrName[t.id] = fullName(t); });
 
   const outCourses = courses
     .filter(c => c.published !== false)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -224,13 +225,17 @@ function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCou
 
 // `p` is a Thinkific PRODUCT of type Bundle (name/slug/price), `members` its courses.
 function mapBundle(p, i, members) {
+  const pp = Array.isArray(p.product_prices)
+    ? (p.product_prices.find(x => x.is_primary) || p.product_prices[0]) : null;
   return {
     name: p.name,
     slug: p.slug || slugify(p.name),
     thinkificSlug: p.slug || '',
+    thinkificBundleId: p.productable_id,           // bundle id, for direct checkout
+    priceId: (pp && pp.id) || '',                  // price_id, for direct checkout
     desc: p.description || '',
     blurb: p.description || '',
-    price: priceOf(p),
+    price: priceOf({ price: (pp && pp.price != null) ? pp.price : p.price }),
     n: members.length,
     tile: CONFIG.accents[i % CONFIG.accents.length],
     // member-course slugs → the bundle page resolves these against the course list.
