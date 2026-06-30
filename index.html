@@ -136,7 +136,6 @@
     <div class="nav-links" style="display:flex; gap:30px; align-items:center;">
       <a href="#paths" class="nav-link">Learning paths</a>
       <a href="#courses" class="nav-link">Courses</a>
-      <a href="#instructors" class="nav-link">Instructors</a>
       <a href="#organizations" class="nav-link">For organizations</a>
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex:none;">
@@ -155,7 +154,7 @@
       <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
       <div class="topcard-actions">
         <a href="#courses" class="btn-primary">Browse courses</a>
-        <a href="#instructors" class="btn-ghost">Meet the faculty</a>
+        <a href="#paths" class="btn-ghost">Explore learning paths</a>
       </div>
       <div class="topcard-scroll">Scroll to explore ↓</div>
     </header>
@@ -209,19 +208,13 @@
     </div>
   </div>
 
-  <!-- ============ INSTRUCTORS ============ -->
-  <section id="instructors" style="background:#ffffff; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
-    <div style="max-width:1240px; margin:0 auto; padding:80px 44px;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:36px;">
-        <div>
-          <div class="kicker">THE FACULTY</div>
-          <h2 style="font-size:clamp(30px,3.6vw,48px); margin:0;">Learn from practitioners.</h2>
-        </div>
-        <p style="max-width:340px; font-size:14px; line-height:1.6; color:#6a7280; margin:0;">Industry leaders who have built and run real money — now teaching exactly what worked.</p>
-      </div>
-      <div id="instructors-grid" class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;"></div>
-    </div>
-  </section>
+  <!-- ============ INSTRUCTORS (faculty listing) — RETIRED FOR NOW ============
+       The "Learn from practitioners" faculty grid lived here. Removed at the team's
+       request ("don't need the all-instructors listing yet"). To bring it back later:
+       restore this <section id="instructors"> with <div id="instructors-grid">, re-add
+       the "Instructors" nav/footer links, and re-enable renderInstructors() in boot +
+       applyCatalog(). The instructor.html detail page and instructor data are kept
+       intact, so this is a markup-only restore. -->
 
   <!-- ============ INSTRUCTOR EXPERIENCE MARQUEE ============ -->
   <section style="max-width:1240px; margin:0 auto; padding:54px 44px 64px;">
@@ -326,7 +319,7 @@
       </div>
       <div style="display:flex; gap:26px; flex-wrap:wrap;">
         <a href="#courses" style="text-decoration:none; color:#6a7280; font-size:14px;">Courses</a>
-        <a href="#instructors" style="text-decoration:none; color:#6a7280; font-size:14px;">Instructors</a>
+        <a href="courses.html" style="text-decoration:none; color:#6a7280; font-size:14px;">All courses</a>
         <a href="#organizations" style="text-decoration:none; color:#6a7280; font-size:14px;">For organizations</a>
         <a href="#faq" style="text-decoration:none; color:#6a7280; font-size:14px;">FAQ</a>
       </div>
@@ -411,7 +404,9 @@ function renderCourses(){
 }
 
 function renderInstructors(){
-  $('instructors-grid').innerHTML = MERIDIAN_DATA.instructors.map(t => `
+  const grid = $('instructors-grid');
+  if (!grid) return;                 // faculty section retired for now — safe no-op
+  grid.innerHTML = MERIDIAN_DATA.instructors.map(t => `
     <div class="card-hover" style="background:#fff; border:1px solid #e4e2d9; border-radius:18px; overflow:hidden;">
       <div style="position:relative; height:272px; background:#152419;">
         <img src="${esc(t.photo)}" alt="${esc(t.name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block;">

@@ -1,10 +1,18 @@
-/* Generate sitemap.xml + robots.txt from the catalog in meridian.js.
-   Usage:  node build-sitemap.mjs [https://your-site-url]
-   Re-run after content changes (or have your proxy/build emit it from the live feed). */
+/* Generate sitemap.xml + robots.txt for the catalog.
+   Usage:
+     node build-sitemap.mjs [https://your-site-url]
+       → uses the demo catalog baked into meridian.js (good before live sync).
+     node build-sitemap.mjs https://your-site-url https://your-thinkific-proxy/catalog
+       → pulls the LIVE catalog from your proxy, so the sitemap always matches what
+         the team has published in Thinkific. Run this on a schedule (e.g. nightly
+         via a GitHub Action) once live sync is on.
+   NOTE: instructor.html pages are intentionally omitted while the faculty listing is
+   retired; add them back here when that section returns. */
 import { readFileSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
 
-const base = (process.argv[2] || 'https://ajoxf.github.io/Auro_cap').replace(/\/$/, '');
+const base  = (process.argv[2] || 'https://ajoxf.github.io/Auro_cap').replace(/\/$/, '');
+const feed  = process.argv[3] || '';   // optional live proxy URL
 
 // Load meridian.js in a sandbox (no browser) and capture its data + helpers.
 let code = readFileSync('meridian.js', 'utf8');
@@ -14,16 +22,28 @@ vm.createContext(ctx);
 vm.runInContext(code, ctx);
 const { MERIDIAN_DATA, slugify } = ctx.__M;
 
+// Prefer the live feed when given; fall back to the demo data in meridian.js.
+let courses = MERIDIAN_DATA.courses, paths = MERIDIAN_DATA.paths;
+if (feed) {
+  try {
+    const d = await (await fetch(feed, { headers: { Accept: 'application/json' } })).json();
+    if (Array.isArray(d.courses) && d.courses.length) courses = d.courses;
+    const p = d.paths || d.bundles;
+    if (Array.isArray(p) && p.length) paths = p;
+    console.log(`Pulled live catalog: ${courses.length} courses, ${paths.length} paths`);
+  } catch (e) {
+    console.warn('Live feed unavailable — using demo catalog from meridian.js.', e.message);
+  }
+}
+
 const urls = [
   { loc: base + '/', priority: '1.0' },
   { loc: base + '/courses.html', priority: '0.9' },
 ];
-for (const c of MERIDIAN_DATA.courses)
-  urls.push({ loc: `${base}/course.html?slug=${encodeURIComponent(c.slug || c.thinkificSlug)}`, priority: '0.8' });
-for (const p of MERIDIAN_DATA.paths)
-  urls.push({ loc: `${base}/bundle.html?slug=${encodeURIComponent(p.slug)}`, priority: '0.7' });
-for (const t of MERIDIAN_DATA.instructors)
-  urls.push({ loc: `${base}/instructor.html?slug=${encodeURIComponent(t.slug || slugify(t.name))}`, priority: '0.6' });
+for (const c of courses)
+  urls.push({ loc: `${base}/course.html?slug=${encodeURIComponent(c.slug || c.thinkificSlug || slugify(c.title || c.name))}`, priority: '0.8' });
+for (const p of paths)
+  urls.push({ loc: `${base}/bundle.html?slug=${encodeURIComponent(p.slug || p.thinkificSlug || slugify(p.name))}`, priority: '0.7' });
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

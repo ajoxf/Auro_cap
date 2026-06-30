@@ -1,335 +1,178 @@
-# Connecting the Meridian landing page to Thinkific
+# Meridian × Thinkific — Portal Setup Playbook (Grow plan)
 
-This landing page (`index.html`) is a **standalone marketing front end**. It does
-not host courses, video, or payments itself — Thinkific does. The page's job is to
-present the brand, the catalog, the faculty and the pricing story, then **hand the
-visitor off to Thinkific** to enrol, pay, and actually take the course.
+This site (`index.html` + the branded `course.html` / `bundle.html` / catalog pages)
+is a **standalone marketing front end**. Thinkific is the back office — it owns
+courses, video, accounts, payments, quizzes, certificates and progress. The site's
+job is to present the brand and catalog beautifully, then hand the visitor off to
+**Thinkific checkout** to buy and learn.
 
-Everything Thinkific-related lives in **one file: `meridian.js`** — shared by
-`index.html` (home) and `course.html` (course detail). A developer sets it up
-**once**:
+**The goal of this setup:** the non-technical team manages *everything* inside the
+Thinkific admin. They never touch website code. Add a course in Thinkific → it
+appears on the site automatically. That automatic link is the **Thinkific Admin API**,
+which is included on your **Grow plan**.
 
-```js
-const THINKIFIC = {
-  domain: 'YOUR-SCHOOL.thinkific.com',  // your Thinkific (or custom) domain
-  signInPath: '/users/sign_in',
-  useDirectEnroll: false,
-  catalogEndpoint: '',                  // ← set this to go fully dynamic (Step B)
-};
-const MERIDIAN_DATA = { courses, instructors, paths, logos, faqs };  // demo fallback only
+```
+  Thinkific admin (team edits here)
+        │   Admin API (secret key)
+        ▼
+  thinkific-proxy.js  ── caches + reshapes ──►  meridian.js (fetchCatalog)
+   (Cloudflare Worker)                              │
+                                                    ▼
+                          index.html · course.html · bundle.html · courses.html
+                                                    │  "Enroll"
+                                                    ▼
+                                            Thinkific checkout
 ```
 
-`MERIDIAN_DATA` is just pre-launch demo content. Once `catalogEndpoint` is set
-(Step B below), **the home page, course pages, learning-path bundles, instructor
-grid and the logo marquee all render live from Thinkific** — and nobody edits code
-again.
+Two files matter to a developer; the team touches neither:
 
----
-
-## ⭐ For the non-technical team (how you'll actually run this)
-
-**You manage everything inside the Thinkific admin portal. You never touch the
-website code.** Once a developer completes the one-time setup (Steps 1–3 + Step B),
-here's what flows automatically to the site on the next page refresh:
-
-| You do this in Thinkific… | …and the website shows it automatically |
+| File | Role |
 |---|---|
-| Publish a new **course** (with price) | New course card in the catalog + its own branded course page |
-| Edit a course's title, price, description, chapters | Updated everywhere, including the course page's curriculum |
-| Add/replace a course's **instructor (author)** | Instructor appears in the faculty grid, gets their own branded profile page (`instructor.html`), and shows on the course page |
-| Create a **Bundle** (several courses, one price) | New **Learning path** card → its own branded bundle landing page (`bundle.html`) → Thinkific bundle checkout |
-| Add the keyword **`featured`** to a course (use `featured-2`, `featured-3`… to order) | It appears in the home page's **Featured courses** row, in that order |
-| Unpublish / archive a course | It drops off the site (home, full catalog, bundles) |
-
-The only things that are *brand assets* (not course content) and so are set once by a
-developer in `meridian.js`: the hero video, the FAQ text, and the marquee logo list.
-Everything a learner buys is managed by you in Thinkific.
+| `meridian.js` | One config block (`THINKIFIC`) + the data layer + demo fallback. |
+| `thinkific-proxy.js` | The serverless Worker that holds the API key and serves the live catalog. |
 
 ---
 
-## The model: this page is the storefront, Thinkific is the back office
+## One-time setup (≈30 minutes, done once by a developer)
 
-```
-  Visitor → index.html (this page) → "Enroll" → Thinkific course/checkout
-                                                      │
-                                          payment, account, video,
-                                          quizzes, certificate, progress
-```
+### Step 1 — Get the Thinkific API key
+Thinkific admin → **Settings → Code & Analytics → API** (Grow plan and up).
+Create an **API key**. Note two values:
+- **API key** (a long secret — treat like a password).
+- **Subdomain** — the part before `.thinkific.com` in your school URL
+  (`meridian.thinkific.com` → subdomain is `meridian`).
 
-Because the page links *out* to Thinkific, it works on **any Thinkific plan** and
-needs **no API key, no server, and no secrets**. Host it anywhere static
-(Vercel, Netlify, GitHub Pages, S3, or your own domain).
+### Step 2 — Deploy the proxy (Cloudflare Workers, free)
+1. [cloudflare.com](https://cloudflare.com) → **Workers & Pages → Create → Worker**.
+2. Replace the starter code with the contents of **`thinkific-proxy.js`** and **Deploy**.
+3. Worker → **Settings → Variables and Secrets** → add two **Secrets**:
+   - `THINKIFIC_API_KEY` = the key from Step 1
+   - `THINKIFIC_SUBDOMAIN` = your subdomain (e.g. `meridian`)
+4. Copy the Worker URL, e.g. `https://meridian-thinkific.<you>.workers.dev`.
+5. **Test it:** open that URL in a browser. You should see JSON with `courses`,
+   `instructors`, `bundles`, `logos`. (First load is slower; after that it's cached.)
 
----
+> Prefer Vercel/Netlify? The fetch + reshape logic in `thinkific-proxy.js` is
+> host-agnostic — only the `export default { fetch }` wrapper changes. Ask and I'll
+> hand you a Vercel/Netlify version.
 
-## Seeing the portal (preview & deploy)
-
-This is a static site — `index.html`, `courses.html`, `course.html`, `bundle.html`, `instructor.html`, `meridian.js`,
-and `assets/` (the hero video + poster) — served over **http/https**. Serve it
-rather than opening from disk so the hero video plays and the data layer can fetch.
-
-**Locally (fastest):**
-```bash
-cd Auro_cap
-python3 -m http.server 8000
-# open http://localhost:8000
-```
-
-**Live URL via GitHub Pages:** the repo has a `gh-pages` branch, so Pages is the
-natural host. In **GitHub → Settings → Pages**, set the source to the branch/folder
-you want to publish; the site then lives at
-`https://<user>.github.io/Auro_cap/`. Publishing = copying `index.html`,
-`courses.html`, `course.html`, `bundle.html`, `instructor.html`, `meridian.js` and `assets/` onto the published branch.
-(Ask and I can push the current build to `gh-pages` for you.)
-
-> **Keeping search engines on your pages, not Thinkific's.** Every page sets a
-> `canonical` tag + Open Graph/Twitter share tags + JSON-LD, and all internal links
-> (course cards, instructor links, learning-path cards) point at *your* pages
-> (`course.html` / `bundle.html`). Enrollment hands off to Thinkific **checkout**
-> (`useDirectEnroll: true`), not their marketing pages. For extra safety, in
-> Thinkific set each course's landing page to redirect, and add a canonical there
-> pointing back to your `course.html?slug=…`.
->
-> A **`sitemap.xml`** + **`robots.txt`** are included so search engines find every
-> page. Regenerate them after content changes (or point at your final domain) with:
-> `node build-sitemap.mjs https://your-final-domain` — in production, have your
-> proxy/build emit the sitemap from the live Thinkific feed so it stays current.
-
-> The Bloomberg hero is a **scroll-driven Three.js frame animation** — the clip
-> advances as you scroll down and reverses as you scroll up. It uses an all-intra
-> clip (`bloomberg-scrub.mp4`) for smooth seeking and needs **H.264** + WebGL (every
-> normal browser has both). If either is unavailable, it falls back to the poster
-> frame (`bloomberg-poster.jpg`), so the hero never appears blank.
-
----
-
-## Step 1 — Create the courses in Thinkific
-
-1. In Thinkific Admin, build each course under **Manage Learning Content → Courses**.
-2. Set each course's **price** (one-time) under the course's **Pricing** tab so the
-   Thinkific checkout matches the price shown on this page.
-3. Note each course's **URL slug** — it's the last part of the course landing URL:
-   `https://YOUR-SCHOOL.thinkific.com/courses/`**`trend-analysis`**.
-
-## Step 2 — Point this page at your school
-
-In `meridian.js`, set your domain:
+### Step 3 — Point the site at the proxy
+In **`meridian.js`**, set two fields:
 
 ```js
 const THINKIFIC = {
-  domain: 'meridian.thinkific.com',   // ← your real domain (or custom domain)
-  signInPath: '/users/sign_in',
-  useDirectEnroll: false,
-};
-```
-
-The **Log in** link in the nav is wired automatically from `domain + signInPath`.
-
-## Step 3 — Map each course to its Thinkific course
-
-Every entry in `MERIDIAN_DATA.courses` has three Thinkific fields. Fill in
-**one** of them per course (slug is the simplest):
-
-| Field | When to use it | Resulting URL |
-|---|---|---|
-| `thinkificSlug` | Default. Send the visitor to the course landing page. | `https://{domain}/courses/{slug}` |
-| `thinkificCourseId` + `useDirectEnroll:true` | Skip the landing page, go straight to enrol. | `https://{domain}/enroll/{id}` |
-| `enrollUrl` | Full custom link (promo, coupon, bundle). Overrides the other two. | exactly what you set |
-
-Example:
-
-```js
-{ title:'Trend Analysis', price:349, /* ...display fields... */
-  thinkificSlug:'trend-analysis', thinkificCourseId:'', enrollUrl:'' },
-```
-
-The page builds every link in exactly one place — the `courseUrl()` function — so
-once these fields are correct, every **Enroll** button, course card, instructor
-"View courses" link, and the checkout step all resolve correctly.
-
-## Step 4 — Keep prices in sync
-
-The `price` in `MERIDIAN_DATA` is **display only**. The real charge happens on
-Thinkific. Whenever you change a price in Thinkific, update the matching `price`
-here so the marketing page and the checkout agree. (Step 6 automates this.)
-
----
-
-## Handling the "build your own bundle" cart
-
-This page lets a visitor tick several courses and "Enroll selected". Thinkific has
-**no native multi-product cart**, so pick one of these:
-
-1. **Thinkific Bundle (recommended).** In Thinkific, create a **Bundle** product
-   containing the relevant courses, give it its own price, and put its URL in a
-   course's `enrollUrl` — or special-case the bundle handoff in `goToThinkific()`
-   to point at a single Bundle URL. Cleanest checkout, one payment.
-2. **Sequential checkout (default in this code).** `goToThinkific()` opens each
-   selected course's checkout in its own tab. Works with zero Thinkific setup, but
-   the visitor pays per course.
-3. **API order (advanced).** On Grow/Advanced plans, use the Thinkific API to
-   create a single order for multiple courses. Requires a backend (see below).
-
-The handoff lives in one function — search `goToThinkific` in `index.html`.
-
----
-
-## Optional upgrades
-
-### A. Single sign-on (one account across page + Thinkific)
-Thinkific supports **SSO via a signed JWT**. If you add your own auth, you can log a
-user into Thinkific by redirecting to
-`https://{domain}/api/sso/v2/sso/jwt?jwt=...&return_to=...`. The JWT must be signed
-server-side with your **API key as the secret** — never put that key in this page.
-
-### B. Live catalog from the Thinkific API (no more hand-editing) ✅ built in
-
-**The page already supports this.** Courses, instructors, learning-path bundles and
-the logo marquee all render live once you point the site at a small proxy — no code
-edits, no redeploys. Two parts:
-
-**1. In `meridian.js`, set the endpoint:**
-
-```js
-const THINKIFIC = {
-  domain: 'meridian.thinkific.com',
-  catalogEndpoint: 'https://your-proxy.workers.dev/catalog',  // ← your proxy URL
+  domain: 'meridian.thinkific.com',                         // your school (or custom) domain
+  catalogEndpoint: 'https://meridian-thinkific.<you>.workers.dev',  // ← the Worker URL
+  useDirectEnroll: true,                                     // Enroll → Thinkific checkout directly
   // ...
 };
 ```
 
-On load, both `index.html` and `course.html` call `fetchCatalog()` (in
-`meridian.js`), fetch that URL, and rebuild the catalog, filter chips, faculty grid,
-learning-path bundles, marquee and course pages from the response. If the endpoint is
-`''` or the fetch fails, the site silently keeps the built-in `MERIDIAN_DATA` — so it
-never breaks. The proxy returns:
+Commit + redeploy the static site. On load, every page calls `fetchCatalog()`, pulls
+the live catalog, and rebuilds the home grid, filter chips, learning paths, course
+pages and bundle pages from Thinkific. If the endpoint is blank or a fetch fails, the
+site silently falls back to the demo data in `meridian.js`, so it never breaks.
 
-```json
-{
-  "courses": [
-    { "title":"Trend Analysis", "cat":"Technical", "instr":"Marcus Chen",
-      "price":349, "hours":"8.5", "lessons":62, "level":"Intermediate",
-      "rating":"4.9", "tag":"Bestseller", "slug":"trend-analysis", "id":123,
-      "description":"Read trend and structure like a desk…",
-      "modules":[ { "title":"Foundations", "lessons":["What trend is","Structure"] } ] }
-  ],
-  "instructors": [
-    { "name":"Marcus Chen", "role":"Technical Analysis", "cred":"Former GS Trader",
-      "courses":4, "students":"32K", "photo":"https://..." }
-  ],
-  "bundles": [
-    { "name":"Technical Trading Track", "desc":"Price action, indicators…",
-      "n":26, "price":899, "slug":"technical-trading-track" }
-  ],
-  "logos": ["Bloomberg","Goldman Sachs","BlackRock"]
-}
+### Step 4 — Verify field mapping against your real data
+Thinkific accounts vary slightly. Open the Worker URL JSON and sanity-check:
+- **Prices** show correctly (the Worker reads `course.price`; adjust `priceOf()` if
+  your account nests price under a product).
+- **Instructor names** resolve on courses (the Worker matches `course.user_id` →
+  instructor; some accounts use `instructor_id` — both are handled, but confirm).
+
+These are 1-line tweaks in `thinkific-proxy.js`, called out in its comments. Everything
+else is automatic.
+
+---
+
+## ⭐ Day-to-day: how the team runs the site (all inside Thinkific)
+
+Once setup is done, this is the entire workflow. Changes appear on the site within
+~10 minutes (the proxy cache window).
+
+| In Thinkific you do this… | …the website does this automatically |
+|---|---|
+| Publish a **course** + set its **Price** | New course card in the catalog + its own branded `course.html` page |
+| Edit a course **name / price / subtitle** | Updates everywhere (subtitle = the marketing description) |
+| Assign a course **Author (instructor)** | Instructor name shows on the card and course page |
+| Create a **Bundle** (several courses, one price) | New **Learning path** card → branded `bundle.html` → bundle checkout |
+| Add tokens to a course's **Keywords** box (see below) | Controls Featured placement, category, level, hours, ribbon |
+| **Unpublish / archive** a course or bundle | It drops off the site |
+
+### The Keywords cheat-sheet (the only "marketing" control)
+Course → **Settings → SEO → Keywords**. Type any of these comma-separated tokens.
+All optional — leave them out and the course still shows with sensible defaults.
+
+| Token | Effect | Example |
+|---|---|---|
+| `featured-1` | Put on the **home page**, position 1 (`-2`, `-3`… set order) | `featured-1` |
+| `cat:Name` | Catalog **category** + filter chip | `cat:Technical` |
+| `level:Name` | **Level** badge | `level:Advanced` |
+| `hours:N` | "**N hrs**" on the card | `hours:8.5` |
+| `tag:Word` | Corner **ribbon** | `tag:Bestseller` |
+
+**Full example** in one Keywords box:
+`featured-2, cat:Quant, level:Advanced, hours:11, tag:Bestseller`
+
+> Brand-only items a developer sets once (not course content): the hero clips,
+> the FAQ text, and the institutions marquee list (in `thinkific-proxy.js` → `CONFIG.logos`).
+
+---
+
+## Checkout, SEO & domain
+
+**Enroll → Thinkific checkout, not their marketing pages.** With
+`useDirectEnroll: true`, every Enroll button uses `https://{domain}/enroll/{courseId}`
+(the course id comes from the live feed). Bundles link to `…/bundles/{slug}`. Your
+branded pages stay the destination search engines see.
+
+**SEO — your pages get indexed, not Thinkific's.** Every page emits a `canonical`
+tag, Open Graph/Twitter tags and JSON-LD, and all internal links point at *your*
+`course.html` / `bundle.html`. For extra safety, in Thinkific set each course's
+landing page canonical to your `course.html?slug=…`.
+
+**Sitemap.** `sitemap.xml` + `robots.txt` are included. Regenerate from the **live**
+Thinkific feed so they always match what's published:
+```bash
+node build-sitemap.mjs https://your-final-domain https://meridian-thinkific.<you>.workers.dev
 ```
+Run it on a schedule (e.g. a nightly GitHub Action) once live sync is on.
 
-Per course, only `title` + (`slug` or `id`) are required; everything else gets a
-sensible default (accent colour auto-assigned, rating defaults to 5.0, etc.).
-`description` + `modules` power the branded **course page** (`course.html`). `bundles`
-become the **Learning paths** cards (linking to each bundle's Thinkific checkout).
-`logos` feed the instructor marquee. Filter chips are derived automatically from the
-courses' `cat` values, so a new track in Thinkific becomes a new filter chip with no
-edits.
+**Custom domain.** To serve the site at e.g. `academy.meridian.com`: point a CNAME at
+GitHub Pages, add a `CNAME` file, and set `siteUrl: 'https://academy.meridian.com'` in
+`meridian.js` (drives canonical/share URLs). Until then it runs at the github.io URL.
 
-**2. The proxy (holds your API key — never ships to the browser).** Example
-Cloudflare Worker:
+---
 
-```js
-export default {
-  async fetch(request, env) {
-    const H = {
-      'X-Auth-API-Key': env.THINKIFIC_API_KEY,     // set as a Worker secret
-      'X-Auth-Subdomain': env.THINKIFIC_SUBDOMAIN,  // e.g. 'meridian'
-      'Content-Type': 'application/json',
-    };
-    const api = (path) =>
-      fetch('https://api.thinkific.com/api/public/v1/' + path, { headers: H })
-        .then(r => r.json());
+## Notes & limits
 
-    const [courses, users, bundles] = await Promise.all([
-      api('courses?page=1&limit=50'),
-      api('users?role=instructor&limit=50').catch(() => ({ items: [] })),
-      api('bundles?page=1&limit=50').catch(() => ({ items: [] })),
-    ]);
-
-    const instrById = Object.fromEntries((users.items || []).map(u => [u.id, u]));
-    const out = {
-      courses: (courses.items || []).map(c => {
-        const u = instrById[c.user_id] || {};
-        return {
-          title: c.name,
-          slug: c.slug,
-          id: c.id,
-          cat: (c.keywords || '').split(',')[0]?.trim() || 'Courses',
-          instr: [u.first_name, u.last_name].filter(Boolean).join(' '),
-          description: c.description || c.card_text || '',
-          keywords: c.keywords || '',   // carries the `featured` / `featured-2` home-curation tags
-          // price/lessons/rating + per-course modules aren't in /courses — fetch
-          // /products (price), /courses/{id}/chapters (modules & lesson counts)
-          // here if you want them exact, or set marketing defaults:
-          price: 0, lessons: 0, rating: '5.0', modules: [],
-        };
-      }),
-      instructors: (users.items || []).map(u => ({
-        name: [u.first_name, u.last_name].filter(Boolean).join(' '),
-        role: u.headline || '', cred: u.bio || '', photo: u.avatar_url || '',
-      })),
-      bundles: (bundles.items || []).map(b => ({
-        name: b.name, slug: b.slug, desc: b.description || '',
-        n: (b.product_ids || []).length, price: 0,   // pull price from /products
-      })),
-      // Brand logos for the marquee — usually a fixed list you keep in meridian.js,
-      // but you can serve them here too:
-      logos: ['Bloomberg','Goldman Sachs','BlackRock','Morgan Stanley','Fidelity'],
-    };
-    return new Response(JSON.stringify(out), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',          // or lock to your domain
-        'Cache-Control': 'public, max-age=300',       // 5-min cache
-      },
-    });
-  },
-};
-```
-
-Notes:
-- Thinkific's `/courses` endpoint does **not** include price, lesson count, or
-  ratings. If you want those exact, have the proxy also call `/products` (price)
-  and `/courses/{id}/chapters` (lesson count) and merge them in. Ratings aren't a
-  Thinkific concept — keep them as a marketing field.
-- The API key requires a **Grow/Advanced plan**. Set it as a Worker secret
-  (`wrangler secret put THINKIFIC_API_KEY`) — it must never appear in `index.html`.
-- Same pattern works on Vercel/Netlify functions or any tiny server.
-
-### C. Embedding *inside* Thinkific instead of linking out
-If you'd rather this design live on your Thinkific domain:
-- Thinkific themes are **Liquid**-based. You can paste sections of this markup into a
-  **Custom HTML** site section, or into **Settings → Code & analytics** for
-  site-wide CSS/JS.
-- Constraints: Thinkific wraps pages in its own theme chrome, the Google Fonts links
-  must be allowed, and dynamic data is better expressed with Liquid objects
-  (`{% for course in courses %}`) than the JS array used here. Treat `index.html` as
-  the visual reference and port section-by-section.
-
-### D. Newsletter
-The footer "weekly memo" form is decorative. Wire `subscribe()` to your email
-provider (ConvertKit, Mailchimp, etc.) or a Thinkific webhook/Zapier hook.
+- **Rate limit:** Thinkific allows 120 API requests/min. The proxy caches the whole
+  assembled catalog (default 10 min), so the API is hit only ~once per cache window
+  regardless of site traffic. Tune `CONFIG.cacheSeconds`.
+- **Lesson counts / curriculum:** the basic `/courses` payload may not include lesson
+  counts; the card hides the "lessons" stat when absent. To show exact curriculum on
+  `course.html`, extend the proxy to call `/courses/{id}/chapters` and attach `modules`
+  (commented in `thinkific-proxy.js`).
+- **Instructors listing:** the homepage faculty grid and the all-instructors listing
+  are **retired for now** (per request). `instructor.html` and the instructor data
+  remain in place, so restoring is a markup-only change — see the comment block where
+  the section used to live in `index.html`.
+- **"Build your own bundle" multi-course cart:** Thinkific has no native multi-product
+  cart. Use **Bundle** products (recommended) for any "several courses, one price"
+  offer — they appear automatically as Learning paths.
 
 ---
 
 ## Quick checklist
 
-- [ ] Courses built and priced in Thinkific
-- [ ] `THINKIFIC.domain` set to your real domain
-- [ ] Every `courses[]` entry has a valid `thinkificSlug` (or `enrollUrl`)
-- [ ] Display `price` values match Thinkific prices
-- [ ] Bundle strategy chosen (Bundle product vs. sequential vs. API)
-- [ ] `Log in` link goes to your Thinkific sign-in page
-- [ ] (Optional) API proxy / SSO / newsletter wired up
+- [ ] Courses + prices created in Thinkific; Bundles created for learning paths
+- [ ] API key generated (Settings → Code & Analytics → API)
+- [ ] `thinkific-proxy.js` deployed; `THINKIFIC_API_KEY` + `THINKIFIC_SUBDOMAIN` set as secrets
+- [ ] Worker URL returns JSON with courses/instructors/bundles
+- [ ] `meridian.js` → `domain` + `catalogEndpoint` set; site redeployed
+- [ ] Spot-check prices + instructor names in the Worker JSON
+- [ ] (Optional) Featured/category/level tokens added to course Keywords
+- [ ] (Optional) custom domain + `siteUrl`; scheduled `build-sitemap.mjs`
 
-Once the first four boxes are ticked, the page is production-ready: every button
-lands the visitor on the correct Thinkific course, and Thinkific handles payment,
-accounts, video, certificates and progress.
+Once the proxy is live and `catalogEndpoint` is set, the site is fully Thinkific-driven:
+the team works only in Thinkific, and the marketing front end keeps itself in sync.

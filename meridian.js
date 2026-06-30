@@ -23,10 +23,11 @@ const THINKIFIC = {
   // from the live feed; falls back to the course URL if an id isn't present.
   useDirectEnroll: true,
   // ---- LIVE SYNC (turn the whole site dynamic) ---------------------------
-  // Point this at your proxy URL and the catalog, instructors, learning-path
-  // bundles and logos all render from Thinkific at runtime — add a course in
-  // Thinkific, it appears here on refresh, zero code edits. The proxy holds
-  // your API key server-side. Leave '' to use the built-in demo data below.
+  // Point this at the deployed `thinkific-proxy.js` Worker URL and the catalog,
+  // instructors, learning-path bundles and logos all render from Thinkific at
+  // runtime — add a course in Thinkific, it appears here on refresh, zero code
+  // edits. The Worker holds your API key server-side (Grow plan Admin API).
+  // Leave '' to use the built-in demo data below. See THINKIFIC_INTEGRATION.md.
   catalogEndpoint: '',
 };
 
@@ -211,7 +212,10 @@ function courseCardHtml(c){
       </div>
       <h3 style="font-family:'Newsreader',serif; font-weight:500; font-size:21px; line-height:1.16; margin:0 0 12px;">${esc(c.title)}</h3>
       <div style="display:flex; gap:9px; font-size:12px; color:#8a92a0; margin-bottom:16px; flex-wrap:wrap;">
-        <span>${esc(c.hours)} hrs</span><span>·</span><span>${c.lessons} lessons</span><span>·</span><span style="color:#b08d3c;">★ ${esc(c.rating)}</span>
+        ${[ c.hours ? `<span>${esc(c.hours)} hrs</span>` : '',
+            c.lessons ? `<span>${c.lessons} lessons</span>` : '',
+            c.rating ? `<span style="color:#b08d3c;">★ ${esc(c.rating)}</span>` : ''
+          ].filter(Boolean).join('<span>·</span>')}
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid #ece9e0;">
         <div class="serif" style="font-size:24px; color:#1a241c;">$${c.price}</div>
