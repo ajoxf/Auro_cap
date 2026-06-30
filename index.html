@@ -665,31 +665,44 @@ function initScrubHero(cfg){
 
   const material = new THREE.ShaderMaterial({
     transparent:true,
-    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 }, uSize:{ value:VSIZE }, uOffset:{ value:new THREE.Vector2(0,0) }, uFeather:{ value: CLEAN ? 0.0 : 1.0 } },
+    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 }, uSize:{ value:VSIZE }, uOffset:{ value:new THREE.Vector2(0,0) }, uFeather:{ value:new THREE.Vector2(CLEAN?0:0.11, CLEAN?0:0.11) } },
     vertexShader:`uniform float uSize; uniform vec2 uOffset; varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * uSize + uOffset, 0.0, 1.0); }`,
     fragmentShader:`
       precision highp float;
-      varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade; uniform float uFeather;
+      varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade; uniform vec2 uFeather;
       void main(){
         vec2 uv = (vUv - 0.5) * uScale + 0.5;
         vec3 c = texture2D(uTex, clamp(uv, 0.0, 1.0)).rgb;
         c = (c - 0.5) * 1.03 + 0.5;                      // slight contrast
-        // clean card (uFeather 0): crisp cover-fill, sharp edge. Blend band (uFeather 1): soft-feather.
+        // per-axis edge: crisp where uFeather=0 (fills edge-to-edge), soft where uFeather>0 (blends into stage).
         vec2 hard = step(vec2(0.0), uv) * step(uv, vec2(1.0));
-        vec2 soft = smoothstep(vec2(0.0), vec2(0.11), uv) * smoothstep(vec2(0.0), vec2(0.11), 1.0 - uv);
-        vec2 m = mix(hard, soft, uFeather);
+        vec2 fw   = max(uFeather, vec2(0.0001));
+        vec2 soft = smoothstep(vec2(0.0), fw, uv) * smoothstep(vec2(0.0), fw, 1.0 - uv);
+        vec2 m    = mix(hard, soft, step(vec2(0.0001), uFeather));
         gl_FragColor = vec4(c, m.x * m.y * uFade);
       }`,
   });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
 
-  // COVER-fit the clip to the target box (card or viewport), then zoom OUT by ZOOM.
+  // Fit the clip to the target box (card or viewport).
   function fitCover(){
     const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
     const sw = boxW(), sh = boxH();
     const videoAR = vw/vh, screenAR = sw/sh, s = material.uniforms.uScale.value;
-    if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
-    s.multiplyScalar(ZOOM);
+    if (!sizer && screenAR < 1){
+      // Portrait viewport (mobile) on a full-bleed band: fit to WIDTH so the clip spans
+      // edge-to-edge (zoomed out), letterboxed into the stage — instead of cropping the sides.
+      s.set(1, videoAR/screenAR);
+    } else {
+      // COVER-fit, then zoom OUT by ZOOM.
+      if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
+      s.multiplyScalar(ZOOM);
+    }
+    // Feather only the axes that actually have a grey margin (uScale > 1); axes that fill
+    // edge-to-edge (uScale ≤ 1) stay crisp. Clean cards never feather.
+    const ff = material.uniforms.uFeather.value;
+    if (CLEAN) ff.set(0, 0);
+    else ff.set(s.x > 1.001 ? 0.11 : 0.0, s.y > 1.001 ? 0.11 : 0.0);
   }
   // Place the video panel: full-box by default; for a (legacy) split band, shrink + shift.
   function placePanel(){
