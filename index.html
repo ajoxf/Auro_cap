@@ -83,15 +83,27 @@
   @media (prefers-reduced-motion:reduce){ .cine-cue .dot{ animation:none } }
   @media (max-width:640px){ .cine-headline{ top:46% } .cine-cue .bar{ width:84px } }
 
-  /* ============ SECOND SCROLL HERO (Trader clip, mid-page band) ============ */
-  /* full-bleed band whose grey matches the trader clip's studio backdrop, so the
-     zoomed-out (45%) margins blend; fades top & bottom dissolve it into the white page. */
+  /* ============ SECOND SCROLL HERO (Trader clip — split: copy left, video right) ============ */
+  /* full-bleed band whose flat grey matches the trader clip's ~#b1 studio backdrop, so the
+     zoomed-out margins blend; fades top & bottom dissolve it into the white page. */
   #cine2-track { position:relative; width:100%; }
   #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:linear-gradient(180deg,#bdbdbb 0%,#b3b3b1 26%,#b0b0ae 100%); }
   #cine2-gl { position:absolute; inset:0; width:100%; height:100%; }
-  #cine2-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
+  #cine2-poster { position:absolute; top:0; right:0; height:100%; width:60%; object-fit:contain; object-position:right center; display:none; }
   #cine2-fade-top { position:absolute; left:0; right:0; top:0; height:20vh; pointer-events:none; z-index:2; background:linear-gradient(to top, rgba(255,255,255,0), #ffffff 96%); }
   #cine2-fade { position:absolute; left:0; right:0; bottom:0; height:20vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(255,255,255,0), #ffffff 96%); }
+  /* left-hand copy (dark text on the light grey field) */
+  #cine2-copy { position:absolute; z-index:3; left:clamp(20px,6vw,90px); top:50%; transform:translateY(-50%); max-width:min(420px,40vw); text-align:left; }
+  #cine2-copy .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.22em; color:#8a6d1f; display:inline-flex; align-items:center; gap:12px; margin-bottom:16px; }
+  #cine2-copy .eyebrow::before { content:""; width:28px; height:1px; background:#8a6d1f; }
+  #cine2-copy h2 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(32px,4.4vw,58px); line-height:1.04; letter-spacing:-.015em; color:#16201a; }
+  #cine2-copy h2 em { font-style:italic; color:#8a6d1f; }
+  #cine2-copy p { margin:18px 0 0; max-width:42ch; font-size:clamp(15px,1.5vw,18px); line-height:1.62; color:#34302a; }
+  @media (max-width:860px){
+    #cine2-copy { top:11%; transform:none; left:0; right:0; max-width:none; text-align:center; padding:0 24px; }
+    #cine2-copy p { margin-left:auto; margin-right:auto; }
+    #cine2-poster { width:100%; object-position:center 78%; }
+  }
 
   /* ============ HERO CARD (top of page, leads into the cinematic section) ============ */
   .topcard { max-width:1000px; margin:0 auto; padding:clamp(76px,12vh,150px) 44px clamp(44px,7vh,90px); text-align:center; }
@@ -185,6 +197,11 @@
     <div id="cine2-stage">
       <canvas id="cine2-gl"></canvas>
       <img id="cine2-poster" src="assets/trader-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
+      <div id="cine2-copy">
+        <div class="eyebrow">On the desk</div>
+        <h2>Learn where the <em>decisions</em> get made.</h2>
+        <p>Every Meridian course is built from real time on the desk — the same screens, the same calls, the same pressure. Markets, taught by the people who traded them.</p>
+      </div>
       <div id="cine2-fade-top"></div>
       <div id="cine2-fade"></div>
     </div>
@@ -598,6 +615,7 @@ function initScrubHero(cfg){
   const progBar  = cfg.prog ? document.getElementById(cfg.prog) : null;
   const ZOOM     = cfg.zoom || 1.35;                 // COVER-fit then zoom OUT by this factor.
   const VSIZE    = cfg.videoScale || 1;              // shrink the whole video panel (1 = full screen).
+  const SPLIT    = !!cfg.split;                       // copy left / video panel pushed to the right.
   const controlsNav = !!cfg.controlsNav;
   if (!video || !trackEl || !stageEl) return;
 
@@ -638,8 +656,8 @@ function initScrubHero(cfg){
 
   const material = new THREE.ShaderMaterial({
     transparent:true,
-    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 }, uSize:{ value:VSIZE } },
-    vertexShader:`uniform float uSize; varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * uSize, 0.0, 1.0); }`,
+    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 }, uSize:{ value:VSIZE }, uOffset:{ value:new THREE.Vector2(0,0) } },
+    vertexShader:`uniform float uSize; uniform vec2 uOffset; varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * uSize + uOffset, 0.0, 1.0); }`,
     fragmentShader:`
       precision highp float;
       varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
@@ -662,7 +680,15 @@ function initScrubHero(cfg){
     if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
     s.multiplyScalar(ZOOM);
   }
-  function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitCover(); }
+  // Place the video panel: full-screen by default; for a split band, shrink it and
+  // push it to the right on wide screens / down on narrow screens (copy takes the rest).
+  function placePanel(){
+    const uS = material.uniforms.uSize, uO = material.uniforms.uOffset;
+    if (!SPLIT){ uS.value = VSIZE; uO.value.set(0, 0); return; }
+    if (window.innerWidth > 860){ uS.value = 0.58; uO.value.set(0.42, 0); }
+    else { uS.value = 0.84; uO.value.set(0, -0.32); }
+  }
+  function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitCover(); placePanel(); }
   window.addEventListener('resize', resize);
 
   let duration = 0, targetT = 0, currentT = 0, pendingSeek = false, started = false;
@@ -722,10 +748,10 @@ initScrubHero({ video:'cine-src', track:'cine-track', stage:'cine-stage',
                 canvas:'cine-gl', poster:'cine-poster', headline:'cine-headline',
                 zoom:1.35, controlsNav:true });
 
-// Mid-page band (Trader) — same engine, zoom out 50% and shrink the panel 40%;
-// the flat grey stage matches the clip's ~#b1 studio backdrop so margins blend.
+// Mid-page band (Trader) — split layout: copy on the left, video panel on the right.
+// Zoom out 20%; flat grey stage matches the clip's ~#b1 studio backdrop so margins blend.
 initScrubHero({ video:'cine2-src', track:'cine2-track', stage:'cine2-stage',
-                canvas:'cine2-gl', poster:'cine2-poster', zoom:1.5, videoScale:0.6 });
+                canvas:'cine2-gl', poster:'cine2-poster', zoom:1.2, split:true });
 </script>
 </body>
 </html>
