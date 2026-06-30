@@ -67,6 +67,20 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Missing THINKIFIC_API_KEY / THINKIFIC_SUBDOMAIN env vars' });
   }
   try {
+    // ?probe=1 → raw field samples (your own catalog data, not secrets) to confirm the
+    // price_id field name for direct checkout. Remove once mapping is verified.
+    if (req.query && req.query.probe) {
+      const [crs, prods] = await Promise.all([
+        tkAll(KEY, SUB, 'courses').catch(() => []),
+        tkAll(KEY, SUB, 'products').catch(() => []),
+      ]);
+      const prod = prods.find(p => String(p.productable_type || '').toLowerCase() === 'course') || prods[0];
+      return res.status(200).json({
+        sampleCourseKeys: crs[0] ? Object.keys(crs[0]) : [],
+        sampleProduct: prod || null,
+        sampleProductKeys: prod ? Object.keys(prod) : [],
+      });
+    }
     const data = await buildCatalog(KEY, SUB);
     // Vercel's CDN serves this cached copy for cacheSeconds, then revalidates in the
     // background — so Thinkific is hit ~once per window no matter the traffic.
@@ -90,12 +104,19 @@ async function buildCatalog(KEY, SUB) {
   let products = [];
   try { products = await tkAll(KEY, SUB, 'products'); } catch (_) { /* products optional */ }
 
-  const priceByCourse = {};   // course id → price
-  const bundleProducts = [];  // products that represent a learning-path bundle
+  const priceByCourse = {};    // course id → price (number)
+  const priceIdByCourse = {};  // course id → price_id (for direct checkout deep-link)
+  const bundleProducts = [];   // products that represent a learning-path bundle
   for (const p of products) {
     const type = String(p.productable_type || '').toLowerCase();
-    if (type === 'course') priceByCourse[p.productable_id] = p.price;
-    else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) bundleProducts.push(p);
+    if (type === 'course') {
+      priceByCourse[p.productable_id] = p.price;
+      const pid = p.price_id || p.default_price_id ||
+                  (Array.isArray(p.prices) && p.prices[0] && p.prices[0].id) || '';
+      if (pid) priceIdByCourse[p.productable_id] = pid;
+    } else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) {
+      bundleProducts.push(p);
+    }
   }
 
   // Curriculum (chapters) per course — best-effort, parallel. Skip when the catalog is
@@ -118,7 +139,7 @@ async function buildCatalog(KEY, SUB) {
 
   const outCourses = courses
     .filter(c => c.published !== false)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, modulesByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -169,10 +190,12 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName, priceByCourse, modulesByCourse) {
+function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse) {
   const kw = String(c.keywords || '');
   const fm = /featured(?:-(\d+))?/i.exec(kw);
   const rawPrice = (priceByCourse && priceByCourse[c.id] != null) ? priceByCourse[c.id] : c.price;
+  const mods = (modulesByCourse && modulesByCourse[c.id]) || [];
+  const lessonTotal = mods.reduce((a, m) => a + (Number(m.count) || 0), 0);
   return {
     id: c.id,
     thinkificCourseId: c.id,                 // enables direct /enroll/{id} checkout links
@@ -182,8 +205,9 @@ function mapCourse(c, i, instrName, priceByCourse, modulesByCourse) {
     cat: token(kw, 'cat') || 'Courses',
     instr: instrName[c.user_id] || instrName[c.instructor_id] || '',
     price: priceOf({ price: rawPrice }),
+    priceId: (priceIdByCourse && priceIdByCourse[c.id]) || '',   // for direct-checkout deep-link
     hours: token(kw, 'hours') || '',
-    lessons: Number(c.chapters_count || c.lessons_count || 0) || 0,
+    lessons: lessonTotal || Number(c.lessons_count || 0) || 0,
     level: token(kw, 'level') || 'All levels',
     rating: c.reviews_average ? Number(c.reviews_average).toFixed(1) : '',
     tag: token(kw, 'tag') || '',
