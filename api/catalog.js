@@ -80,33 +80,39 @@ module.exports = async function handler(req, res) {
 
 /* ---- assemble the normalized catalog the site expects ---- */
 async function buildCatalog(KEY, SUB) {
-  // Courses + instructors are the core feed. Bundles are optional — not every
-  // account/plan exposes a /bundles list endpoint (it can 404), so don't let that
-  // sink the whole catalog; learning paths just stay empty (the site falls back).
   const [courses, instructors] = await Promise.all([
     tkAll(KEY, SUB, 'courses'),
     tkAll(KEY, SUB, 'instructors'),
   ]);
-  let bundles = [];
-  try { bundles = await tkAll(KEY, SUB, 'bundles'); } catch (_) { /* no bundles list endpoint */ }
+
+  // /products carries the PRICE (the /courses payload has none) and tells us which
+  // items are bundles. There is no /bundles list endpoint — bundles are products.
+  let products = [];
+  try { products = await tkAll(KEY, SUB, 'products'); } catch (_) { /* products optional */ }
+
+  const priceByCourse = {};   // course id → price
+  const bundleProducts = [];  // products that represent a learning-path bundle
+  for (const p of products) {
+    const type = String(p.productable_type || '').toLowerCase();
+    if (type === 'course') priceByCourse[p.productable_id] = p.price;
+    else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) bundleProducts.push(p);
+  }
 
   const instrName = {};
   instructors.forEach(t => { instrName[t.id] = fullName(t); });
 
   const outCourses = courses
     .filter(c => c.published !== false)
-    .map((c, i) => mapCourse(c, i, instrName));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse));
 
-  // Each bundle = one learning path; pull its member courses (best-effort).
-  const outPaths = await Promise.all(bundles
-    .filter(b => b.published !== false)
-    .map(async (b, i) => {
-      let members = [];
-      try { members = await tkAll(KEY, SUB, `bundles/${b.id}/courses`); } catch (_) {}
-      return mapBundle(b, i, members);
-    }));
+  // Each bundle product = one learning path; pull its member courses (best-effort).
+  const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
+    let members = [];
+    try { members = await tkAll(KEY, SUB, `bundles/${p.productable_id}/courses`); } catch (_) {}
+    return mapBundle(p, i, members);
+  }));
 
-  const outInstr = instructors.map((t, i) => mapInstructor(t, i));
+  const outInstr = instructors.map((t, i) => mapInstructor(t, i, SUB));
 
   return { courses: outCourses, instructors: outInstr, bundles: outPaths, logos: CONFIG.logos };
 }
@@ -148,9 +154,10 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName) {
+function mapCourse(c, i, instrName, priceByCourse) {
   const kw = String(c.keywords || '');
   const fm = /featured(?:-(\d+))?/i.exec(kw);
+  const rawPrice = (priceByCourse && priceByCourse[c.id] != null) ? priceByCourse[c.id] : c.price;
   return {
     id: c.id,
     thinkificCourseId: c.id,                 // enables direct /enroll/{id} checkout links
@@ -159,7 +166,7 @@ function mapCourse(c, i, instrName) {
     thinkificSlug: c.slug,
     cat: token(kw, 'cat') || 'Courses',
     instr: instrName[c.user_id] || instrName[c.instructor_id] || '',
-    price: priceOf(c),
+    price: priceOf({ price: rawPrice }),
     hours: token(kw, 'hours') || '',
     lessons: Number(c.chapters_count || c.lessons_count || 0) || 0,
     level: token(kw, 'level') || 'All levels',
@@ -174,23 +181,29 @@ function mapCourse(c, i, instrName) {
   };
 }
 
-function mapBundle(b, i, members) {
+// `p` is a Thinkific PRODUCT of type Bundle (name/slug/price), `members` its courses.
+function mapBundle(p, i, members) {
   return {
-    name: b.name,
-    slug: b.slug || slugify(b.name),
-    thinkificSlug: b.slug || '',
-    desc: b.description || '',
-    blurb: b.description || '',
-    price: priceOf(b),
-    n: members.length || Number(b.courses_count || 0) || 0,
+    name: p.name,
+    slug: p.slug || slugify(p.name),
+    thinkificSlug: p.slug || '',
+    desc: p.description || '',
+    blurb: p.description || '',
+    price: priceOf(p),
+    n: members.length,
     tile: CONFIG.accents[i % CONFIG.accents.length],
     // member-course slugs → the bundle page resolves these against the course list.
     courses: members.map(m => m.slug || String(m.id)),
   };
 }
 
-function mapInstructor(t, i) {
+function mapInstructor(t, i, SUB) {
   const name = fullName(t);
+  let photo = t.avatar_url || '';
+  // Thinkific returns relative paths for default/uploaded avatars — make them absolute
+  // so they load off our domain. Drop the generic default so the initials avatar shows.
+  if (/instructor-avatar\.png|\/defaults\//.test(photo)) photo = '';
+  else if (photo.startsWith('/')) photo = `https://${SUB}.thinkific.com${photo}`;
   return {
     name,
     slug: slugify(name),
@@ -199,13 +212,13 @@ function mapInstructor(t, i) {
     bio: t.bio || '',
     students: '—',
     courses: 0,
-    photo: t.avatar_url || '',
+    photo,
   };
 }
 
 /* ---- small helpers ---- */
 function fullName(t) {
-  return (t.name || `${t.first_name || ''} ${t.last_name || ''}`).trim() || 'Instructor';
+  return (t.name || `${t.first_name || ''} ${t.last_name || ''}`).replace(/\s+/g, ' ').trim() || 'Instructor';
 }
 // Pull a "key:value" token out of the keywords string (cat:Quant, level:Advanced…).
 function token(kw, key) {
