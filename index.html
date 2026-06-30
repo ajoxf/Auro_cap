@@ -65,10 +65,11 @@
       radial-gradient(120% 110% at 6% 98%, #0a201570 0%, rgba(6,14,10,0) 52%),
       linear-gradient(160deg, #060f0b 0%, #0a1b13 48%, #040907 100%); }
   #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
-  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
-  #cine-stage::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(135% 135% at 50% 50%, rgba(4,9,7,0) 56%, rgba(4,9,7,.62) 100%); }
-  /* dark → white dissolve so the hero melts into the page */
-  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:26vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(6,15,11,0), #ffffff 97%); }
+  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
+  #cine-stage::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(135% 135% at 50% 50%, rgba(4,9,7,0) 62%, rgba(4,9,7,.42) 100%); }
+  /* white → video → white dissolves so the band reads as part of the same page */
+  #cine-fade-top { position:absolute; left:0; right:0; top:0; height:26vh; pointer-events:none; z-index:2; background:linear-gradient(to top, rgba(6,15,11,0), #ffffff 96%); }
+  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:26vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(6,15,11,0), #ffffff 96%); }
   /* headline: center-left, with a parallax offset (--py) applied by JS */
   .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; --py:0px; }
   .cine-inner { transform:translate3d(0,var(--py),0); will-change:transform, opacity; }
@@ -142,6 +143,18 @@
 
 
 
+
+  <!-- ============ SCROLL-DRIVEN CINEMATIC BAND (Bloomberg clip scrubbed by scroll) ============ -->
+  <div id="cine-track">
+    <div id="cine-stage">
+      <div id="cine-fade-top"></div>
+      <canvas id="cine-gl"></canvas>
+      <img id="cine-poster" src="assets/bloomberg-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
+      <div id="cine-fade"></div>
+    </div>
+  </div>
+  <video id="cine-src" src="assets/bloomberg-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
+
   <!-- ============ LEARNING PATHS ============ -->
   <section id="paths" style="max-width:1240px; margin:0 auto; padding:80px 44px 44px;">
     <div class="reveal" style="margin-bottom:34px;">
@@ -150,26 +163,6 @@
     </div>
     <div id="paths-grid" class="grid-4" style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;"></div>
   </section>
-
-  <!-- ============ SCROLL-DRIVEN CINEMATIC SECTION (Bloomberg clip scrubbed by scroll) ============ -->
-  <div id="cine-track">
-    <div id="cine-stage">
-      <canvas id="cine-gl"></canvas>
-      <img id="cine-poster" src="assets/bloomberg-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
-
-      <div class="cine-headline" id="cine-headline">
-        <div class="cine-inner" id="cine-inner">
-          <span class="cine-eyebrow">The trading floor</span>
-          <h2 class="cine-cap">Markets,<br><em>mastered.</em></h2>
-          <p class="cine-sub">Where live data, real terminals and institutional rigor become the way you think about every trade.</p>
-        </div>
-      </div>
-
-      <div class="cine-cue"><span class="dot"></span><span>Keep scrolling</span><span class="bar"><span id="cine-prog"></span></span></div>
-      <div id="cine-fade"></div>
-    </div>
-  </div>
-  <video id="cine-src" src="assets/bloomberg-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
 
   <!-- ============ FEATURED COURSES ============ -->
   <section id="courses" style="max-width:1240px; margin:0 auto; padding:56px 44px 44px;">
@@ -574,10 +567,9 @@ applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is 
 import * as THREE from 'three';
 
 /* CONFIG */
-const SCROLL_SPEED   = 0.6;   // 1.0 = baseline; 0.6 = 40% slower scrub.
-const VIEWPORTS_BASE = 4;     // baseline scroll length (viewport heights) at speed 1.
+const SCRUB_SCREENS  = 3;     // viewport-heights of scrolling to play the whole clip (↓ = shorter band).
 const SMOOTHING      = 0.085; // lerp factor — lower = smoother / heavier.
-const PARALLAX_AMT   = 90;    // px the headline drifts over the full scroll.
+const PARALLAX_AMT   = 90;    // px the (optional) caption drifts over the full scroll.
 
 const video    = document.getElementById('cine-src');
 const trackEl   = document.getElementById('cine-track');
@@ -640,21 +632,21 @@ if (renderer){
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
 
   // CONTAIN: scale so the whole video frame fits inside the viewport, centered.
-  function fitContain(){
+  // COVER-fit: fill the viewport (no bands); crops a little rather than letterboxing.
+  function fitCover(){
     const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
     const sw = window.innerWidth, sh = window.innerHeight;
     const videoAR = vw/vh, screenAR = sw/sh, s = material.uniforms.uScale.value;
-    if (screenAR > videoAR) s.set(screenAR/videoAR, 1); else s.set(1, videoAR/screenAR);
+    if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
   }
-  function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitContain(); }
+  function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitCover(); }
   window.addEventListener('resize', resize);
 
   let duration = 0, targetT = 0, currentT = 0, pendingSeek = false, started = false;
 
   function layoutTrack(){
     const vh = window.innerHeight;
-    // Longer track ⇒ slower scrub. /SCROLL_SPEED stretches it (0.6 ⇒ ~1.67× longer).
-    trackEl.style.height = ((VIEWPORTS_BASE / SCROLL_SPEED) * vh + vh) + 'px';
+    trackEl.style.height = ((SCRUB_SCREENS + 1) * vh) + 'px';   // +1 vh for the sticky stage
   }
   function progress(){
     const max = trackEl.offsetHeight - window.innerHeight;
@@ -671,8 +663,10 @@ if (renderer){
     }
     texture.needsUpdate = true;
     // subtle headline parallax + fade
-    headline.style.setProperty('--py', (-((p - 0.5) * PARALLAX_AMT)).toFixed(1) + 'px');
-    headline.style.opacity = (1 - Math.min(1, p * 1.5)).toFixed(3);
+    if (headline){
+      headline.style.setProperty('--py', (-((p - 0.5) * PARALLAX_AMT)).toFixed(1) + 'px');
+      headline.style.opacity = (1 - Math.min(1, p * 1.5)).toFixed(3);
+    }
     if (progBar) progBar.style.width = (p * 100).toFixed(1) + '%';
     navUpdate();
     renderer.render(scene, camera);
