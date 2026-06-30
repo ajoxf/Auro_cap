@@ -29,7 +29,11 @@ const THINKIFIC = {
   // course in Thinkific, it appears here on refresh, zero code edits. The function
   // holds your API key server-side (Grow plan Admin API). Leave '' to use the
   // built-in demo data below. See THINKIFIC_INTEGRATION.md.
-  catalogEndpoint: '',
+  // Same-origin path to the bundled Vercel function (api/catalog.js). Works on any
+  // Vercel domain (and custom domains) with no edits. Until the THINKIFIC_API_KEY /
+  // THINKIFIC_SUBDOMAIN env vars are set in Vercel, the function returns an error and
+  // the site gracefully shows the demo data below.
+  catalogEndpoint: '/api/catalog',
 };
 
 /* ----------------------------------------------------------------------------
