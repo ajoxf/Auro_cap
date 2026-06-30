@@ -5,9 +5,7 @@
      node build-sitemap.mjs https://your-site-url https://your-thinkific-proxy/catalog
        → pulls the LIVE catalog from your proxy, so the sitemap always matches what
          the team has published in Thinkific. Run this on a schedule (e.g. nightly
-         via a GitHub Action) once live sync is on.
-   NOTE: instructor.html pages are intentionally omitted while the faculty listing is
-   retired; add them back here when that section returns. */
+         via a GitHub Action) once live sync is on. */
 import { readFileSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
 
@@ -23,14 +21,15 @@ vm.runInContext(code, ctx);
 const { MERIDIAN_DATA, slugify } = ctx.__M;
 
 // Prefer the live feed when given; fall back to the demo data in meridian.js.
-let courses = MERIDIAN_DATA.courses, paths = MERIDIAN_DATA.paths;
+let courses = MERIDIAN_DATA.courses, paths = MERIDIAN_DATA.paths, instructors = MERIDIAN_DATA.instructors;
 if (feed) {
   try {
     const d = await (await fetch(feed, { headers: { Accept: 'application/json' } })).json();
     if (Array.isArray(d.courses) && d.courses.length) courses = d.courses;
     const p = d.paths || d.bundles;
     if (Array.isArray(p) && p.length) paths = p;
-    console.log(`Pulled live catalog: ${courses.length} courses, ${paths.length} paths`);
+    if (Array.isArray(d.instructors) && d.instructors.length) instructors = d.instructors;
+    console.log(`Pulled live catalog: ${courses.length} courses, ${paths.length} paths, ${instructors.length} instructors`);
   } catch (e) {
     console.warn('Live feed unavailable — using demo catalog from meridian.js.', e.message);
   }
@@ -44,6 +43,8 @@ for (const c of courses)
   urls.push({ loc: `${base}/course.html?slug=${encodeURIComponent(c.slug || c.thinkificSlug || slugify(c.title || c.name))}`, priority: '0.8' });
 for (const p of paths)
   urls.push({ loc: `${base}/bundle.html?slug=${encodeURIComponent(p.slug || p.thinkificSlug || slugify(p.name))}`, priority: '0.7' });
+for (const t of instructors)
+  urls.push({ loc: `${base}/instructor.html?slug=${encodeURIComponent(t.slug || slugify(t.name))}`, priority: '0.6' });
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

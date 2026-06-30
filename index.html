@@ -55,40 +55,33 @@
   }
   [id]{ scroll-margin-top:84px; }
 
-  /* ============ SCROLL-DRIVEN HERO (Three.js video scrub) ============ */
+  /* ============ TOP HERO — split: copy left, scrubbing video card right ============ */
   /* #cine-track height is set by JS = how far you scroll to play the clip. */
   #cine-track { position:relative; width:100%; }
-  /* the intro act (hero card + scroll clip) shares the clip's studio-grey backdrop,
-     so the zoomed-out margins blend in and the two read as one section */
   #intro { background:#ffffff; }
-  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; }
-  #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
-  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
-  /* dissolve from the grey intro into the white page below */
-  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:24vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(255,255,255,0), #ffffff 96%); }
-  /* headline: center-left, with a parallax offset (--py) applied by JS */
-  .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; --py:0px; }
-  .cine-inner { transform:translate3d(0,var(--py),0); will-change:transform, opacity; }
-  /* cinematic caption (no panel — sits on the dark gradient with shadows) */
-  .cine-eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.26em; color:#e8c97a; display:inline-flex; align-items:center; gap:12px; margin-bottom:18px; text-shadow:0 1px 10px rgba(0,0,0,.6); }
-  .cine-eyebrow::before { content:""; width:30px; height:1px; background:#e8c97a; }
-  .cine-cap { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(38px,5.6vw,76px); line-height:1.02; letter-spacing:-.015em; color:#FBF9F3; text-shadow:0 2px 24px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
-  .cine-cap em { font-style:italic; color:#e8c97a; }
-  .cine-sub { margin:18px 0 0; max-width:44ch; font-size:clamp(15px,1.5vw,18px); line-height:1.6; color:#e7e3da; font-weight:400; text-shadow:0 1px 14px rgba(0,0,0,.7); }
-  .cine-cue { position:absolute; left:clamp(20px,6vw,90px); bottom:34px; z-index:3; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:#cfcabf; display:flex; align-items:center; gap:14px; }
-  .cine-cue .dot { width:6px; height:6px; border-radius:50%; background:#e8c97a; animation:pulse 2.4s cubic-bezier(.16,1,.3,1) infinite; }
-  .cine-cue .bar { position:relative; width:120px; height:1px; background:rgba(240,236,228,.18); }
-  .cine-cue .bar span { position:absolute; inset:0; width:0%; background:#e8c97a; transition:width .12s linear; }
-  @keyframes pulse { 0%,100%{opacity:.35; transform:translateY(0)} 50%{opacity:1; transform:translateY(4px)} }
-  @media (prefers-reduced-motion:reduce){ .cine-cue .dot{ animation:none } }
-  @media (max-width:640px){ .cine-headline{ top:46% } .cine-cue .bar{ width:84px } }
+  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; display:flex; align-items:center; }
+  #cine-inner { width:100%; max-width:1280px; margin:0 auto; padding:64px clamp(20px,5vw,64px) 0; display:grid; grid-template-columns:1fr 1.12fr; gap:clamp(30px,5vw,64px); align-items:center; }
+  #cine-copy { text-align:left; min-width:0; }
+  #cine-copy h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(36px,5vw,70px); line-height:1.03; letter-spacing:-.015em; color:#1a241c; }
+  #cine-copy p { max-width:46ch; margin:22px 0 0; font-size:17px; line-height:1.62; color:#4a5260; }
+  #cine-copy .topcard-actions { display:flex; gap:13px; margin-top:30px; flex-wrap:wrap; justify-content:flex-start; }
+  #cine-card { position:relative; width:100%; aspect-ratio:16/10; margin:0; min-width:0; border-radius:18px; overflow:hidden; box-shadow:0 26px 60px rgba(20,24,30,.16); background:#0f1115; }
+  #cine-card video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  @media (max-width:860px){
+    #cine-inner { grid-template-columns:1fr; gap:24px; padding-top:88px; text-align:center; }
+    #cine-copy { text-align:center; }
+    #cine-copy h1 { font-size:clamp(32px,8vw,46px); }
+    #cine-copy p { margin-left:auto; margin-right:auto; font-size:15px; }
+    #cine-copy .topcard-actions { justify-content:center; }
+    #cine-card { aspect-ratio:16/11; }
+  }
 
   /* ============ SECOND SCROLL HERO (Trader clip — clean split: copy left, video card right) ============ */
   /* plain white section (same as the page) with the video in a crisp rounded card —
      no grey field, no gradient, no feather. The card scrubs with scroll. */
   #cine2-track { position:relative; width:100%; }
   #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; display:flex; align-items:center; }
-  #cine2-inner { width:100%; max-width:1240px; margin:0 auto; padding:0 clamp(20px,5vw,64px); display:grid; grid-template-columns:1fr 1.08fr; gap:clamp(30px,5vw,64px); align-items:center; }
+  #cine2-inner { width:100%; max-width:1360px; margin:0 auto; padding:0 clamp(20px,5vw,64px); display:grid; grid-template-columns:0.92fr 1.6fr; gap:clamp(28px,4vw,56px); align-items:center; }
   #cine2-copy { text-align:left; min-width:0; }
   #cine2-card { margin:0; min-width:0; }
   #cine2-copy .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.22em; color:#8a6d1f; display:inline-flex; align-items:center; gap:12px; margin-bottom:16px; }
@@ -136,6 +129,7 @@
     <div class="nav-links" style="display:flex; gap:30px; align-items:center;">
       <a href="#paths" class="nav-link">Learning paths</a>
       <a href="#courses" class="nav-link">Courses</a>
+      <a href="#instructors" class="nav-link">Instructors</a>
       <a href="#organizations" class="nav-link">For organizations</a>
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex:none;">
@@ -147,27 +141,25 @@
 
   <div id="top"></div>
 
-  <!-- ============ INTRO ACT (hero card + scroll clip share one grey backdrop) ============ -->
+  <!-- ============ TOP HERO — split: copy left, scroll-scrubbed video card right ============ -->
   <div id="intro">
-    <header class="topcard">
-      <h1>Master the numbers<br>behind every market.</h1>
-      <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
-      <div class="topcard-actions">
-        <a href="#courses" class="btn-primary">Browse courses</a>
-        <a href="#paths" class="btn-ghost">Explore learning paths</a>
-      </div>
-      <div class="topcard-scroll">Scroll to explore ↓</div>
-    </header>
-
-    <!-- SCROLL-DRIVEN CINEMATIC BAND (Bloomberg clip scrubbed by scroll) -->
     <div id="cine-track">
       <div id="cine-stage">
-        <canvas id="cine-gl"></canvas>
-        <img id="cine-poster" src="assets/bloomberg-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
-        <div id="cine-fade"></div>
+        <div id="cine-inner">
+          <div id="cine-copy">
+            <h1>Master the numbers<br>behind every market.</h1>
+            <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
+            <div class="topcard-actions">
+              <a href="#courses" class="btn-primary">Browse courses</a>
+              <a href="#paths" class="btn-ghost">Explore learning paths</a>
+            </div>
+          </div>
+          <figure id="cine-card">
+            <video id="cine-src" src="assets/bloomberg-scrub.mp4" poster="assets/bloomberg-poster.jpg" muted playsinline preload="auto"></video>
+          </figure>
+        </div>
       </div>
     </div>
-    <video id="cine-src" src="assets/bloomberg-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
   </div>
 
   <!-- ============ LEARNING PATHS ============ -->
@@ -208,13 +200,19 @@
     </div>
   </div>
 
-  <!-- ============ INSTRUCTORS (faculty listing) — RETIRED FOR NOW ============
-       The "Learn from practitioners" faculty grid lived here. Removed at the team's
-       request ("don't need the all-instructors listing yet"). To bring it back later:
-       restore this <section id="instructors"> with <div id="instructors-grid">, re-add
-       the "Instructors" nav/footer links, and re-enable renderInstructors() in boot +
-       applyCatalog(). The instructor.html detail page and instructor data are kept
-       intact, so this is a markup-only restore. -->
+  <!-- ============ INSTRUCTORS ============ -->
+  <section id="instructors" style="background:#ffffff; border-top:1px solid #e4e2d9; border-bottom:1px solid #e4e2d9;">
+    <div style="max-width:1240px; margin:0 auto; padding:80px 44px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:36px;">
+        <div>
+          <div class="kicker">THE FACULTY</div>
+          <h2 style="font-size:clamp(30px,3.6vw,48px); margin:0;">Learn from practitioners.</h2>
+        </div>
+        <p style="max-width:340px; font-size:14px; line-height:1.6; color:#6a7280; margin:0;">Industry leaders who have built and run real money — now teaching exactly what worked.</p>
+      </div>
+      <div id="instructors-grid" class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;"></div>
+    </div>
+  </section>
 
   <!-- ============ INSTRUCTOR EXPERIENCE MARQUEE ============ -->
   <section style="max-width:1240px; margin:0 auto; padding:54px 44px 64px;">
@@ -319,7 +317,7 @@
       </div>
       <div style="display:flex; gap:26px; flex-wrap:wrap;">
         <a href="#courses" style="text-decoration:none; color:#6a7280; font-size:14px;">Courses</a>
-        <a href="courses.html" style="text-decoration:none; color:#6a7280; font-size:14px;">All courses</a>
+        <a href="#instructors" style="text-decoration:none; color:#6a7280; font-size:14px;">Instructors</a>
         <a href="#organizations" style="text-decoration:none; color:#6a7280; font-size:14px;">For organizations</a>
         <a href="#faq" style="text-decoration:none; color:#6a7280; font-size:14px;">FAQ</a>
       </div>
@@ -586,173 +584,15 @@ applyMeta({
 applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is set
 </script>
 
-<!-- ============ SCROLL-DRIVEN HERO ENGINE (Three.js video scrubber) ============ -->
-<script type="importmap">
-{ "imports": { "three": "./vendor/three.module.js" } }
-</script>
-<script type="module">
-import * as THREE from 'three';
+<!-- ============ SCROLL-DRIVEN HERO ENGINE (plain-video scrubbers) ============ -->
+<script>
+/* Scroll-scrub config (shared by both hero bands). */
+const SCRUB_SCREENS = 3;     // viewport-heights of scrolling to play the whole clip.
+const SMOOTHING     = 0.085; // lerp factor — lower = smoother / heavier.
 
-/* CONFIG (shared by every scroll-hero band) */
-const SCRUB_SCREENS  = 3;     // viewport-heights of scrolling to play the whole clip (↓ = shorter band).
-const SMOOTHING      = 0.085; // lerp factor — lower = smoother / heavier.
-const PARALLAX_AMT   = 90;    // px the (optional) caption drifts over the full scroll.
-
-const nav = document.getElementById('nav');
-
-/* One scroll-scrubbed video band. Pass element IDs + zoom; reused for every band. */
-function initScrubHero(cfg){
-  const video    = document.getElementById(cfg.video);
-  const trackEl  = document.getElementById(cfg.track);
-  const canvas   = document.getElementById(cfg.canvas);
-  const poster   = document.getElementById(cfg.poster);
-  const stageEl  = document.getElementById(cfg.stage);
-  const headline = cfg.headline ? document.getElementById(cfg.headline) : null;
-  const progBar  = cfg.prog ? document.getElementById(cfg.prog) : null;
-  const ZOOM     = cfg.zoom || 1.35;                 // COVER-fit then zoom OUT by this factor.
-  const VSIZE    = cfg.videoScale || 1;              // shrink the whole video panel (1 = full screen).
-  const SPLIT    = !!cfg.split;                       // copy left / video panel pushed to the right.
-  const sizer    = cfg.container ? document.getElementById(cfg.container) : null; // size to this box, not the window
-  const CLEAN    = !!cfg.clean;                       // crisp card (cover-fill, no edge feather)
-  const controlsNav = !!cfg.controlsNav;
-  if (!video || !trackEl || !stageEl) return;
-  // measurement target: a fixed card box, or the full viewport
-  function boxW(){ return sizer ? (sizer.clientWidth  || 16) : window.innerWidth;  }
-  function boxH(){ return sizer ? (sizer.clientHeight ||  9) : window.innerHeight; }
-
-  // Only the top band drives the nav: solid (dark text) everywhere except while its
-  // stage covers the top of the viewport — then transparent (light text).
-  function navUpdate(){
-    if (!controlsNav) return;
-    const r = stageEl.getBoundingClientRect();
-    const overDark = r.top <= 2 && r.bottom >= 90;
-    nav.classList.toggle('nav--solid', !overDark);
-  }
-
-  /* Graceful fallback: no WebGL / can't decode → static poster, page stays usable. */
-  function fallback(){
-    if (poster) poster.style.display = 'block';
-    if (canvas) canvas.style.display = 'none';
-    trackEl.style.height = '100svh';
-    if (controlsNav){
-      window.addEventListener('scroll', navUpdate, { passive:true });
-      window.addEventListener('resize', navUpdate);
-      navUpdate();
-    }
-  }
-
-  let renderer;
-  try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, premultipliedAlpha:false }); }
-  catch(e){ fallback(); return; }
-
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0);
-  const scene  = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-  const texture = new THREE.VideoTexture(video);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.minFilter  = THREE.LinearFilter;
-  texture.magFilter  = THREE.LinearFilter;
-
-  const material = new THREE.ShaderMaterial({
-    transparent:true,
-    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 }, uSize:{ value:VSIZE }, uOffset:{ value:new THREE.Vector2(0,0) }, uFeather:{ value:new THREE.Vector2(CLEAN?0:0.11, CLEAN?0:0.11) } },
-    vertexShader:`uniform float uSize; uniform vec2 uOffset; varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * uSize + uOffset, 0.0, 1.0); }`,
-    fragmentShader:`
-      precision highp float;
-      varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade; uniform vec2 uFeather;
-      void main(){
-        vec2 uv = (vUv - 0.5) * uScale + 0.5;
-        vec3 c = texture2D(uTex, clamp(uv, 0.0, 1.0)).rgb;
-        c = (c - 0.5) * 1.03 + 0.5;                      // slight contrast
-        // per-axis edge: crisp where uFeather=0 (fills edge-to-edge), soft where uFeather>0 (blends into stage).
-        vec2 hard = step(vec2(0.0), uv) * step(uv, vec2(1.0));
-        vec2 fw   = max(uFeather, vec2(0.0001));
-        vec2 soft = smoothstep(vec2(0.0), fw, uv) * smoothstep(vec2(0.0), fw, 1.0 - uv);
-        vec2 m    = mix(hard, soft, step(vec2(0.0001), uFeather));
-        gl_FragColor = vec4(c, m.x * m.y * uFade);
-      }`,
-  });
-  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
-
-  // COVER-fit: fill the box edge-to-edge (crop the overflow), then optional zoom-out (ZOOM).
-  // With ZOOM = 1 this fills the viewport completely — no grey margin, no border.
-  function fitCover(){
-    const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
-    const sw = boxW(), sh = boxH();
-    const videoAR = vw/vh, screenAR = sw/sh, s = material.uniforms.uScale.value;
-    if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
-    s.multiplyScalar(ZOOM);
-    // Feather only the axes that actually have a grey margin (uScale > 1); a full cover has none.
-    const ff = material.uniforms.uFeather.value;
-    if (CLEAN) ff.set(0, 0);
-    else ff.set(s.x > 1.001 ? 0.11 : 0.0, s.y > 1.001 ? 0.11 : 0.0);
-  }
-  // Place the video panel: full-box by default; for a (legacy) split band, shrink + shift.
-  function placePanel(){
-    const uS = material.uniforms.uSize, uO = material.uniforms.uOffset;
-    if (!SPLIT){ uS.value = VSIZE; uO.value.set(0, 0); return; }
-    if (window.innerWidth > 860){ uS.value = 0.58; uO.value.set(0.42, 0); }
-    else { uS.value = 0.84; uO.value.set(0, -0.32); }
-  }
-  function resize(){ renderer.setSize(boxW(), boxH(), false); fitCover(); placePanel(); }
-  window.addEventListener('resize', resize);
-
-  let duration = 0, targetT = 0, currentT = 0, pendingSeek = false, started = false;
-
-  function layoutTrack(){
-    const vh = window.innerHeight;
-    trackEl.style.height = ((SCRUB_SCREENS + 1) * vh) + 'px';   // +1 vh for the sticky stage
-  }
-  // progress 0→1 across this band's own track (its position within the page).
-  function progress(){
-    const rect = trackEl.getBoundingClientRect();
-    const max = trackEl.offsetHeight - window.innerHeight;
-    if (max <= 0) return 0;
-    return Math.min(1, Math.max(0, -rect.top / max));
-  }
-
-  function tick(){
-    const p = progress();
-    targetT = p * duration;
-    currentT += (targetT - currentT) * SMOOTHING;       // scroll up lowers target ⇒ reverse, for free
-    if (duration > 0 && Math.abs(video.currentTime - currentT) > 0.001 && !pendingSeek){
-      pendingSeek = true;
-      video.currentTime = Math.min(duration - 0.001, Math.max(0, currentT));
-    }
-    texture.needsUpdate = true;
-    if (headline){
-      headline.style.setProperty('--py', (-((p - 0.5) * PARALLAX_AMT)).toFixed(1) + 'px');
-      headline.style.opacity = (1 - Math.min(1, p * 1.5)).toFixed(3);
-    }
-    if (progBar) progBar.style.width = (p * 100).toFixed(1) + '%';
-    navUpdate();
-    renderer.render(scene, camera);
-    requestAnimationFrame(tick);
-  }
-  video.addEventListener('seeked', () => { pendingSeek = false; texture.needsUpdate = true; });
-
-  function start(){
-    if (started) return; started = true;
-    duration = video.duration || 0;
-    resize(); layoutTrack();
-    window.addEventListener('resize', layoutTrack);
-    let f = 0; (function fadeIn(){ f = Math.min(1, f + 0.05); material.uniforms.uFade.value = f; if (f < 1) requestAnimationFrame(fadeIn); })();
-    requestAnimationFrame(tick);
-  }
-
-  // If the clip can't decode (e.g. no H.264), fall back to the poster.
-  const failSafe = setTimeout(() => { if (!started) fallback(); }, 6000);
-  video.addEventListener('error', () => { clearTimeout(failSafe); fallback(); });
-  video.addEventListener('loadeddata', () => { texture.needsUpdate = true; });
-  if (video.readyState >= 1) { clearTimeout(failSafe); start(); }
-  else video.addEventListener('loadedmetadata', () => { clearTimeout(failSafe); start(); }, { once:true });
-  video.load();
-}
-
-/* Lightweight scrubber for a plain <video> (no WebGL) — used by the clean card band.
-   The video element fills its card via object-fit:cover; we just drive currentTime. */
+/* Scrub a plain <video> (object-fit:cover inside its rounded card) by driving
+   currentTime from the band's scroll position. Reverses on scroll-up for free.
+   No WebGL — reliable on every device. */
 function initVideoScrub(cfg){
   const video   = document.getElementById(cfg.video);
   const trackEl = document.getElementById(cfg.track);
@@ -793,15 +633,9 @@ function initVideoScrub(cfg){
   video.load();
 }
 
-// Top hero — pure cover-fill (zoom 1): the clip fills the viewport edge-to-edge with
-// NO margin, so there are no borders. clean:true keeps the edges crisp. White stage +
-// solid (dark-text) nav for legibility.
-initScrubHero({ video:'cine-src', track:'cine-track', stage:'cine-stage',
-                canvas:'cine-gl', poster:'cine-poster', headline:'cine-headline',
-                zoom:1, clean:true });
-
-// Mid-page band (Trader) — plain <video> cover-filling a crisp rounded card, scrubbed by
-// scroll. No WebGL needed; reliable everywhere.
+// Top hero — split: copy left, scrubbing video card on the right.
+initVideoScrub({ video:'cine-src', track:'cine-track' });
+// Mid-page band (Trader) — same split-card scrubber.
 initVideoScrub({ video:'cine2-src', track:'cine2-track' });
 </script>
 </body>

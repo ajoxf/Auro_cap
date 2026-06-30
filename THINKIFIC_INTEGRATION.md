@@ -159,10 +159,10 @@ GitHub Pages, add a `CNAME` file, and set `siteUrl: 'https://academy.meridian.co
   counts; the card hides the "lessons" stat when absent. To show exact curriculum on
   `course.html`, extend the proxy to call `/courses/{id}/chapters` and attach `modules`
   (commented in `api/catalog.js`).
-- **Instructors listing:** the homepage faculty grid and the all-instructors listing
-  are **retired for now** (per request). `instructor.html` and the instructor data
-  remain in place, so restoring is a markup-only change — see the comment block where
-  the section used to live in `index.html`.
+- **Instructors:** the homepage faculty grid (`#instructors`) renders from the
+  `instructors` array of the feed, and each instructor gets a branded `instructor.html`
+  profile page (linked from the grid's "View profile" and in the sitemap). In the live
+  feed, an instructor's name, title and avatar come straight from Thinkific Instructors.
 - **"Build your own bundle" multi-course cart:** Thinkific has no native multi-product
   cart. Use **Bundle** products (recommended) for any "several courses, one price"
   offer — they appear automatically as Learning paths.
