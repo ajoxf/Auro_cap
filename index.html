@@ -357,7 +357,12 @@ const $ = (id) => document.getElementById(id);
 
 // Learning paths === Thinkific bundles; each links to its bundle checkout.
 function renderPaths(){
-  $('paths-grid').innerHTML = MERIDIAN_DATA.paths.map(p => `
+  const sec = $('paths'), paths = MERIDIAN_DATA.paths || [];
+  if (sec) sec.style.display = paths.length ? '' : 'none';   // hide section when there are no real bundles
+  // also hide any links/buttons that point at it, so nothing leads to a hidden section
+  document.querySelectorAll('a[href="#paths"]').forEach(a => { a.style.display = paths.length ? '' : 'none'; });
+  if (!$('paths-grid')) return;
+  $('paths-grid').innerHTML = paths.map(p => `
     <a href="${bundlePageUrl(p)}" class="card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; padding:24px;">
       <div style="width:44px; height:44px; border-radius:11px; background:${p.tile}; display:flex; align-items:center; justify-content:center; margin-bottom:18px;">
         <svg viewBox="0 0 24 18" style="width:23px; height:17px;"><polyline points="1,15 7,9 12,12 17,4 23,7" fill="none" stroke="#fff" stroke-width="2.2"></polyline></svg>

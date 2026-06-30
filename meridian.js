@@ -283,8 +283,11 @@ async function fetchCatalog(){
     const out = {};
     if (Array.isArray(d.courses)     && d.courses.length)     out.courses     = d.courses.map(normalizeCourse);
     if (Array.isArray(d.instructors) && d.instructors.length) out.instructors = d.instructors.map(normalizeInstructor);
-    if (Array.isArray(d.paths)       && d.paths.length)       out.paths       = d.paths.map(normalizePath);
-    if (Array.isArray(d.bundles)     && d.bundles.length)     out.paths       = d.bundles.map(normalizePath); // alias
+    // Learning paths = bundles. If the live feed returns a bundles array (even empty),
+    // honour it — an empty array means "no real bundles", so the paths section hides
+    // rather than falling back to demo paths that link to non-existent Thinkific bundles.
+    const rawPaths = Array.isArray(d.bundles) ? d.bundles : (Array.isArray(d.paths) ? d.paths : null);
+    if (rawPaths) out.paths = rawPaths.map(normalizePath);
     if (Array.isArray(d.logos)       && d.logos.length)       out.logos       = d.logos.map(normalizeLogo);
     return out;
   } catch (e) {
