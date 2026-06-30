@@ -18,6 +18,8 @@ const THINKIFIC = {
   siteUrl: '',
   // Sign-in path on Thinkific (default works for all schools):
   signInPath: '/users/sign_in',
+  // Student dashboard ("My Courses" + progress) — Thinkific's built-in page.
+  dashboardPath: '/enrollments',
   // Enroll target. true = go straight to Thinkific CHECKOUT via /enroll/{id}?price_id={pid}
   // (the price_id is required — without it Thinkific bounces to the home page). The
   // price_id comes from the live feed; if it's missing we fall back to the course's
@@ -36,6 +38,23 @@ const THINKIFIC = {
   // the site gracefully shows the demo data below.
   catalogEndpoint: '/api/catalog',
 };
+
+/* ----------------------------------------------------------------------------
+   1:1 COACHING — "Book a session" button target.
+   Lowest-setup option: paste a CALENDLY (or Acuity) link below — no Thinkific
+   coaching configuration needed. (You could also use a Thinkific Coaching product
+   URL.) Until `url` is set, the button emails `contactEmail` so it still works.
+   ---------------------------------------------------------------------------- */
+const COACHING = {
+  url: '',                               // ← e.g. 'https://calendly.com/your-handle/coaching'
+  contactEmail: 'ankit@aajventures.com', // fallback inquiry email until `url` is set
+  price: 'Private sessions',             // small display label on the button row (optional)
+};
+function coachingHref(){
+  return COACHING.url
+    ? COACHING.url
+    : 'mailto:' + COACHING.contactEmail + '?subject=' + encodeURIComponent('1:1 Coaching enquiry');
+}
 
 /* ----------------------------------------------------------------------------
    DEMO / FALLBACK CONTENT
@@ -138,6 +157,7 @@ function coursePageUrl(c){ return 'course.html?slug=' + encodeURIComponent(c.slu
 function bundlePageUrl(p){ return 'bundle.html?slug=' + encodeURIComponent(p.slug || p.thinkificSlug || slugify(p.name)); }
 function instructorPageUrl(t){ return 'instructor.html?slug=' + encodeURIComponent(t.slug || slugify(t.name)); }
 function signInUrl(){ return 'https://' + THINKIFIC.domain + THINKIFIC.signInPath; }
+function dashboardUrl(){ return 'https://' + THINKIFIC.domain + (THINKIFIC.dashboardPath || '/enrollments'); }
 
 /* ---------- SEO / share helpers (so OUR pages get indexed, not Thinkific's) ---------- */
 function siteBase(){ return (THINKIFIC.siteUrl || location.origin).replace(/\/$/,''); }
@@ -317,4 +337,9 @@ async function fetchCatalog(){
 /* Wire any "Log in" link to Thinkific sign-in (present on every page). */
 if (typeof document !== 'undefined') {
   document.querySelectorAll('[data-thinkific="signin"]').forEach(a => a.href = signInUrl());
+  document.querySelectorAll('[data-thinkific="dashboard"]').forEach(a => a.href = dashboardUrl());
+  document.querySelectorAll('[data-thinkific="coaching"]').forEach(a => {
+    a.href = coachingHref();
+    if (COACHING.url) { a.target = '_blank'; a.rel = 'noopener'; }
+  });
 }
