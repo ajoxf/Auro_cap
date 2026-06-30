@@ -82,15 +82,17 @@
       });
       const instr = (instructors || []).find(t => t.name === c.instr);
       const modules = (c.modules || []);
-      const modulesHtml = modules.length ? modules.map((m,i) => `
-        <div class="mod">
-          <button onclick="this.parentNode.classList.toggle('open'); const u=this.nextElementSibling; u.style.display = u.style.display==='block'?'none':'block';">
+      const modulesHtml = modules.length ? modules.map((m,i) => {
+        const names = Array.isArray(m.lessons) ? m.lessons : [];
+        const count = names.length || Number(m.count) || 0;
+        return `<div class="mod">
+          <button onclick="const u=this.nextElementSibling; if(u){ u.style.display = u.style.display==='block'?'none':'block'; }">
             <h3>${esc(m.title)}</h3>
-            <span class="mono" style="font-size:12px; color:#8a92a0;">${(m.lessons||[]).length} lessons</span>
+            <span class="mono" style="font-size:12px; color:#8a92a0;">${count} lesson${count===1?'':'s'}</span>
           </button>
-          <ul style="display:${i===0?'block':'none'};">${(m.lessons||[]).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>
-        </div>`).join('') :
-        `<p style="color:#6a7280;">Full curriculum is available on the Thinkific course page.</p>`;
+          ${names.length ? `<ul style="display:${i===0?'block':'none'};">${names.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+        </div>`; }).join('') :
+        `<p style="color:#6a7280;">Full curriculum is on the <a href="${esc(courseUrl(c))}" target="_blank" rel="noopener" style="color:#8a6d1f; font-weight:600;">course page →</a></p>`;
 
       app.innerHTML = `
         <a href="index.html#courses" style="text-decoration:none; color:#6a7280; font-size:13px;">← All courses</a>
@@ -98,6 +100,7 @@
           <div>
             <div class="kicker" style="margin-bottom:12px;">${esc(c.cat).toUpperCase()} · ${esc(c.level).toUpperCase()}</div>
             <h1 style="font-size:clamp(32px,4.4vw,52px); line-height:1.05; margin:0 0 16px;">${esc(c.title)}</h1>
+            ${c.image ? `<img src="${esc(c.image)}" alt="${esc(c.title)}" style="width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:14px; border:1px solid #e8e6dd; margin:4px 0 22px; display:block;" onerror="this.style.display='none'">` : ''}
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:22px;">
               <span class="serif" style="width:34px; height:34px; border-radius:50%; background:#eef0ec; border:1px solid #e0ddd2; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; color:#8a6d1f;">${esc(c.initials)}</span>
               <span style="font-size:14px; color:#4a5260;">Taught by <strong>${esc(c.instr)}</strong>${instr?` · ${esc(instr.cred)}`:''}</span>
@@ -132,7 +135,7 @@
                 <span style="font-size:14px; color:#8a92a0;">one-time</span>
               </div>
               <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">Lifetime access · pay once, own it forever.</div>
-              <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">Enroll on Thinkific →</a>
+              <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">Enroll now →</a>
               <div style="display:flex; flex-direction:column; gap:9px; margin-top:22px;">
                 <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Verified certificate</div>
                 <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Templates &amp; datasets</div>

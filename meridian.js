@@ -18,10 +18,11 @@ const THINKIFIC = {
   siteUrl: '',
   // Sign-in path on Thinkific (default works for all schools):
   signInPath: '/users/sign_in',
-  // Enroll target. true = go straight to Thinkific CHECKOUT (/enroll/{id}) so
-  // their marketing landing page is never surfaced. Needs each course's `id`
-  // from the live feed; falls back to the course URL if an id isn't present.
-  useDirectEnroll: true,
+  // Enroll target. The /enroll/{id} deep-link isn't reliable on all schools (it can
+  // bounce to the home page), so we send buyers to the course's Thinkific landing
+  // page (/courses/{slug}) — which always exists and has the Buy/checkout button.
+  // Set true only if you've confirmed /enroll/{id} works on your school.
+  useDirectEnroll: false,
   // ---- LIVE SYNC (turn the whole site dynamic) ---------------------------
   // Point this at the deployed Vercel function (api/catalog.js), e.g.
   // 'https://your-project.vercel.app/api/catalog'. Then the catalog, instructors,
@@ -190,6 +191,7 @@ function normalizeCourse(c, i){
     thinkificSlug: c.thinkificSlug || c.slug || '',
     thinkificCourseId: c.thinkificCourseId || c.id || '',
     enrollUrl: c.enrollUrl || '',
+    image: c.image || '',
     description: c.description || '',
     modules: Array.isArray(c.modules) ? c.modules : [],
     // HOME-PAGE CURATION (controlled from Thinkific): add the keyword `featured`
@@ -203,9 +205,11 @@ function normalizeCourse(c, i){
 function courseCardHtml(c){
   return `<a href="${coursePageUrl(c)}" class="card card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; overflow:hidden;">
     <div style="position:relative; height:140px; overflow:hidden; background:linear-gradient(150deg, ${hexA(c.accent,.10)}, #ffffff); border-bottom:1px solid #e8e6dd;">
-      <svg viewBox="0 0 360 140" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
+      ${c.image
+        ? `<img src="${esc(c.image)}" alt="" loading="lazy" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'">`
+        : `<svg viewBox="0 0 360 140" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
         <polyline points="0,110 60,94 120,102 180,66 240,80 300,42 360,54" fill="none" stroke="${c.accent}" stroke-width="2.5"></polyline>
-      </svg>
+      </svg>`}
       ${c.tag ? `<span style="position:absolute; top:12px; right:12px; padding:5px 11px; border-radius:6px; background:${c.accent}; color:#fff; font-size:11px; font-weight:700;">${esc(c.tag)}</span>`:''}
       <span class="mono" style="position:absolute; bottom:11px; left:13px; padding:4px 9px; border-radius:6px; background:rgba(255,255,255,.9); border:1px solid #e4e2d9; font-size:11px; color:#4a5260;">${esc(c.cat)}</span>
       <span class="mono" style="position:absolute; bottom:11px; right:13px; font-size:11px; color:#6a7280;">${esc(c.level)}</span>
