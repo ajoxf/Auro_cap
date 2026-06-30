@@ -107,20 +107,32 @@ async function buildCatalog(KEY, SUB) {
   return { courses: outCourses, instructors: outInstr, bundles: outPaths, logos: CONFIG.logos };
 }
 
+/* ---- one request, tolerant of both Thinkific auth schemes ---- */
+async function tkFetch(KEY, SUB, url) {
+  // Legacy single-site API key: X-Auth-API-Key + X-Auth-Subdomain.
+  const r = await fetch(url, {
+    headers: { 'X-Auth-API-Key': KEY, 'X-Auth-Subdomain': SUB, 'Content-Type': 'application/json' },
+  });
+  if (r.status !== 401) return r;
+  // Newer OAuth-style access tokens: Authorization: Bearer. Retry once.
+  const bearer = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+  });
+  return bearer.status === 401 ? r : bearer;   // keep the first response if Bearer also 401s
+}
+
 /* ---- Thinkific fetch with pagination ---- */
 async function tkAll(KEY, SUB, resource) {
   const out = [];
   let page = 1;
   for (;;) {
     const sep = resource.includes('?') ? '&' : '?';
-    const r = await fetch(`${API}/${resource}${sep}page=${page}&limit=100`, {
-      headers: {
-        'X-Auth-API-Key': KEY,
-        'X-Auth-Subdomain': SUB,
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!r.ok) throw new Error(`Thinkific ${resource} → HTTP ${r.status}`);
+    const r = await tkFetch(KEY, SUB, `${API}/${resource}${sep}page=${page}&limit=100`);
+    if (!r.ok) {
+      let body = '';
+      try { body = (await r.text()).replace(/\s+/g, ' ').slice(0, 240); } catch (_) {}
+      throw new Error(`Thinkific ${resource} → HTTP ${r.status}${body ? ' · ' + body : ''}`);
+    }
     const j = await r.json();
     const items = Array.isArray(j) ? j : (j.items || []);
     out.push(...items);
