@@ -87,7 +87,7 @@
   /* full-bleed band whose grey matches the trader clip's studio backdrop, so the
      zoomed-out (45%) margins blend; fades top & bottom dissolve it into the white page. */
   #cine2-track { position:relative; width:100%; }
-  #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:linear-gradient(180deg,#bcbbb9 0%,#6e6e6c 100%); }
+  #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:linear-gradient(180deg,#bdbdbb 0%,#b3b3b1 26%,#b0b0ae 100%); }
   #cine2-gl { position:absolute; inset:0; width:100%; height:100%; }
   #cine2-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
   #cine2-fade-top { position:absolute; left:0; right:0; top:0; height:20vh; pointer-events:none; z-index:2; background:linear-gradient(to top, rgba(255,255,255,0), #ffffff 96%); }
@@ -597,6 +597,7 @@ function initScrubHero(cfg){
   const headline = cfg.headline ? document.getElementById(cfg.headline) : null;
   const progBar  = cfg.prog ? document.getElementById(cfg.prog) : null;
   const ZOOM     = cfg.zoom || 1.35;                 // COVER-fit then zoom OUT by this factor.
+  const VSIZE    = cfg.videoScale || 1;              // shrink the whole video panel (1 = full screen).
   const controlsNav = !!cfg.controlsNav;
   if (!video || !trackEl || !stageEl) return;
 
@@ -637,8 +638,8 @@ function initScrubHero(cfg){
 
   const material = new THREE.ShaderMaterial({
     transparent:true,
-    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 } },
-    vertexShader:`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 }, uSize:{ value:VSIZE } },
+    vertexShader:`uniform float uSize; varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy * uSize, 0.0, 1.0); }`,
     fragmentShader:`
       precision highp float;
       varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
@@ -721,9 +722,10 @@ initScrubHero({ video:'cine-src', track:'cine-track', stage:'cine-stage',
                 canvas:'cine-gl', poster:'cine-poster', headline:'cine-headline',
                 zoom:1.35, controlsNav:true });
 
-// Mid-page band (Trader) — same engine, zoom out 45%.
+// Mid-page band (Trader) — same engine, zoom out 50% and shrink the panel 40%;
+// the flat grey stage matches the clip's ~#b1 studio backdrop so margins blend.
 initScrubHero({ video:'cine2-src', track:'cine2-track', stage:'cine2-stage',
-                canvas:'cine2-gl', poster:'cine2-poster', zoom:1.45 });
+                canvas:'cine2-gl', poster:'cine2-poster', zoom:1.5, videoScale:0.6 });
 </script>
 </body>
 </html>
