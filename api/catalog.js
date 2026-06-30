@@ -120,6 +120,7 @@ async function buildCatalog(KEY, SUB) {
 
   const priceByCourse = {};    // course id → price (number)
   const priceIdByCourse = {};  // course id → price_id (for direct checkout deep-link)
+  const createdByCourse = {};  // course id → created_at (for the "New" badge)
   const bundleProducts = [];   // products that represent a learning-path bundle
   for (const p of products) {
     const type = String(p.productable_type || '').toLowerCase();
@@ -129,6 +130,7 @@ async function buildCatalog(KEY, SUB) {
         ? (p.product_prices.find(x => x.is_primary) || p.product_prices[0]) : null;
       priceByCourse[p.productable_id] = (pp && pp.price != null) ? pp.price : p.price;
       if (pp && pp.id) priceIdByCourse[p.productable_id] = pp.id;
+      if (p.created_at) createdByCourse[p.productable_id] = p.created_at;
     } else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) {
       bundleProducts.push(p);
     }
@@ -141,7 +143,7 @@ async function buildCatalog(KEY, SUB) {
 
   const outCourses = courses
     .filter(c => c.published !== false)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -192,7 +194,7 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse) {
+function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse) {
   const kw = String(c.keywords || '');
   const fm = /featured(?:-(\d+))?/i.exec(kw);
   const rawPrice = (priceByCourse && priceByCourse[c.id] != null) ? priceByCourse[c.id] : c.price;
@@ -217,6 +219,7 @@ function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCou
     description: c.subtitle || c.description || '',
     image: c.course_card_image_url || c.banner_image_url || '',
     modules: (modulesByCourse && modulesByCourse[c.id]) || [],
+    createdAt: (createdByCourse && createdByCourse[c.id]) || '',
     keywords: kw,
     featured: /featured/i.test(kw),
     order: fm && fm[1] ? Number(fm[1]) : 0,
