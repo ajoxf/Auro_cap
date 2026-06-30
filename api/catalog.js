@@ -80,11 +80,15 @@ module.exports = async function handler(req, res) {
 
 /* ---- assemble the normalized catalog the site expects ---- */
 async function buildCatalog(KEY, SUB) {
-  const [courses, instructors, bundles] = await Promise.all([
+  // Courses + instructors are the core feed. Bundles are optional — not every
+  // account/plan exposes a /bundles list endpoint (it can 404), so don't let that
+  // sink the whole catalog; learning paths just stay empty (the site falls back).
+  const [courses, instructors] = await Promise.all([
     tkAll(KEY, SUB, 'courses'),
     tkAll(KEY, SUB, 'instructors'),
-    tkAll(KEY, SUB, 'bundles'),
   ]);
+  let bundles = [];
+  try { bundles = await tkAll(KEY, SUB, 'bundles'); } catch (_) { /* no bundles list endpoint */ }
 
   const instrName = {};
   instructors.forEach(t => { instrName[t.id] = fullName(t); });
