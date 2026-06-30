@@ -106,10 +106,10 @@
               <span style="font-size:14px; color:#4a5260;">Taught by <strong>${esc(c.instr)}</strong>${instr?` · ${esc(instr.cred)}`:''}</span>
             </div>
             <div style="display:flex; gap:9px; flex-wrap:wrap; margin-bottom:28px;">
-              <span class="chip">${esc(c.hours)} hrs</span>
-              <span class="chip">${c.lessons} lessons</span>
-              <span class="chip">${esc(c.level)}</span>
-              <span class="chip" style="color:#b08d3c;">★ ${esc(c.rating)}</span>
+              ${c.hours ? `<span class="chip">${esc(c.hours)} hrs</span>` : ''}
+              ${c.lessons ? `<span class="chip">${c.lessons} lessons</span>` : ''}
+              ${c.level ? `<span class="chip">${esc(c.level)}</span>` : ''}
+              ${c.rating ? `<span class="chip" style="color:#b08d3c;">★ ${esc(c.rating)}</span>` : ''}
             </div>
             <p style="font-size:17px; line-height:1.65; color:#3a424f; margin:0 0 34px; max-width:60ch;">${esc(c.description || 'A professional finance course taught by industry practitioners. Enroll to get lifetime access, datasets and a verified certificate.')}</p>
 
@@ -118,14 +118,17 @@
 
             ${instr ? `
             <h2 style="font-size:26px; margin:36px 0 16px;">Your instructor</h2>
-            <div class="card" style="display:flex; gap:18px; align-items:center; padding:20px;">
-              ${instr.photo?`<img src="${esc(instr.photo)}" alt="${esc(instr.name)}" style="width:72px; height:72px; border-radius:12px; object-fit:cover; flex:none;">`:''}
-              <div>
+            <a href="${instructorPageUrl(instr)}" class="card card-hover" style="display:flex; gap:18px; align-items:center; padding:20px; text-decoration:none; color:#1a241c;">
+              ${instr.photo
+                ? `<img src="${esc(instr.photo)}" alt="${esc(instr.name)}" style="width:72px; height:72px; border-radius:12px; object-fit:cover; flex:none;" onerror="this.style.display='none'">`
+                : `<span class="serif" style="width:72px; height:72px; border-radius:12px; flex:none; background:#152419; color:#cbb46a; display:flex; align-items:center; justify-content:center; font-size:26px;">${esc(instr.initials || '')}</span>`}
+              <div style="flex:1;">
                 <div class="serif" style="font-size:20px; font-weight:600;">${esc(instr.name)}</div>
-                <div class="mono" style="font-size:12px; color:#8a6d1f; margin:4px 0 6px;">${esc(instr.cred)}</div>
-                <div style="font-size:13px; color:#6a7280;">${esc(instr.role)}</div>
+                ${instr.cred ? `<div class="mono" style="font-size:12px; color:#8a6d1f; margin:4px 0 6px;">${esc(instr.cred)}</div>` : ''}
+                ${instr.role ? `<div style="font-size:13px; color:#6a7280;">${esc(instr.role)}</div>` : ''}
               </div>
-            </div>` : ''}
+              <span style="color:#8a6d1f; font-size:13px; font-weight:700; white-space:nowrap;">View profile →</span>
+            </a>` : ''}
           </div>
 
           <aside>
@@ -141,7 +144,6 @@
                 <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Templates &amp; datasets</div>
                 <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> 30-day money-back guarantee</div>
               </div>
-              <div style="font-size:12px; color:#9aa0ab; margin-top:18px; text-align:center;">Secure checkout on Thinkific</div>
             </div>
           </aside>
         </div>`;

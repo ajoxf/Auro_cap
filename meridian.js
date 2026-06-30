@@ -18,11 +18,11 @@ const THINKIFIC = {
   siteUrl: '',
   // Sign-in path on Thinkific (default works for all schools):
   signInPath: '/users/sign_in',
-  // Enroll target. The /enroll/{id} deep-link isn't reliable on all schools (it can
-  // bounce to the home page), so we send buyers to the course's Thinkific landing
-  // page (/courses/{slug}) — which always exists and has the Buy/checkout button.
-  // Set true only if you've confirmed /enroll/{id} works on your school.
-  useDirectEnroll: false,
+  // Enroll target. true = go straight to Thinkific CHECKOUT via /enroll/{id}?price_id={pid}
+  // (the price_id is required — without it Thinkific bounces to the home page). The
+  // price_id comes from the live feed; if it's missing we fall back to the course's
+  // Thinkific landing page so the button never dead-ends.
+  useDirectEnroll: true,
   // ---- LIVE SYNC (turn the whole site dynamic) ---------------------------
   // Point this at the deployed Vercel function (api/catalog.js), e.g.
   // 'https://your-project.vercel.app/api/catalog'. Then the catalog, instructors,
@@ -117,7 +117,10 @@ const slugify = (s) => String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,
 function courseUrl(c){
   if (c.enrollUrl) return c.enrollUrl;
   const base = 'https://' + THINKIFIC.domain;
-  if (THINKIFIC.useDirectEnroll && c.thinkificCourseId) return base + '/enroll/' + c.thinkificCourseId;
+  // Direct to Thinkific CHECKOUT — requires BOTH course id and price_id.
+  if (THINKIFIC.useDirectEnroll && c.thinkificCourseId && c.priceId)
+    return base + '/enroll/' + c.thinkificCourseId + '?price_id=' + encodeURIComponent(c.priceId);
+  // Fallback: the course's Thinkific landing page (always valid; has the Buy button).
   return base + '/courses/' + (c.thinkificSlug || c.slug || '');
 }
 function bundleUrl(p){
@@ -184,12 +187,13 @@ function normalizeCourse(c, i){
     hours: c.hours || '',
     lessons: c.lessons || 0,
     level: c.level || 'All levels',
-    rating: c.rating || '5.0',
+    rating: c.rating || '',          // only show a rating when there's a real one (no fake default)
     tag: c.tag || '',
     accent: c.accent || ACCENTS[i % ACCENTS.length],
     slug,
     thinkificSlug: c.thinkificSlug || c.slug || '',
     thinkificCourseId: c.thinkificCourseId || c.id || '',
+    priceId: c.priceId || c.price_id || '',
     enrollUrl: c.enrollUrl || '',
     image: c.image || '',
     description: c.description || '',
