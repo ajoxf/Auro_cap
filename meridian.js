@@ -125,7 +125,11 @@ function courseUrl(c){
 }
 function bundleUrl(p){
   if (p.enrollUrl) return p.enrollUrl;
-  return 'https://' + THINKIFIC.domain + '/bundles/' + (p.thinkificSlug || p.slug || '');
+  const base = 'https://' + THINKIFIC.domain;
+  // Direct to checkout when we have the bundle id + price_id; else the bundle landing page.
+  if (THINKIFIC.useDirectEnroll && p.thinkificBundleId && p.priceId)
+    return base + '/enroll/' + p.thinkificBundleId + '?price_id=' + encodeURIComponent(p.priceId);
+  return base + '/bundles/' + (p.thinkificSlug || p.slug || '');
 }
 // Internal branded detail pages (our pages — never Thinkific's marketing pages).
 function coursePageUrl(c){ return 'course.html?slug=' + encodeURIComponent(c.slug || c.thinkificSlug || slugify(c.title)); }
@@ -271,6 +275,8 @@ function normalizePath(p, i){
     price: Number(p.price) || 0,
     slug: p.slug || p.thinkificSlug || slugify(p.name || p.title),
     thinkificSlug: p.thinkificSlug || p.slug || '',
+    thinkificBundleId: p.thinkificBundleId || '',
+    priceId: p.priceId || p.price_id || '',
     enrollUrl: p.enrollUrl || '',
     courses,
   };
