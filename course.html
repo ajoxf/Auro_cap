@@ -157,12 +157,11 @@
                 <span class="serif" style="font-size:42px; color:#1a241c;">${c.price>0 ? '$'+c.price : 'Free'}</span>
                 ${c.price>0 ? `<span style="font-size:14px; color:#8a92a0;">one-time</span>` : ''}
               </div>
-              <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">Lifetime access · pay once, own it forever.</div>
-              <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">Enroll now →</a>
+              <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">${c.price>0 ? 'Lifetime access · pay once, own it forever.' : 'Free — full, lifetime access.'}</div>
+              <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">${c.price>0 ? 'Enroll now →' : 'Enroll free →'}</a>
               <div style="display:flex; flex-direction:column; gap:9px; margin-top:22px;">
-                <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Verified certificate</div>
-                <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Templates &amp; datasets</div>
-                <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> 30-day money-back guarantee</div>
+                <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Self-paced, lifetime access</div>
+                <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Certificate of completion</div>
               </div>
             </div>
           </aside>
