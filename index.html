@@ -87,7 +87,7 @@
   /* full-bleed band whose flat grey matches the trader clip's ~#b1 studio backdrop, so the
      zoomed-out margins blend; fades top & bottom dissolve it into the white page. */
   #cine2-track { position:relative; width:100%; }
-  #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:linear-gradient(180deg,#bdbdbb 0%,#b3b3b1 26%,#b0b0ae 100%); }
+  #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#b6b5b3; }
   #cine2-gl { position:absolute; inset:0; width:100%; height:100%; }
   #cine2-poster { position:absolute; top:0; right:0; height:100%; width:60%; object-fit:contain; object-position:right center; display:none; }
   #cine2-fade-top { position:absolute; left:0; right:0; top:0; height:20vh; pointer-events:none; z-index:2; background:linear-gradient(to top, rgba(255,255,255,0), #ffffff 96%); }
@@ -665,8 +665,9 @@ function initScrubHero(cfg){
         vec2 uv = (vUv - 0.5) * uScale + 0.5;            // cover, then zoomed out
         vec3 c = texture2D(uTex, clamp(uv, 0.0, 1.0)).rgb;
         c = (c - 0.5) * 1.03 + 0.5;                      // slight contrast
-        vec2 e = step(0.0, uv) * step(uv, vec2(1.0));    // outside the frame → transparent → grey stage shows
-        gl_FragColor = vec4(c, e.x * e.y * uFade);
+        // soft-feather the frame edges (no hard rectangle) → dissolves into the matched grey
+        vec2 m = smoothstep(vec2(0.0), vec2(0.11), uv) * smoothstep(vec2(0.0), vec2(0.11), 1.0 - uv);
+        gl_FragColor = vec4(c, m.x * m.y * uFade);
       }`,
   });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
