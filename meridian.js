@@ -281,4 +281,6 @@ async function fetchCatalog(){
 }
 
 /* Wire any "Log in" link to Thinkific sign-in (present on every page). */
-document.querySelectorAll('[data-thinkific="signin"]').forEach(a => a.href = signInUrl());
+if (typeof document !== 'undefined') {
+  document.querySelectorAll('[data-thinkific="signin"]').forEach(a => a.href = signInUrl());
+}

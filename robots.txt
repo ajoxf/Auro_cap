@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ajoxf.github.io/Auro_cap/sitemap.xml
