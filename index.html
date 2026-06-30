@@ -55,33 +55,38 @@
   }
   [id]{ scroll-margin-top:84px; }
 
-  /* ============ CINEMATIC HERO (Bloomberg clip, smooth autoplay loop) ============ */
-  /* Hero matches the clip's 16:9 shape and fills it (cover) — no black bands,
-     and on ~16:9 screens almost the whole frame stays visible. */
-  #cine-hero { position:relative; width:100%; aspect-ratio:16 / 9; max-height:100svh; min-height:70svh; overflow:hidden; background:#05060A; }
-  #cine-vid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; will-change:transform; }
-  /* dark → cream dissolve so the hero melts into the page */
-  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:30vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(5,6,10,0), #ffffff 96%); }
-  .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; }
-  .cine-inner { will-change:transform, opacity; }
-  /* frosted-glass panel keeps text legible over the bright clip */
-  .cine-panel { background:rgba(9,11,15,.75); backdrop-filter:blur(16px) saturate(120%); -webkit-backdrop-filter:blur(16px) saturate(120%); border:1px solid rgba(255,255,255,.16); border-radius:22px; padding:clamp(26px,3vw,40px); box-shadow:0 30px 80px rgba(0,0,0,.5); }
-  .cine-badge { display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.07em; color:#f0d68f; background:rgba(255,255,255,.07); border:1px solid rgba(240,214,143,.34); padding:6px 13px; border-radius:7px; margin-bottom:20px; }
+  /* ============ SCROLL-DRIVEN HERO (Three.js video scrub) ============ */
+  /* #cine-track height is set by JS = how far you scroll to play the clip. */
+  #cine-track { position:relative; width:100%; }
+  /* sticky stage pins the canvas while the track scrolls past; dark gradient bg */
+  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 80% 8%, #15362670 0%, rgba(8,20,14,0) 55%),
+      radial-gradient(120% 110% at 6% 98%, #0a201570 0%, rgba(6,14,10,0) 52%),
+      linear-gradient(160deg, #060f0b 0%, #0a1b13 48%, #040907 100%); }
+  #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
+  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
+  #cine-stage::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(135% 135% at 50% 50%, rgba(4,9,7,0) 56%, rgba(4,9,7,.62) 100%); }
+  /* dark → white dissolve so the hero melts into the page */
+  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:26vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(6,15,11,0), #ffffff 97%); }
+  /* headline: center-left, with a parallax offset (--py) applied by JS */
+  .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; --py:0px; }
+  .cine-inner { transform:translate3d(0,var(--py),0); will-change:transform, opacity; }
+  .cine-panel { background:rgba(9,15,12,.6); backdrop-filter:blur(14px) saturate(120%); -webkit-backdrop-filter:blur(14px) saturate(120%); border:1px solid rgba(255,255,255,.14); border-radius:22px; padding:clamp(26px,3vw,40px); box-shadow:0 30px 80px rgba(0,0,0,.5); }
   .cine-headline h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(32px,4.3vw,58px); line-height:1.05; letter-spacing:-.015em; color:#FBF9F3; }
   .cine-headline p { margin:18px 0 0; max-width:46ch; font-size:clamp(14px,1.4vw,16.5px); line-height:1.62; color:#dcd9d2; font-weight:400; }
   .cine-actions { display:flex; gap:13px; margin-top:28px; flex-wrap:wrap; }
   .cine-btn-primary { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; border-radius:10px; background:#1f4733; color:#fff; font-size:14px; font-weight:600; text-decoration:none; box-shadow:0 10px 30px rgba(0,0,0,.35); transition:background .2s ease; }
-  .cine-btn-primary:hover { background:#163a29; }
+  .cine-btn-primary:hover { background:#2a5e44; }
   .cine-btn-ghost { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; border-radius:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.4); color:#FBF9F3; font-size:14px; font-weight:600; text-decoration:none; transition:background .2s ease, border-color .2s ease; }
   .cine-btn-ghost:hover { background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.62); }
-  /* sound toggle */
-  #cine-sound { position:absolute; top:84px; right:clamp(20px,5vw,44px); z-index:4; display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:9px 15px; border-radius:999px; border:1px solid rgba(240,236,228,.28); background:rgba(5,6,10,.42); backdrop-filter:blur(8px); color:#F0ECE4; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; transition:background .25s ease, border-color .25s ease; }
-  #cine-sound:hover { background:rgba(5,6,10,.66); border-color:rgba(240,236,228,.5); }
-  .cine-cue { position:absolute; left:clamp(24px,7vw,120px); bottom:36px; z-index:3; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:#cfcabf; display:flex; align-items:center; gap:14px; }
+  .cine-cue { position:absolute; left:clamp(20px,6vw,90px); bottom:34px; z-index:3; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:#cfcabf; display:flex; align-items:center; gap:14px; }
   .cine-cue .dot { width:6px; height:6px; border-radius:50%; background:#e8c97a; animation:pulse 2.4s cubic-bezier(.16,1,.3,1) infinite; }
+  .cine-cue .bar { position:relative; width:120px; height:1px; background:rgba(240,236,228,.18); }
+  .cine-cue .bar span { position:absolute; inset:0; width:0%; background:#e8c97a; transition:width .12s linear; }
   @keyframes pulse { 0%,100%{opacity:.35; transform:translateY(0)} 50%{opacity:1; transform:translateY(4px)} }
   @media (prefers-reduced-motion:reduce){ .cine-cue .dot{ animation:none } }
-  @media (max-width:640px){ .cine-headline{ top:46% } #cine-sound{ top:74px } }
+  @media (max-width:640px){ .cine-headline{ top:46% } .cine-cue .bar{ width:84px } }
 
   /* ============ NAV — transparent over hero, solid over content ============ */
   #nav { position:fixed; top:0; left:0; right:0; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:transparent; border-bottom:1px solid transparent; transition:background .3s ease, border-color .3s ease; }
@@ -117,31 +122,31 @@
 
   <div id="top"></div>
 
-  <!-- ============ CINEMATIC HERO (Bloomberg clip — autoplay loop) ============ -->
-  <header id="cine-hero">
-    <!-- Muted autoplay is required by browsers; the sound button below unmutes. -->
-    <video id="cine-vid" autoplay muted loop playsinline preload="auto" poster="assets/bloomberg-poster.jpg">
-      <source src="assets/bloomberg-hero.mp4" type="video/mp4">
-    </video>
-    <div id="cine-fade"></div>
+  <!-- ============ SCROLL-DRIVEN HERO (Bloomberg clip scrubbed by scroll) ============ -->
+  <div id="cine-track">
+    <div id="cine-stage">
+      <canvas id="cine-gl"></canvas>
+      <img id="cine-poster" src="assets/bloomberg-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
 
-    <button id="cine-sound" onclick="toggleSound()"><span id="cine-sound-ico">🔇</span> <span id="cine-sound-txt">Sound off</span></button>
-
-    <div class="cine-headline" id="cine-headline">
-      <div class="cine-inner" id="cine-inner">
-        <div class="cine-panel">
-          <h1>Master the numbers behind every market.</h1>
-          <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
-          <div class="cine-actions">
-            <a href="#courses" class="cine-btn-primary">Browse courses</a>
-            <a href="#instructors" class="cine-btn-ghost">Meet the faculty</a>
+      <div class="cine-headline" id="cine-headline">
+        <div class="cine-inner" id="cine-inner">
+          <div class="cine-panel">
+            <h1>Master the numbers behind every market.</h1>
+            <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
+            <div class="cine-actions">
+              <a href="#courses" class="cine-btn-primary">Browse courses</a>
+              <a href="#instructors" class="cine-btn-ghost">Meet the faculty</a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="cine-cue"><span class="dot"></span><span>Scroll to explore</span></div>
-  </header>
+      <div class="cine-cue"><span class="dot"></span><span>Scroll</span><span class="bar"><span id="cine-prog"></span></span></div>
+      <div id="cine-fade"></div>
+    </div>
+  </div>
+  <!-- Hidden source clip — never "played"; we scrub currentTime from scroll. -->
+  <video id="cine-src" src="assets/bloomberg-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
 
   <!-- ============ LEARNING PATHS ============ -->
   <section id="paths" style="max-width:1240px; margin:0 auto; padding:80px 44px 44px;">
@@ -553,42 +558,7 @@ async function applyCatalog(){
   renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos();
 }
 
-/* ---- cinematic hero/* ---- cinematic hero: nav state, scroll parallax, sound toggle ---- */
-function toggleSound(){
-  const v = document.getElementById('cine-vid');
-  if (!v) return;
-  v.muted = !v.muted;
-  if (!v.muted){ v.volume = 1; v.play().catch(()=>{}); }
-  document.getElementById('cine-sound-ico').textContent = v.muted ? '🔇' : '🔊';
-  document.getElementById('cine-sound-txt').textContent = v.muted ? 'Sound off' : 'Sound on';
-}
-function initHero(){
-  const nav   = $('nav');
-  const hero  = document.getElementById('cine-hero');
-  const vid   = document.getElementById('cine-vid');
-  const inner = document.getElementById('cine-inner');
-  let ticking = false;
-  function frame(){
-    ticking = false;
-    const h = hero ? hero.offsetHeight : 0;
-    const y = window.scrollY;
-    nav.classList.toggle('nav--solid', !hero || y > (h - 90));
-    if (hero && y < h){
-      const p = Math.min(1, y / h);                 // 0→1 through the hero
-      if (vid)   vid.style.transform   = `scale(${1 + p*0.08}) translateY(${p*40}px)`; // gentle Ken-Burns drift
-      if (inner) inner.style.transform = `translateY(${p*-60}px)`;                      // headline parallax
-      if (inner) inner.style.opacity   = String(1 - Math.min(1, p*1.4));               // fade out
-    }
-  }
-  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(frame); } }
-  window.addEventListener('scroll', onScroll, { passive:true });
-  window.addEventListener('resize', onScroll);
-  // If the clip can't load, keep the poster (native) and make sure nav is usable.
-  if (vid) vid.addEventListener('error', () => nav.classList.add('nav--solid'));
-  frame();
-}
-
-/* ---- util ---- */
+/* The scroll-driven hero engine lives in the Three.js module script below. */
 
 /* ---- scroll reveal ---- */
 function initReveal(){
@@ -599,7 +569,7 @@ function initReveal(){
 }
 
 /* ---- boot ---- */
-renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos(); renderFaq(); renderSelbar(); initReveal(); initHero();
+renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos(); renderFaq(); renderSelbar(); initReveal();
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 applyMeta({
   title: 'Meridian Finance Academy — Master the numbers behind every market',
@@ -607,6 +577,135 @@ applyMeta({
   url: THINKIFIC.siteUrl ? siteBase() + '/' : (location.origin + location.pathname),
 });
 applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is set
+</script>
+
+<!-- ============ SCROLL-DRIVEN HERO ENGINE (Three.js video scrubber) ============ -->
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* CONFIG */
+const SCROLL_SPEED   = 0.6;   // 1.0 = baseline; 0.6 = 40% slower scrub.
+const VIEWPORTS_BASE = 4;     // baseline scroll length (viewport heights) at speed 1.
+const SMOOTHING      = 0.085; // lerp factor — lower = smoother / heavier.
+const PARALLAX_AMT   = 90;    // px the headline drifts over the full scroll.
+
+const video    = document.getElementById('cine-src');
+const trackEl   = document.getElementById('cine-track');
+const headline = document.getElementById('cine-headline');
+const progBar  = document.getElementById('cine-prog');
+const canvas   = document.getElementById('cine-gl');
+const poster   = document.getElementById('cine-poster');
+const nav      = document.getElementById('nav');
+
+function navUpdate(){
+  const max = trackEl.offsetHeight - window.innerHeight;
+  nav.classList.toggle('nav--solid', window.scrollY > Math.max(0, max - 60));
+}
+
+/* Graceful fallback: no WebGL / can't decode → static poster hero, page stays usable. */
+function fallback(){
+  if (poster) poster.style.display = 'block';
+  if (canvas) canvas.style.display = 'none';
+  trackEl.style.height = '100svh';
+  window.addEventListener('scroll', navUpdate, { passive:true });
+  window.addEventListener('resize', navUpdate);
+  navUpdate();
+}
+
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, premultipliedAlpha:false }); }
+catch(e){ fallback(); }
+
+if (renderer){
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  const scene  = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const texture = new THREE.VideoTexture(video);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter  = THREE.LinearFilter;
+  texture.magFilter  = THREE.LinearFilter;
+
+  const material = new THREE.ShaderMaterial({
+    transparent:true,
+    uniforms:{ uTex:{ value:texture }, uScale:{ value:new THREE.Vector2(1,1) }, uFade:{ value:0 } },
+    vertexShader:`varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader:`
+      precision highp float;
+      varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
+      void main(){
+        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // CONTAIN-fit (zoomed out to fit)
+        vec2 e = step(0.0, uv) * step(uv, vec2(1.0));
+        float inside = e.x * e.y;                        // 0 outside the frame → transparent (dark bg shows)
+        vec3 c = texture2D(uTex, uv).rgb;
+        c = (c - 0.5) * 1.04 + 0.5;                      // slight contrast
+        gl_FragColor = vec4(c, inside * uFade);
+      }`,
+  });
+  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
+
+  // CONTAIN: scale so the whole video frame fits inside the viewport, centered.
+  function fitContain(){
+    const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
+    const sw = window.innerWidth, sh = window.innerHeight;
+    const videoAR = vw/vh, screenAR = sw/sh, s = material.uniforms.uScale.value;
+    if (screenAR > videoAR) s.set(screenAR/videoAR, 1); else s.set(1, videoAR/screenAR);
+  }
+  function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitContain(); }
+  window.addEventListener('resize', resize);
+
+  let duration = 0, targetT = 0, currentT = 0, pendingSeek = false, started = false;
+
+  function layoutTrack(){
+    const vh = window.innerHeight;
+    // Longer track ⇒ slower scrub. /SCROLL_SPEED stretches it (0.6 ⇒ ~1.67× longer).
+    trackEl.style.height = ((VIEWPORTS_BASE / SCROLL_SPEED) * vh + vh) + 'px';
+  }
+  function progress(){
+    const max = trackEl.offsetHeight - window.innerHeight;
+    return max <= 0 ? 0 : Math.min(1, Math.max(0, window.scrollY / max));
+  }
+
+  function tick(){
+    const p = progress();
+    targetT = p * duration;
+    currentT += (targetT - currentT) * SMOOTHING;       // scroll up lowers target ⇒ reverse, for free
+    if (duration > 0 && Math.abs(video.currentTime - currentT) > 0.001 && !pendingSeek){
+      pendingSeek = true;
+      video.currentTime = Math.min(duration - 0.001, Math.max(0, currentT));
+    }
+    texture.needsUpdate = true;
+    // subtle headline parallax + fade
+    headline.style.setProperty('--py', (-((p - 0.5) * PARALLAX_AMT)).toFixed(1) + 'px');
+    headline.style.opacity = (1 - Math.min(1, p * 1.5)).toFixed(3);
+    if (progBar) progBar.style.width = (p * 100).toFixed(1) + '%';
+    nav.classList.toggle('nav--solid', p > 0.985);
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  video.addEventListener('seeked', () => { pendingSeek = false; texture.needsUpdate = true; });
+
+  function start(){
+    if (started) return; started = true;
+    duration = video.duration || 0;
+    resize(); layoutTrack();
+    window.addEventListener('resize', layoutTrack);
+    let f = 0; (function fadeIn(){ f = Math.min(1, f + 0.05); material.uniforms.uFade.value = f; if (f < 1) requestAnimationFrame(fadeIn); })();
+    requestAnimationFrame(tick);
+  }
+
+  // If the clip can't decode (e.g. no H.264), fall back to the poster hero.
+  const failSafe = setTimeout(() => { if (!started) fallback(); }, 6000);
+  video.addEventListener('error', () => { clearTimeout(failSafe); fallback(); });
+  video.addEventListener('loadeddata', () => { texture.needsUpdate = true; });
+  if (video.readyState >= 1) { clearTimeout(failSafe); start(); }
+  else video.addEventListener('loadedmetadata', () => { clearTimeout(failSafe); start(); }, { once:true });
+  video.load();
+}
 </script>
 </body>
 </html>
