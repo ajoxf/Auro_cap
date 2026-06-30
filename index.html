@@ -58,10 +58,14 @@
   /* ============ SCROLL-DRIVEN HERO (Three.js video scrub) ============ */
   /* #cine-track height is set by JS = how far you scroll to play the clip. */
   #cine-track { position:relative; width:100%; }
-  /* clean full-bleed clip on white — fills edge to edge, no borders, no box */
-  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; }
+  /* the intro act (hero card + scroll clip) shares the clip's studio-grey backdrop,
+     so the zoomed-out margins blend in and the two read as one section */
+  #intro { background:linear-gradient(180deg,#cbcbcb 0%,#d6d6d6 100%); }
+  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:linear-gradient(180deg,#cbcbcb 0%,#d6d6d6 100%); }
   #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
-  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
+  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
+  /* dissolve from the grey intro into the white page below */
+  #cine-fade { position:absolute; left:0; right:0; bottom:0; height:24vh; pointer-events:none; z-index:2; background:linear-gradient(to bottom, rgba(255,255,255,0), #ffffff 96%); }
   /* headline: center-left, with a parallax offset (--py) applied by JS */
   .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; --py:0px; }
   .cine-inner { transform:translate3d(0,var(--py),0); will-change:transform, opacity; }
@@ -121,28 +125,28 @@
 
   <div id="top"></div>
 
-  <!-- ============ HERO CARD ============ -->
-  <header class="topcard">
-    <h1>Master the numbers<br>behind every market.</h1>
-    <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
-    <div class="topcard-actions">
-      <a href="#courses" class="btn-primary">Browse courses</a>
-      <a href="#instructors" class="btn-ghost">Meet the faculty</a>
+  <!-- ============ INTRO ACT (hero card + scroll clip share one grey backdrop) ============ -->
+  <div id="intro">
+    <header class="topcard">
+      <h1>Master the numbers<br>behind every market.</h1>
+      <p>A professional finance curriculum taught by analysts, portfolio managers and CFOs from the world's leading firms. Pay per course and own exactly what you need — no subscription required.</p>
+      <div class="topcard-actions">
+        <a href="#courses" class="btn-primary">Browse courses</a>
+        <a href="#instructors" class="btn-ghost">Meet the faculty</a>
+      </div>
+      <div class="topcard-scroll">Scroll to explore ↓</div>
+    </header>
+
+    <!-- SCROLL-DRIVEN CINEMATIC BAND (Bloomberg clip scrubbed by scroll) -->
+    <div id="cine-track">
+      <div id="cine-stage">
+        <canvas id="cine-gl"></canvas>
+        <img id="cine-poster" src="assets/bloomberg-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
+        <div id="cine-fade"></div>
+      </div>
     </div>
-    <div class="topcard-scroll">Scroll to explore ↓</div>
-  </header>
-
-
-
-
-  <!-- ============ SCROLL-DRIVEN CINEMATIC BAND (Bloomberg clip scrubbed by scroll) ============ -->
-  <div id="cine-track">
-    <div id="cine-stage">
-      <canvas id="cine-gl"></canvas>
-      <img id="cine-poster" src="assets/bloomberg-poster.jpg" alt="">   <!-- fallback if WebGL/video unavailable -->
-    </div>
+    <video id="cine-src" src="assets/bloomberg-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
   </div>
-  <video id="cine-src" src="assets/bloomberg-scrub.mp4" muted playsinline preload="auto" style="display:none"></video>
 
   <!-- ============ LEARNING PATHS ============ -->
   <section id="paths" style="max-width:1240px; margin:0 auto; padding:80px 44px 44px;">
@@ -610,21 +614,25 @@ if (renderer){
       precision highp float;
       varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
       void main(){
-        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // cover-fit, full-bleed
+        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // cover, zoomed out 20%
         vec3 c = texture2D(uTex, clamp(uv, 0.0, 1.0)).rgb;
         c = (c - 0.5) * 1.03 + 0.5;                      // slight contrast
-        gl_FragColor = vec4(c, uFade);
+        vec2 e = step(0.0, uv) * step(uv, vec2(1.0));    // outside the frame → transparent → grey stage shows
+        gl_FragColor = vec4(c, e.x * e.y * uFade);
       }`,
   });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
 
   // CONTAIN: scale so the whole video frame fits inside the viewport, centered.
-  // COVER-fit: fill the viewport full-bleed (edge to edge, no margins).
+  // COVER-fit, then zoom OUT ~20%; the margins reveal the grey stage that matches
+  // the clip's own studio backdrop, so it blends seamlessly.
+  const ZOOM = 1.2;
   function fitCover(){
     const vw = video.videoWidth || 16, vh = video.videoHeight || 9;
     const sw = window.innerWidth, sh = window.innerHeight;
     const videoAR = vw/vh, screenAR = sw/sh, s = material.uniforms.uScale.value;
     if (screenAR > videoAR) s.set(1, videoAR/screenAR); else s.set(screenAR/videoAR, 1);
+    s.multiplyScalar(ZOOM);
   }
   function resize(){ renderer.setSize(window.innerWidth, window.innerHeight, false); fitCover(); }
   window.addEventListener('resize', resize);
