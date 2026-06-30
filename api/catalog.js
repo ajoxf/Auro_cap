@@ -110,10 +110,11 @@ async function buildCatalog(KEY, SUB) {
   for (const p of products) {
     const type = String(p.productable_type || '').toLowerCase();
     if (type === 'course') {
-      priceByCourse[p.productable_id] = p.price;
-      const pid = p.price_id || p.default_price_id ||
-                  (Array.isArray(p.prices) && p.prices[0] && p.prices[0].id) || '';
-      if (pid) priceIdByCourse[p.productable_id] = pid;
+      // Prefer the primary price record: its price (number) and its id (price_id for checkout).
+      const pp = Array.isArray(p.product_prices)
+        ? (p.product_prices.find(x => x.is_primary) || p.product_prices[0]) : null;
+      priceByCourse[p.productable_id] = (pp && pp.price != null) ? pp.price : p.price;
+      if (pp && pp.id) priceIdByCourse[p.productable_id] = pp.id;
     } else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) {
       bundleProducts.push(p);
     }
