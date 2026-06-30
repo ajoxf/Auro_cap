@@ -62,7 +62,7 @@
   /* white stage: the clip sits on white and blends straight into the page — no fades needed */
   #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; }
   #cine-gl { position:absolute; inset:0; width:100%; height:100%; }
-  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; }
+  #cine-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:none; -webkit-mask-image:radial-gradient(125% 125% at 50% 50%, #000 58%, transparent 100%); mask-image:radial-gradient(125% 125% at 50% 50%, #000 58%, transparent 100%); }
   /* headline: center-left, with a parallax offset (--py) applied by JS */
   .cine-headline { position:absolute; top:50%; left:clamp(20px,6vw,90px); transform:translateY(-50%); max-width:min(560px,88vw); text-align:left; z-index:3; --py:0px; }
   .cine-inner { transform:translate3d(0,var(--py),0); will-change:transform, opacity; }
@@ -611,12 +611,14 @@ if (renderer){
       precision highp float;
       varying vec2 vUv; uniform sampler2D uTex; uniform vec2 uScale; uniform float uFade;
       void main(){
-        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // CONTAIN-fit (zoomed out to fit)
-        vec2 e = step(0.0, uv) * step(uv, vec2(1.0));
-        float inside = e.x * e.y;                        // 0 outside the frame → transparent (dark bg shows)
-        vec3 c = texture2D(uTex, uv).rgb;
-        c = (c - 0.5) * 1.04 + 0.5;                      // slight contrast
-        gl_FragColor = vec4(c, inside * uFade);
+        vec2 uv = (vUv - 0.5) * uScale + 0.5;            // cover-fit, zoomed out
+        vec3 c = texture2D(uTex, clamp(uv, 0.0, 1.0)).rgb;
+        c = (c - 0.5) * 1.03 + 0.5;                      // slight contrast
+        // FEATHER all four edges → the clip dissolves into the white page (no hard box).
+        float fw = 0.16;                                  // feather width (fraction of the frame)
+        vec2 d = min(uv, 1.0 - uv);                       // distance to nearest edge per axis
+        float a = smoothstep(0.0, fw, min(d.x, d.y));
+        gl_FragColor = vec4(c, a * uFade);
       }`,
   });
   scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), material));
