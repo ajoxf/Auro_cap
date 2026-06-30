@@ -118,10 +118,13 @@ async function buildCatalog(KEY, SUB) {
   let products = [];
   try { products = await tkAll(KEY, SUB, 'products'); } catch (_) { /* products optional */ }
 
-  const priceByCourse = {};    // course id → price (number)
-  const priceIdByCourse = {};  // course id → price_id (for direct checkout deep-link)
-  const createdByCourse = {};  // course id → created_at (for the "New" badge)
-  const bundleProducts = [];   // products that represent a learning-path bundle
+  const priceByCourse = {};        // course id → price (number)
+  const priceIdByCourse = {};      // course id → price_id (for direct checkout deep-link)
+  const createdByCourse = {};      // course id → created_at (for the "New" badge)
+  const liveCourseIds = new Set(); // course ids whose product is published & shoppable
+  const bundleProducts = [];       // products that represent a learning-path bundle
+  // A product is "live" (shown publicly) only when published and not hidden/private.
+  const isLive = (p) => p.status !== 'draft' && !p.hidden && !p.private;
   for (const p of products) {
     const type = String(p.productable_type || '').toLowerCase();
     if (type === 'course') {
@@ -131,7 +134,8 @@ async function buildCatalog(KEY, SUB) {
       priceByCourse[p.productable_id] = (pp && pp.price != null) ? pp.price : p.price;
       if (pp && pp.id) priceIdByCourse[p.productable_id] = pp.id;
       if (p.created_at) createdByCourse[p.productable_id] = p.created_at;
-    } else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) {
+      if (isLive(p)) liveCourseIds.add(String(p.productable_id));
+    } else if (type === 'bundle' && isLive(p)) {
       bundleProducts.push(p);
     }
   }
@@ -141,8 +145,10 @@ async function buildCatalog(KEY, SUB) {
   const instrName = {};
   instructors.forEach(t => { instrName[t.id] = fullName(t); });
 
+  // Only show courses whose product is published & shoppable (draft/hidden/private are
+  // excluded). If the products feed is unavailable, fall back to showing all courses.
   const outCourses = courses
-    .filter(c => c.published !== false)
+    .filter(c => products.length ? liveCourseIds.has(String(c.id)) : true)
     .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
