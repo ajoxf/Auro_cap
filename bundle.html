@@ -22,7 +22,7 @@
   .btn-primary:hover { background:#c79b41; }
   .wrap { max-width:1080px; margin:0 auto; padding:0 44px; }
   /* dark premium hero */
-  .hero { background:radial-gradient(120% 130% at 85% 0%, #235138 0%, rgba(35,81,56,0) 55%), linear-gradient(160deg,#163a29 0%,#1f4733 60%,#15311f 100%); color:#eef2ee; }
+  .hero { background:radial-gradient(120% 130% at 85% 0%, #7a5f1c 0%, rgba(122,95,28,0) 55%), linear-gradient(160deg,#1c1812 0%,#272016 55%,#15110a 100%); color:#f3efe4; }
   .hero-inner { max-width:1080px; margin:0 auto; padding:64px 44px 70px; }
   .chip { display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:#dce7df; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:8px; padding:7px 13px; }
   .card { background:#fff; border:1px solid #e4e2d9; border-radius:16px; }
@@ -35,7 +35,7 @@
 <body>
   <nav>
     <a href="index.html" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
-      <span style="width:26px; height:26px; border-radius:7px; background:#1f4733; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
+      <span style="width:26px; height:26px; border-radius:7px; background:#8a6d1f; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
       <span class="serif" style="font-weight:600; font-size:22px;">Meridian</span>
     </a>
     <div style="display:flex; gap:14px; align-items:center;">
@@ -63,7 +63,7 @@
 
     function notFound(){
       app.innerHTML = `<div style="text-align:center; padding:80px 20px;">
-        <div class="kicker" style="color:#1f4733; margin-bottom:12px;">PATH NOT FOUND</div>
+        <div class="kicker" style="color:#8a6d1f; margin-bottom:12px;">PATH NOT FOUND</div>
         <h1 style="font-size:34px; margin:0 0 14px;">We couldn't find that learning path.</h1>
         <a class="btn-primary" href="index.html#paths">See all learning paths</a>
       </div>`;
@@ -101,10 +101,10 @@
       app.innerHTML = `
         <section class="hero">
           <div class="hero-inner">
-            <a href="index.html#paths" style="text-decoration:none; color:#bcd2c2; font-size:13px;">← All learning paths</a>
+            <a href="index.html#paths" style="text-decoration:none; color:#cdbf9d; font-size:13px;">← All learning paths</a>
             <div class="kicker" style="color:#cbb46a; margin:18px 0 14px;">LEARNING PATH</div>
             <h1 style="font-size:clamp(34px,5vw,60px); line-height:1.04; margin:0; color:#fff; max-width:16ch;">${esc(p.name)}</h1>
-            <p style="font-size:18px; line-height:1.6; color:#cfe0d4; max-width:62ch; margin:20px 0 26px;">${esc(p.blurb || p.desc)}</p>
+            <p style="font-size:18px; line-height:1.6; color:#ded2ba; max-width:62ch; margin:20px 0 26px;">${esc(p.blurb || p.desc)}</p>
             <div style="display:flex; gap:9px; flex-wrap:wrap; margin-bottom:30px;">
               <span class="chip">${p.n} courses</span>
               <span class="chip">Guided order</span>
@@ -115,21 +115,21 @@
               <a class="btn-primary" href="${esc(bundleUrl(p))}" target="_blank" rel="noopener">Enroll in this track →</a>
               <div style="display:flex; align-items:baseline; gap:10px;">
                 <span class="serif" style="font-size:40px; color:#fff;">$${p.price}</span>
-                ${save>0 ? `<span style="color:#bcd2c2; font-size:14px;"><s style="color:#8aa593;">$${sumIndividual}</s> · save $${save}</span>` : ``}
+                ${save>0 ? `<span style="color:#cdbf9d; font-size:14px;"><s style="color:#8aa593;">$${sumIndividual}</s> · save $${save}</span>` : ``}
               </div>
             </div>
           </div>
         </section>
 
         <section class="wrap" style="padding-top:56px; padding-bottom:30px;">
-          <div class="kicker" style="color:#1f4733; margin-bottom:12px;">WHAT'S INCLUDED</div>
+          <div class="kicker" style="color:#8a6d1f; margin-bottom:12px;">WHAT'S INCLUDED</div>
           <h2 style="font-size:clamp(26px,3vw,38px); margin:0 0 8px;">${members.length} courses, one ordered track</h2>
           <p style="font-size:15px; color:#6a7280; margin:0 0 28px; max-width:60ch;">Work through them in sequence — each course builds on the last. Buy the whole track for one price, or open any course on its own.</p>
           <div class="grid-3">${members.map(courseCard).join('') || '<p style="color:#6a7280;">Courses for this path are listed on Thinkific.</p>'}</div>
         </section>
 
         <section class="wrap" style="padding-bottom:80px;">
-          <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:30px 34px; border:1.5px solid #1f4733;">
+          <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:30px 34px; border:1.5px solid #8a6d1f;">
             <div>
               <h3 style="font-size:24px; margin:0 0 6px;">Ready to start the ${esc(p.name)}?</h3>
               <p style="font-size:14px; color:#6a7280; margin:0;">One payment · lifetime access · ${p.n} courses${save>0?` · save $${save} vs buying separately`:''}.</p>
