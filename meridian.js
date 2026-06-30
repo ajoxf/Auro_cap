@@ -58,7 +58,7 @@ const MERIDIAN_DATA = {
   ],
 
   courses: [
-    { title:'Trend Analysis', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:349, hours:'8.5', lessons:62, level:'Intermediate', rating:'4.9', tag:'Bestseller', accent:'#1f4733', slug:'trend-analysis', thinkificSlug:'trend-analysis',
+    { title:'Trend Analysis', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:349, hours:'8.5', lessons:62, level:'Intermediate', rating:'4.9', tag:'Bestseller', accent:'#1f4733', slug:'trend-analysis', thinkificSlug:'trend-analysis', featured:true, order:1,
       description:'Read trend, structure and momentum the way a desk does. Build a repeatable framework for entries, exits and risk across any liquid market.',
       modules:[ {title:'Foundations of Trend', lessons:['What trend really is','Higher highs & market structure','Timeframe alignment']}, {title:'Execution', lessons:['Entry triggers','Stop placement','Scaling & exits']}, {title:'Risk', lessons:['Position sizing','Drawdown control']} ] },
     { title:'Chart Pattern Analysis', cat:'Technical', instr:'Priya Nair', initials:'PN', price:299, hours:'7', lessons:52, level:'Beginner', rating:'5.0', tag:'Popular', accent:'#3c6b4f', slug:'chart-pattern-analysis', thinkificSlug:'chart-pattern-analysis',
@@ -67,13 +67,13 @@ const MERIDIAN_DATA = {
     { title:'Technical Indicators', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:329, hours:'9', lessons:64, level:'Intermediate', rating:'4.8', tag:'', accent:'#5c7a5f', slug:'technical-indicators', thinkificSlug:'technical-indicators',
       description:'Moving averages, oscillators and volume tools — what they measure, where they fail, and how to combine them without redundancy.',
       modules:[ {title:'Trend & Momentum', lessons:['Moving averages','MACD','RSI']}, {title:'Volume & Volatility', lessons:['OBV','ATR & Bollinger Bands']} ] },
-    { title:'Statistics for Technicians', cat:'Quant', instr:'Sofia Reyes', initials:'SR', price:399, hours:'11', lessons:78, level:'Advanced', rating:'4.9', tag:'Bestseller', accent:'#b08d3c', slug:'statistics-for-technicians', thinkificSlug:'statistics-for-technicians',
+    { title:'Statistics for Technicians', cat:'Quant', instr:'Sofia Reyes', initials:'SR', price:399, hours:'11', lessons:78, level:'Advanced', rating:'4.9', tag:'Bestseller', accent:'#b08d3c', slug:'statistics-for-technicians', thinkificSlug:'statistics-for-technicians', featured:true, order:2,
       description:'The statistics that actually matter for trading: distributions, expectancy, significance and how to avoid fooling yourself with backtests.',
       modules:[ {title:'Core Statistics', lessons:['Distributions','Expectancy & edge']}, {title:'Validation', lessons:['Significance testing','Overfitting & walk-forward']} ] },
     { title:'Cycle Analysis', cat:'Systematic', instr:'James Whitfield', initials:'JW', price:379, hours:'9', lessons:58, level:'Advanced', rating:'4.7', tag:'', accent:'#547a5c', slug:'cycle-analysis', thinkificSlug:'cycle-analysis',
       description:'Identify, measure and trade market cycles — turning periodicity into timing models you can systematise.',
       modules:[ {title:'Cycle Foundations', lessons:['Periodicity basics','Detrending']}, {title:'Applied Cycles', lessons:['Composite cycles','Building a timing model']} ] },
-    { title:'Behavioral Finance & Sentiment', cat:'AI', instr:'David Brenner', initials:'DB', price:449, hours:'12', lessons:84, level:'Advanced', rating:'4.9', tag:'New', accent:'#2e6047', slug:'behavioral-finance', thinkificSlug:'behavioral-finance',
+    { title:'Behavioral Finance & Sentiment', cat:'AI', instr:'David Brenner', initials:'DB', price:449, hours:'12', lessons:84, level:'Advanced', rating:'4.9', tag:'New', accent:'#2e6047', slug:'behavioral-finance', thinkificSlug:'behavioral-finance', featured:true, order:3,
       description:'Quantify crowd psychology. Turn sentiment, positioning and flow data into signals using modern ML techniques.',
       modules:[ {title:'Sentiment Data', lessons:['Sources & cleaning','Positioning & flow']}, {title:'Modelling', lessons:['Feature engineering','From signal to strategy']} ] },
   ],
@@ -186,7 +186,46 @@ function normalizeCourse(c, i){
     enrollUrl: c.enrollUrl || '',
     description: c.description || '',
     modules: Array.isArray(c.modules) ? c.modules : [],
+    // HOME-PAGE CURATION (controlled from Thinkific): add the keyword `featured`
+    // to a course to put it on the home page; `featured-2`, `featured-3`… set order.
+    featured: c.featured === true || /(^|,)\s*featured/i.test(c.keywords || ''),
+    order: Number(c.order) || (function(){ const m=/featured-(\d+)/i.exec(c.keywords||''); return m?+m[1]:0; })(),
   };
+}
+
+/* Compact course card (shared by the home featured grid + the full catalog page). */
+function courseCardHtml(c){
+  return `<a href="${coursePageUrl(c)}" class="card card-hover" style="text-decoration:none; color:#1a241c; display:block; background:#fff; border:1px solid #e4e2d9; border-radius:16px; overflow:hidden;">
+    <div style="position:relative; height:140px; overflow:hidden; background:linear-gradient(150deg, ${hexA(c.accent,.10)}, #ffffff); border-bottom:1px solid #e8e6dd;">
+      <svg viewBox="0 0 360 140" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%;">
+        <polyline points="0,110 60,94 120,102 180,66 240,80 300,42 360,54" fill="none" stroke="${c.accent}" stroke-width="2.5"></polyline>
+      </svg>
+      ${c.tag ? `<span style="position:absolute; top:12px; right:12px; padding:5px 11px; border-radius:6px; background:${c.accent}; color:#fff; font-size:11px; font-weight:700;">${esc(c.tag)}</span>`:''}
+      <span class="mono" style="position:absolute; bottom:11px; left:13px; padding:4px 9px; border-radius:6px; background:rgba(255,255,255,.9); border:1px solid #e4e2d9; font-size:11px; color:#4a5260;">${esc(c.cat)}</span>
+      <span class="mono" style="position:absolute; bottom:11px; right:13px; font-size:11px; color:#6a7280;">${esc(c.level)}</span>
+    </div>
+    <div style="padding:18px 20px 20px;">
+      <div style="display:flex; align-items:center; gap:9px; margin-bottom:11px;">
+        <span class="serif" style="width:26px; height:26px; flex:none; border-radius:50%; background:#eef0ec; border:1px solid #e0ddd2; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#1f4733;">${esc(c.initials)}</span>
+        <span style="font-size:13px; color:#6a7280;">${esc(c.instr)}</span>
+      </div>
+      <h3 style="font-family:'Newsreader',serif; font-weight:500; font-size:21px; line-height:1.16; margin:0 0 12px;">${esc(c.title)}</h3>
+      <div style="display:flex; gap:9px; font-size:12px; color:#8a92a0; margin-bottom:16px; flex-wrap:wrap;">
+        <span>${esc(c.hours)} hrs</span><span>·</span><span>${c.lessons} lessons</span><span>·</span><span style="color:#b08d3c;">★ ${esc(c.rating)}</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid #ece9e0;">
+        <div class="serif" style="font-size:24px; color:#1a241c;">$${c.price}</div>
+        <span style="padding:9px 16px; border-radius:8px; border:1px solid #1f4733; color:#1f4733; font-size:13px; font-weight:600;">View course</span>
+      </div>
+    </div>
+  </a>`;
+}
+// Featured (curated) courses for the home page, sorted by `order`, capped at `limit`.
+function featuredCourses(courses, limit){
+  let list = courses.filter(c => c.featured);
+  if (!list.length) list = courses.slice();
+  list = list.slice().sort((a,b) => (a.order||999) - (b.order||999));
+  return limit ? list.slice(0, limit) : list;
 }
 function normalizeInstructor(t, i){
   const name = t.name || ((t.first_name||'') + ' ' + (t.last_name||'')).trim() || 'Instructor';
