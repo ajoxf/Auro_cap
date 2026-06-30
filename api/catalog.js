@@ -98,12 +98,27 @@ async function buildCatalog(KEY, SUB) {
     else if (type === 'bundle' && p.status !== 'draft' && !p.hidden && !p.private) bundleProducts.push(p);
   }
 
+  // Curriculum (chapters) per course — best-effort, parallel. Skip when the catalog is
+  // large to respect the 120 req/min limit (the full curriculum lives on Thinkific too).
+  const modulesByCourse = {};
+  if (courses.length <= 40) {
+    await Promise.all(courses.map(async c => {
+      try {
+        const chs = await tkAll(KEY, SUB, `courses/${c.id}/chapters`);
+        modulesByCourse[c.id] = chs.map(ch => ({
+          title: ch.name || ch.title || 'Section',
+          count: Array.isArray(ch.content_ids) ? ch.content_ids.length : Number(ch.contents_count || ch.lessons_count || 0),
+        }));
+      } catch (_) { /* no chapters for this course */ }
+    }));
+  }
+
   const instrName = {};
   instructors.forEach(t => { instrName[t.id] = fullName(t); });
 
   const outCourses = courses
     .filter(c => c.published !== false)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, modulesByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -154,7 +169,7 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName, priceByCourse) {
+function mapCourse(c, i, instrName, priceByCourse, modulesByCourse) {
   const kw = String(c.keywords || '');
   const fm = /featured(?:-(\d+))?/i.exec(kw);
   const rawPrice = (priceByCourse && priceByCourse[c.id] != null) ? priceByCourse[c.id] : c.price;
@@ -175,6 +190,7 @@ function mapCourse(c, i, instrName, priceByCourse) {
     accent: CONFIG.accents[i % CONFIG.accents.length],
     description: c.subtitle || c.description || '',
     image: c.course_card_image_url || c.banner_image_url || '',
+    modules: (modulesByCourse && modulesByCourse[c.id]) || [],
     keywords: kw,
     featured: /featured/i.test(kw),
     order: fm && fm[1] ? Number(fm[1]) : 0,
