@@ -89,6 +89,11 @@ you want to publish; the site then lives at
 > (`useDirectEnroll: true`), not their marketing pages. For extra safety, in
 > Thinkific set each course's landing page to redirect, and add a canonical there
 > pointing back to your `course.html?slug=…`.
+>
+> A **`sitemap.xml`** + **`robots.txt`** are included so search engines find every
+> page. Regenerate them after content changes (or point at your final domain) with:
+> `node build-sitemap.mjs https://your-final-domain` — in production, have your
+> proxy/build emit the sitemap from the live Thinkific feed so it stays current.
 
 > The Bloomberg hero is a **scroll-driven Three.js frame animation** — the clip
 > advances as you scroll down and reverses as you scroll up. It uses an all-intra
