@@ -39,11 +39,11 @@ const THINKIFIC = {
 const MERIDIAN_DATA = {
   // Learning paths === Thinkific BUNDLES (several courses sold together).
   paths: [
-    { name:'Technical Trading Track',  n:26, price:899,  tile:'#1f4733', slug:'technical-trading-track',
+    { name:'Technical Trading Track',  n:26, price:899,  tile:'#8a6d1f', slug:'technical-trading-track',
       desc:'Price action, indicators, chart patterns, market structure.',
       blurb:'Go from chart-blind to reading any market with confidence. A complete, ordered path through price action, indicators, patterns and market structure — built so each course compounds on the last.',
       courses:['trend-analysis','chart-pattern-analysis','technical-indicators'] },
-    { name:'Systematic Trading Track', n:21, price:949,  tile:'#3c6b4f', slug:'systematic-trading-track',
+    { name:'Systematic Trading Track', n:21, price:949,  tile:'#b8923c', slug:'systematic-trading-track',
       desc:'Rules-based systems, backtesting, execution, risk.',
       blurb:'Turn discretion into rules. Design, backtest and run systematic strategies with disciplined execution and risk control — the way a systematic desk actually operates.',
       courses:['cycle-analysis'] },
@@ -51,29 +51,29 @@ const MERIDIAN_DATA = {
       desc:'Statistics, factor models, Python, strategy research.',
       blurb:'The quant core: statistics that matter, factor models, Python and rigorous strategy research — the closest thing to a buy-side research bootcamp online.',
       courses:['statistics-for-technicians'] },
-    { name:'AI & Machine Learning',    n:18, price:1199, tile:'#5c7a5f', slug:'ai-ml-track',
+    { name:'AI & Machine Learning',    n:18, price:1199, tile:'#cdab57', slug:'ai-ml-track',
       desc:'ML models, feature engineering, alpha from data.',
       blurb:'Apply modern machine learning to markets — feature engineering, sentiment and behavioral signals, and building models that find real, durable alpha.',
       courses:['behavioral-finance'] },
   ],
 
   courses: [
-    { title:'Trend Analysis', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:349, hours:'8.5', lessons:62, level:'Intermediate', rating:'4.9', tag:'Bestseller', accent:'#1f4733', slug:'trend-analysis', thinkificSlug:'trend-analysis', featured:true, order:1,
+    { title:'Trend Analysis', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:349, hours:'8.5', lessons:62, level:'Intermediate', rating:'4.9', tag:'Bestseller', accent:'#8a6d1f', slug:'trend-analysis', thinkificSlug:'trend-analysis', featured:true, order:1,
       description:'Read trend, structure and momentum the way a desk does. Build a repeatable framework for entries, exits and risk across any liquid market.',
       modules:[ {title:'Foundations of Trend', lessons:['What trend really is','Higher highs & market structure','Timeframe alignment']}, {title:'Execution', lessons:['Entry triggers','Stop placement','Scaling & exits']}, {title:'Risk', lessons:['Position sizing','Drawdown control']} ] },
-    { title:'Chart Pattern Analysis', cat:'Technical', instr:'Priya Nair', initials:'PN', price:299, hours:'7', lessons:52, level:'Beginner', rating:'5.0', tag:'Popular', accent:'#3c6b4f', slug:'chart-pattern-analysis', thinkificSlug:'chart-pattern-analysis',
+    { title:'Chart Pattern Analysis', cat:'Technical', instr:'Priya Nair', initials:'PN', price:299, hours:'7', lessons:52, level:'Beginner', rating:'5.0', tag:'Popular', accent:'#b8923c', slug:'chart-pattern-analysis', thinkificSlug:'chart-pattern-analysis',
       description:'Classic and modern chart patterns, objectively defined — so you can spot, qualify and trade them without guesswork.',
       modules:[ {title:'Reversal Patterns', lessons:['Head & shoulders','Double tops/bottoms']}, {title:'Continuation Patterns', lessons:['Flags & pennants','Triangles']} ] },
-    { title:'Technical Indicators', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:329, hours:'9', lessons:64, level:'Intermediate', rating:'4.8', tag:'', accent:'#5c7a5f', slug:'technical-indicators', thinkificSlug:'technical-indicators',
+    { title:'Technical Indicators', cat:'Technical', instr:'Marcus Chen', initials:'MC', price:329, hours:'9', lessons:64, level:'Intermediate', rating:'4.8', tag:'', accent:'#cdab57', slug:'technical-indicators', thinkificSlug:'technical-indicators',
       description:'Moving averages, oscillators and volume tools — what they measure, where they fail, and how to combine them without redundancy.',
       modules:[ {title:'Trend & Momentum', lessons:['Moving averages','MACD','RSI']}, {title:'Volume & Volatility', lessons:['OBV','ATR & Bollinger Bands']} ] },
     { title:'Statistics for Technicians', cat:'Quant', instr:'Sofia Reyes', initials:'SR', price:399, hours:'11', lessons:78, level:'Advanced', rating:'4.9', tag:'Bestseller', accent:'#b08d3c', slug:'statistics-for-technicians', thinkificSlug:'statistics-for-technicians', featured:true, order:2,
       description:'The statistics that actually matter for trading: distributions, expectancy, significance and how to avoid fooling yourself with backtests.',
       modules:[ {title:'Core Statistics', lessons:['Distributions','Expectancy & edge']}, {title:'Validation', lessons:['Significance testing','Overfitting & walk-forward']} ] },
-    { title:'Cycle Analysis', cat:'Systematic', instr:'James Whitfield', initials:'JW', price:379, hours:'9', lessons:58, level:'Advanced', rating:'4.7', tag:'', accent:'#547a5c', slug:'cycle-analysis', thinkificSlug:'cycle-analysis',
+    { title:'Cycle Analysis', cat:'Systematic', instr:'James Whitfield', initials:'JW', price:379, hours:'9', lessons:58, level:'Advanced', rating:'4.7', tag:'', accent:'#b8923c', slug:'cycle-analysis', thinkificSlug:'cycle-analysis',
       description:'Identify, measure and trade market cycles — turning periodicity into timing models you can systematise.',
       modules:[ {title:'Cycle Foundations', lessons:['Periodicity basics','Detrending']}, {title:'Applied Cycles', lessons:['Composite cycles','Building a timing model']} ] },
-    { title:'Behavioral Finance & Sentiment', cat:'AI', instr:'David Brenner', initials:'DB', price:449, hours:'12', lessons:84, level:'Advanced', rating:'4.9', tag:'New', accent:'#2e6047', slug:'behavioral-finance', thinkificSlug:'behavioral-finance', featured:true, order:3,
+    { title:'Behavioral Finance & Sentiment', cat:'AI', instr:'David Brenner', initials:'DB', price:449, hours:'12', lessons:84, level:'Advanced', rating:'4.9', tag:'New', accent:'#9a7b2e', slug:'behavioral-finance', thinkificSlug:'behavioral-finance', featured:true, order:3,
       description:'Quantify crowd psychology. Turn sentiment, positioning and flow data into signals using modern ML techniques.',
       modules:[ {title:'Sentiment Data', lessons:['Sources & cleaning','Positioning & flow']}, {title:'Modelling', lessons:['Feature engineering','From signal to strategy']} ] },
   ],
@@ -100,9 +100,9 @@ const MERIDIAN_DATA = {
 };
 
 /* ---------- helpers ---------- */
-const ACCENTS = ['#1f4733','#3c6b4f','#b08d3c','#5c7a5f','#547a5c','#2e6047'];
+const ACCENTS = ['#8a6d1f','#b8923c','#b08d3c','#cdab57','#b8923c','#9a7b2e'];
 const esc  = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const hexA = (hex,a) => { const h=String(hex||'#1f4733').replace('#',''); const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; };
+const hexA = (hex,a) => { const h=String(hex||'#8a6d1f').replace('#',''); const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; };
 const initialsOf = (name) => String(name||'').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const slugify = (s) => String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 
@@ -206,7 +206,7 @@ function courseCardHtml(c){
     </div>
     <div style="padding:18px 20px 20px;">
       <div style="display:flex; align-items:center; gap:9px; margin-bottom:11px;">
-        <span class="serif" style="width:26px; height:26px; flex:none; border-radius:50%; background:#eef0ec; border:1px solid #e0ddd2; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#1f4733;">${esc(c.initials)}</span>
+        <span class="serif" style="width:26px; height:26px; flex:none; border-radius:50%; background:#eef0ec; border:1px solid #e0ddd2; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#8a6d1f;">${esc(c.initials)}</span>
         <span style="font-size:13px; color:#6a7280;">${esc(c.instr)}</span>
       </div>
       <h3 style="font-family:'Newsreader',serif; font-weight:500; font-size:21px; line-height:1.16; margin:0 0 12px;">${esc(c.title)}</h3>
@@ -215,7 +215,7 @@ function courseCardHtml(c){
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid #ece9e0;">
         <div class="serif" style="font-size:24px; color:#1a241c;">$${c.price}</div>
-        <span style="padding:9px 16px; border-radius:8px; border:1px solid #1f4733; color:#1f4733; font-size:13px; font-weight:600;">View course</span>
+        <span style="padding:9px 16px; border-radius:8px; border:1px solid #8a6d1f; color:#8a6d1f; font-size:13px; font-weight:600;">View course</span>
       </div>
     </div>
   </a>`;
