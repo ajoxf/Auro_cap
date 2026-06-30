@@ -793,12 +793,12 @@ function initVideoScrub(cfg){
   video.load();
 }
 
-// Top hero — clip sits on a pure-white stage that matches the clip's own white
-// backdrop, so the 35% zoom-out margins are invisible. clean:true = crisp edges (no
-// feather/gradient border). Nav stays solid (dark text) since the backdrop is light.
+// Top hero — pure cover-fill (zoom 1): the clip fills the viewport edge-to-edge with
+// NO margin, so there are no borders. clean:true keeps the edges crisp. White stage +
+// solid (dark-text) nav for legibility.
 initScrubHero({ video:'cine-src', track:'cine-track', stage:'cine-stage',
                 canvas:'cine-gl', poster:'cine-poster', headline:'cine-headline',
-                zoom:1.35, clean:true });
+                zoom:1, clean:true });
 
 // Mid-page band (Trader) — plain <video> cover-filling a crisp rounded card, scrubbed by
 // scroll. No WebGL needed; reliable everywhere.
