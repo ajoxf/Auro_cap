@@ -139,6 +139,21 @@ the school owner — the owner already "owns" everything and is not a valid test
 - Turn on **order/receipt emails**, **welcome email**, and **course-completion** emails.
 - Make sure the **post-purchase redirect** sends students into the course player or their dashboard.
 
+### 8. Match Thinkific's hosted pages to the Meridian brand
+Students bounce between the marketing site and **Thinkific-hosted pages** (sign-in, sign-up,
+checkout, the course player, and their dashboard). Those pages use the **Thinkific Site Builder
+theme**, NOT the marketing site, so they currently show Thinkific's default header — e.g. an
+**"All Products"** menu link — which looks inconsistent. Clean this up in **Design → Site Builder
+(Theme)**:
+- **Remove or rename the "All Products" nav item** in the theme **Header/Navigation** (rename to
+  "Courses" or point it at the marketing site if you prefer; delete it if not needed).
+- Set the header **logo** to the Meridian logo and match **brand colours/fonts** so the hosted
+  sign-in / checkout / player pages look like the marketing site.
+- Configure **social sign-in** (LinkedIn / Facebook / Google / Apple) only if you actually want
+  those options on the sign-in page; otherwise remove the ones you don't want.
+- Keep the **domain** as-is (don't change the school subdomain or any custom domain).
+- Goal: a student never feels they've left "Meridian" when they hit a Thinkific page.
+
 ## Guardrails
 - **Never delete anything with enrolled students** without explicit confirmation from me.
 - **Always confirm the delete list with me before deleting.**
