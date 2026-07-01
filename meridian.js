@@ -46,14 +46,23 @@ const THINKIFIC = {
    URL.) Until `url` is set, the button emails `contactEmail` so it still works.
    ---------------------------------------------------------------------------- */
 const COACHING = {
+  // BEST (direct checkout): create a paid coaching Product in Thinkific, then paste its
+  // product/course id + primary price_id here. The button then deep-links STRAIGHT to the
+  // Thinkific checkout — same one-step flow as the course "Enroll" buttons.
+  productId: '',                         // ← Thinkific coaching product/course id
+  priceId: '',                           // ← its primary price_id (required by /enroll)
+  // OR paste a full booking/checkout link (Thinkific "Copy link", Calendly, Acuity…).
   url: '',                               // ← e.g. 'https://calendly.com/your-handle/coaching'
-  contactEmail: 'ankit@aajventures.com', // fallback inquiry email until `url` is set
+  contactEmail: 'ankit@aajventures.com', // last-resort inquiry email until the above is set
   price: 'Private sessions',             // small display label on the button row (optional)
 };
+// Prefer the direct Thinkific checkout deep-link; then a pasted URL; then an email enquiry.
 function coachingHref(){
-  return COACHING.url
-    ? COACHING.url
-    : 'mailto:' + COACHING.contactEmail + '?subject=' + encodeURIComponent('1:1 Coaching enquiry');
+  if (COACHING.productId && COACHING.priceId)
+    return 'https://' + THINKIFIC.domain + '/enroll/' + COACHING.productId +
+           '?price_id=' + encodeURIComponent(COACHING.priceId);
+  if (COACHING.url) return COACHING.url;
+  return 'mailto:' + COACHING.contactEmail + '?subject=' + encodeURIComponent('1:1 Coaching enquiry');
 }
 
 /* ----------------------------------------------------------------------------
@@ -343,6 +352,6 @@ if (typeof document !== 'undefined') {
   document.querySelectorAll('[data-thinkific="dashboard"]').forEach(a => a.href = dashboardUrl());
   document.querySelectorAll('[data-thinkific="coaching"]').forEach(a => {
     a.href = coachingHref();
-    if (COACHING.url) { a.target = '_blank'; a.rel = 'noopener'; }
+    if (!/^mailto:/.test(a.href)) { a.target = '_blank'; a.rel = 'noopener'; }
   });
 }
