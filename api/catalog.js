@@ -105,7 +105,7 @@ module.exports = async function handler(req, res) {
           status: p.status, hidden: p.hidden, private: p.private, price: p.price,
           // The exact deep-link our Enroll button builds, so we can see if it's valid:
           enrollUrl: primary && primary.id
-            ? `${base}/enroll/${p.productable_id}?price_id=${primary.id}`
+            ? `${base}/enroll/${p.id}?price_id=${primary.id}`
             : `${base}/courses/${p.slug} (no price_id — falls back to landing)`,
           product_prices: prices.map(x => ({
             id: x.id, price: x.price, is_primary: x.is_primary, is_free: x.price == 0 || x.price === '0.0',
@@ -149,6 +149,7 @@ async function buildCatalog(KEY, SUB) {
   const priceByCourse = {};        // course id → price (number)
   const priceIdByCourse = {};      // course id → price_id (for direct checkout deep-link)
   const createdByCourse = {};      // course id → created_at (for the "New" badge)
+  const productIdByCourse = {};    // course id -> Thinkific PRODUCT id (needed by /enroll)
   const liveCourseIds = new Set(); // course ids whose product is published & shoppable
   const bundleProducts = [];       // products that represent a learning-path bundle
   // A product is "live" (shown publicly) only when published and not hidden/private.
@@ -165,6 +166,7 @@ async function buildCatalog(KEY, SUB) {
       priceByCourse[p.productable_id] = (pp && pp.price != null) ? pp.price : p.price;
       if (pp && pp.id) priceIdByCourse[p.productable_id] = pp.id;
       if (p.created_at) createdByCourse[p.productable_id] = p.created_at;
+      productIdByCourse[p.productable_id] = p.id;
       if (isLive(p)) liveCourseIds.add(String(p.productable_id));
     } else if (type === 'bundle' && isLive(p)) {
       bundleProducts.push(p);
@@ -180,7 +182,7 @@ async function buildCatalog(KEY, SUB) {
   // excluded). If the products feed is unavailable, fall back to showing all courses.
   const outCourses = courses
     .filter(c => productsOk ? liveCourseIds.has(String(c.id)) : true)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse, productIdByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -237,7 +239,7 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse) {
+function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse, productIdByCourse) {
   const kw = String(c.keywords || '');
   const fm = /featured(?:-(\d+))?/i.exec(kw);
   const rawPrice = (priceByCourse && priceByCourse[c.id] != null) ? priceByCourse[c.id] : c.price;
@@ -245,7 +247,7 @@ function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCou
   const lessonTotal = mods.reduce((a, m) => a + (Number(m.count) || 0), 0);
   return {
     id: c.id,
-    thinkificCourseId: c.id,                 // enables direct /enroll/{id} checkout links
+    thinkificCourseId: (productIdByCourse && productIdByCourse[c.id]) || c.id,   // PRODUCT id for /enroll
     title: c.name,
     slug: c.slug,
     thinkificSlug: c.slug,
@@ -277,7 +279,7 @@ function mapBundle(p, i, members) {
     name: p.name,
     slug: p.slug || slugify(p.name),
     thinkificSlug: p.slug || '',
-    thinkificBundleId: p.productable_id,           // bundle id, for direct checkout
+    thinkificBundleId: p.id,   // PRODUCT id (not productable_id) for /enroll
     priceId: (pp && pp.id) || '',                  // price_id, for direct checkout
     desc: p.description || '',
     blurb: p.description || '',
