@@ -66,6 +66,74 @@ function coachingHref(){
 }
 
 /* ----------------------------------------------------------------------------
+   CRYPTO CHECKOUT (Cregis) — optional second way to pay for a PAID course/bundle.
+   Card / Apple-Google Pay / PayPal keep going through Thinkific's native checkout;
+   crypto goes through our serverless endpoint (see api/crypto-checkout.js), which
+   creates a Cregis order and, on confirmed payment, enrolls the student via the
+   Thinkific Admin API. Keep `enabled:false` until Cregis is live — the "Pay with
+   crypto" button stays hidden and Enroll behaves exactly as before.
+   ---------------------------------------------------------------------------- */
+const CRYPTO = {
+  enabled: false,                    // ← flip to true once Cregis is configured & tested
+  endpoint: '/api/crypto-checkout',  // serverless fn that creates the Cregis order
+  label: 'Pay with crypto',
+  coins: 'USDT · USDC',              // display hint under the button
+};
+// Secondary button markup — empty string when disabled or when the item is free.
+function cryptoButtonHtml(kind, id, price){
+  if (!CRYPTO.enabled || !(Number(price) > 0)) return '';
+  return `<button type="button" onclick="startCryptoCheckout('${kind}','${id}')"
+      style="width:100%; margin-top:10px; cursor:pointer; padding:13px 20px; border-radius:11px;
+             border:1px solid #d9d7cd; background:#fff; color:#1a241c; font-size:14px; font-weight:600;">
+      ${CRYPTO.label} <span style="color:#8a92a0; font-weight:500;">· ${CRYPTO.coins}</span>
+    </button>`;
+}
+// Collect email+name in a tiny modal, create the Cregis order, redirect to its checkout.
+async function startCryptoCheckout(kind, id){
+  if (!CRYPTO.enabled) return;
+  const info = await cryptoCollectDetails();
+  if (!info) return;                 // cancelled
+  try {
+    const res = await fetch(CRYPTO.endpoint, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, id, email: info.email, name: info.name }),
+    });
+    const d = await res.json().catch(() => ({}));
+    if (res.ok && d && d.checkoutUrl) { window.location.href = d.checkoutUrl; return; }
+    alert((d && d.error) || 'Unable to start crypto checkout. Please try a card instead.');
+  } catch (e) {
+    alert('Network error starting crypto checkout. Please try again or use a card.');
+  }
+}
+// Minimal promise-based modal → resolves {name,email} or null if cancelled.
+function cryptoCollectDetails(){
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed; inset:0; z-index:1000; background:rgba(15,18,22,.55); display:flex; align-items:center; justify-content:center; padding:20px;';
+    ov.innerHTML = `<div style="background:#fff; border-radius:16px; max-width:420px; width:100%; padding:26px; font-family:inherit;">
+        <div style="font-family:'Newsreader',serif; font-size:22px; margin-bottom:6px;">Pay with crypto</div>
+        <div style="font-size:13px; color:#6a7280; margin-bottom:18px;">Enter your details — we'll email your login after payment is confirmed.</div>
+        <input id="cc-name" placeholder="Full name" style="width:100%; margin-bottom:10px; padding:12px 14px; border:1px solid #d9d7cd; border-radius:10px; font-size:14px;">
+        <input id="cc-email" type="email" placeholder="Email address" style="width:100%; margin-bottom:18px; padding:12px 14px; border:1px solid #d9d7cd; border-radius:10px; font-size:14px;">
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+          <button id="cc-cancel" style="cursor:pointer; padding:11px 18px; border-radius:10px; border:1px solid #d9d7cd; background:#fff; font-size:14px; font-weight:600;">Cancel</button>
+          <button id="cc-go" style="cursor:pointer; padding:11px 20px; border-radius:10px; border:none; background:#8a6d1f; color:#fff; font-size:14px; font-weight:700;">Continue →</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+    const close = (val) => { ov.remove(); resolve(val); };
+    ov.querySelector('#cc-cancel').onclick = () => close(null);
+    ov.addEventListener('click', e => { if (e.target === ov) close(null); });
+    ov.querySelector('#cc-go').onclick = () => {
+      const name = ov.querySelector('#cc-name').value.trim();
+      const email = ov.querySelector('#cc-email').value.trim();
+      if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { alert('Please enter your name and a valid email.'); return; }
+      close({ name, email });
+    };
+  });
+}
+
+/* ----------------------------------------------------------------------------
    DEMO / FALLBACK CONTENT
    Shown only until catalogEndpoint is live (or if a fetch fails), so the site
    always looks complete. Once live sync is on, Thinkific data replaces all of

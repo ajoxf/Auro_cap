@@ -94,6 +94,24 @@ Student
 - **Phase 2 (this build):** Cregis crypto checkout + API enrollment as specced above.
 - **Phase 2b (optional):** Thinkific SSO for instant post-payment login; auto-receipt PDFs.
 
+## Implementation status (built so far)
+- ✅ **Front-end method-chooser** — `meridian.js` `CRYPTO` config (`enabled:false` flag),
+  `cryptoButtonHtml()` + `startCryptoCheckout()` with a small name/email modal. Wired into
+  `course.html` and `bundle.html` (paid items only). Hidden until `CRYPTO.enabled = true`.
+- ✅ **`api/crypto-checkout.js`** — resolves real price from Thinkific, creates a Cregis order,
+  returns `checkoutUrl`. Cregis call isolated in `createCregisOrder()` / `cregisAuthHeaders()`.
+- ✅ **`api/crypto-webhook.js`** — verifies signature (fail-closed), find-or-creates the user,
+  enrolls in the course (or every bundle course), enroll-once via Upstash. Cregis signature in
+  `verifyCregisSignature()`; receipt in `sendReceipt()`.
+- ✅ **`crypto-success.html`** — branded post-payment return page.
+- ⏳ **TODO once Cregis creds arrive:** exact create-order call, request signing, and callback
+  signature scheme (all clearly marked `TODO(Cregis)`); choose an ESP for the receipt email/PDF.
+
+### Vercel env vars to add (when going live)
+`CREGIS_API_KEY`, `CREGIS_API_SECRET`, `CREGIS_BASE` (opt), `PUBLIC_SITE_URL`,
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, plus an ESP key for receipts.
+(`THINKIFIC_API_KEY` / `THINKIFIC_SUBDOMAIN` already set.) Then flip `CRYPTO.enabled = true`.
+
 ## Open items before build
 1. Confirm: can SG Thinkific connect **direct Stripe** for cards? (Sets scope — see Decision point.)
 2. **Cregis merchant account** — obtain API key + secret + supported coins/chains + webhook format.
