@@ -452,8 +452,22 @@ async function fetchCatalog(){
 
 /* Wire any "Log in" link to Thinkific sign-in (present on every page). */
 if (typeof document !== 'undefined') {
-  document.querySelectorAll('[data-thinkific="signin"]').forEach(a => a.href = signInUrl());
-  document.querySelectorAll('[data-thinkific="dashboard"]').forEach(a => a.href = dashboardUrl());
+  // "My Courses" stays hidden until the visitor has signed in. We can't read Thinkific's
+  // cross-domain session directly, so we remember (in this browser) once they head to
+  // sign-in / their dashboard, and reveal the link on subsequent pages/visits.
+  const SEEN_KEY = 'mer_signed_in';
+  const seenSignIn = () => { try { return localStorage.getItem(SEEN_KEY) === '1'; } catch (_) { return false; } };
+  const markSignedIn = () => { try { localStorage.setItem(SEEN_KEY, '1'); } catch (_) {} };
+
+  document.querySelectorAll('[data-thinkific="signin"]').forEach(a => {
+    a.href = signInUrl();
+    a.addEventListener('click', markSignedIn);   // returning visitor → show "My Courses" next time
+  });
+  document.querySelectorAll('[data-thinkific="dashboard"]').forEach(a => {
+    a.href = dashboardUrl();
+    a.addEventListener('click', markSignedIn);
+    a.style.display = seenSignIn() ? '' : 'none';  // hidden until they've signed in
+  });
   document.querySelectorAll('[data-thinkific="coaching"]').forEach(a => {
     a.href = coachingHref();
     if (!/^mailto:/.test(a.href)) { a.target = '_blank'; a.rel = 'noopener'; }
