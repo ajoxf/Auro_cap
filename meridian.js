@@ -49,8 +49,8 @@ const COACHING = {
   // BEST (direct checkout): create a paid coaching Product in Thinkific, then paste its
   // product/course id + primary price_id here. The button then deep-links STRAIGHT to the
   // Thinkific checkout — same one-step flow as the course "Enroll" buttons.
-  productId: '',                         // ← Thinkific coaching product/course id
-  priceId: '',                           // ← its primary price_id (required by /enroll)
+  productId: '3808378',                  // ← Thinkific coaching PRODUCT id
+  priceId: '4769560',                    // ← its primary price_id (required by /enroll)
   // OR paste a full booking/checkout link (Thinkific "Copy link", Calendly, Acuity…).
   url: '',                               // ← e.g. 'https://calendly.com/your-handle/coaching'
   contactEmail: 'ankit@aajventures.com', // last-resort inquiry email until the above is set
@@ -64,6 +64,16 @@ function coachingHref(){
   if (COACHING.url) return COACHING.url;
   return 'mailto:' + COACHING.contactEmail + '?subject=' + encodeURIComponent('1:1 Coaching enquiry');
 }
+// Click handler for every "Book a 1:1 session" CTA. When crypto is live, route the coaching
+// purchase through the Cregis checkout; otherwise let the href (Thinkific checkout / mailto) run.
+function coachingClick(e){
+  if (CRYPTO && CRYPTO.enabled && COACHING.productId){
+    if (e && e.preventDefault) e.preventDefault();
+    startCryptoCheckout('coaching', COACHING.productId);
+    return false;
+  }
+  return true;   // fall through to coachingHref() (Thinkific direct checkout, or mailto)
+}
 
 /* ----------------------------------------------------------------------------
    CRYPTO CHECKOUT (Cregis) — optional second way to pay for a PAID course/bundle.
@@ -74,7 +84,7 @@ function coachingHref(){
    crypto" button stays hidden and Enroll behaves exactly as before.
    ---------------------------------------------------------------------------- */
 const CRYPTO = {
-  enabled: false,                    // ← flip to true once Cregis is configured & tested
+  enabled: true,                     // ← flip to true once Cregis is configured & tested
   endpoint: '/api/crypto-checkout',  // serverless fn that creates the Cregis order
   label: 'Pay with crypto',
   coins: 'USDT · USDC',              // display hint under the button
@@ -421,5 +431,6 @@ if (typeof document !== 'undefined') {
   document.querySelectorAll('[data-thinkific="coaching"]').forEach(a => {
     a.href = coachingHref();
     if (!/^mailto:/.test(a.href)) { a.target = '_blank'; a.rel = 'noopener'; }
+    a.addEventListener('click', coachingClick);   // crypto checkout when CRYPTO.enabled
   });
 }
