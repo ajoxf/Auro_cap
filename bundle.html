@@ -113,7 +113,7 @@
               <span class="chip">Lifetime access</span>
             </div>
             <div style="display:flex; align-items:center; gap:22px; flex-wrap:wrap;">
-              <a class="btn-primary" href="${esc(bundleUrl(p))}" target="_blank" rel="noopener">Enroll in this track →</a>
+              <a class="btn-primary" href="${esc(bundleUrl(p))}" target="_blank" rel="noopener" onclick="return payClick(event,'bundle','${p.thinkificBundleId || ''}',${Number(p.price)||0})">Enroll in this track →</a>
               <div style="display:flex; align-items:baseline; gap:10px;">
                 <span class="serif" style="font-size:40px; color:#fff;">$${p.price}</span>
                 ${save>0 ? `<span style="color:#cdbf9d; font-size:14px;"><s style="color:#8aa593;">$${sumIndividual}</s> · save $${save}</span>` : ``}
@@ -135,10 +135,7 @@
               <h3 style="font-size:24px; margin:0 0 6px;">Ready to start the ${esc(p.name)}?</h3>
               <p style="font-size:14px; color:#6a7280; margin:0;">One payment · lifetime access · ${p.n} courses${save>0?` · save $${save} vs buying separately`:''}.</p>
             </div>
-            <div style="display:flex; flex-direction:column; gap:0; min-width:220px;">
-              <a class="btn-primary" href="${esc(bundleUrl(p))}" target="_blank" rel="noopener">Enroll for $${p.price} →</a>
-              ${cryptoButtonHtml('bundle', p.thinkificBundleId || '', p.price)}
-            </div>
+            <a class="btn-primary" href="${esc(bundleUrl(p))}" target="_blank" rel="noopener" onclick="return payClick(event,'bundle','${p.thinkificBundleId || ''}',${Number(p.price)||0})">Enroll for $${p.price} →</a>
           </div>
         </section>`;
     }

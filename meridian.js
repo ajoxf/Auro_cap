@@ -69,10 +69,11 @@ function coachingHref(){
 function coachingClick(e){
   if (CRYPTO && CRYPTO.enabled && COACHING.productId){
     if (e && e.preventDefault) e.preventDefault();
-    startCryptoCheckout('coaching', COACHING.productId);
+    // Card/PayPal via coachingHref() (direct checkout) OR crypto — student's choice.
+    openPaymentChooser({ kind:'coaching', id:String(COACHING.productId), cardUrl: coachingHref() });
     return false;
   }
-  return true;   // fall through to coachingHref() (Thinkific direct checkout, or mailto)
+  return true;   // crypto off → fall through to coachingHref() (direct checkout, or mailto)
 }
 
 /* ----------------------------------------------------------------------------
@@ -89,14 +90,39 @@ const CRYPTO = {
   label: 'Pay with crypto',
   coins: 'USDT · USDC',              // display hint under the button
 };
-// Secondary button markup — empty string when disabled or when the item is free.
-function cryptoButtonHtml(kind, id, price){
-  if (!CRYPTO.enabled || !(Number(price) > 0)) return '';
-  return `<button type="button" onclick="startCryptoCheckout('${kind}','${id}')"
-      style="width:100%; margin-top:10px; cursor:pointer; padding:13px 20px; border-radius:11px;
-             border:1px solid #d9d7cd; background:#fff; color:#1a241c; font-size:14px; font-weight:600;">
-      ${CRYPTO.label} <span style="color:#8a92a0; font-weight:500;">· ${CRYPTO.coins}</span>
-    </button>`;
+// Click interceptor for any Enroll / Buy / Book button. For a PAID item with crypto live,
+// open the payment-method chooser; otherwise let the link's href (card/PayPal, or free
+// sign-up) proceed as normal.
+function payClick(e, kind, id, price){
+  if (!(CRYPTO && CRYPTO.enabled) || !(Number(price) > 0)) return true;  // free or crypto off → normal link
+  if (e && e.preventDefault) e.preventDefault();
+  const cardUrl = (e && e.currentTarget && e.currentTarget.href) || '';
+  openPaymentChooser({ kind, id: String(id), cardUrl });
+  return false;
+}
+// The chooser: "Payment Methods" (Stripe / PayPal card route) vs "Crypto Payment Methods".
+function openPaymentChooser({ kind, id, cardUrl }){
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed; inset:0; z-index:1000; background:rgba(15,18,22,.55); display:flex; align-items:center; justify-content:center; padding:20px;';
+  const opt = (idAttr, title, sub) =>
+    `<button id="${idAttr}" style="width:100%; text-align:left; cursor:pointer; padding:16px 18px; border-radius:12px;
+        border:1px solid #d9d7cd; background:#fff; margin-bottom:12px;">
+       <div style="font-weight:700; font-size:15px; color:#1a241c;">${title}</div>
+       <div style="font-size:12.5px; color:#8a92a0; margin-top:3px;">${sub}</div>
+     </button>`;
+  ov.innerHTML = `<div style="background:#fff; border-radius:16px; max-width:440px; width:100%; padding:26px; font-family:inherit;">
+      <div style="font-family:'Newsreader',serif; font-size:22px; margin-bottom:4px;">Choose how to pay</div>
+      <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">Both options give you the same instant access.</div>
+      ${opt('pc-card', 'Payment Methods', 'Card, Apple&nbsp;Pay, Google&nbsp;Pay &amp; PayPal')}
+      ${opt('pc-crypto', 'Crypto Payment Methods', 'Pay in ' + CRYPTO.coins)}
+      <button id="pc-cancel" style="width:100%; margin-top:4px; cursor:pointer; padding:11px; border-radius:10px; border:none; background:transparent; color:#8a92a0; font-size:13px; font-weight:600;">Cancel</button>
+    </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  ov.querySelector('#pc-cancel').onclick = close;
+  ov.querySelector('#pc-card').onclick = () => { close(); if (cardUrl) window.open(cardUrl, '_blank', 'noopener'); };
+  ov.querySelector('#pc-crypto').onclick = () => { close(); startCryptoCheckout(kind, id); };
 }
 // Collect email+name in a tiny modal, create the Cregis order, redirect to its checkout.
 async function startCryptoCheckout(kind, id){
