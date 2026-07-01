@@ -160,6 +160,7 @@
               </div>
               <div style="font-size:13px; color:#6a7280; margin-bottom:20px;">${c.price>0 ? 'Lifetime access · pay once, own it forever.' : 'Free — full, lifetime access.'}</div>
               <a class="btn-primary" style="width:100%;" href="${esc(courseUrl(c))}" target="_blank" rel="noopener">${c.price>0 ? 'Enroll now →' : 'Enroll free →'}</a>
+              ${cryptoButtonHtml('course', c.thinkificCourseId || c.id || '', c.price)}
               <div style="display:flex; flex-direction:column; gap:9px; margin-top:22px;">
                 <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Self-paced, lifetime access</div>
                 <div style="font-size:14px; color:#3a424f;"><span style="color:#8a6d1f;">✓</span> Certificate of completion</div>
