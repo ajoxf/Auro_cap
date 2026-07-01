@@ -94,6 +94,21 @@ For each course I want live:
   For free, confirm the price is set to **Free** (not just $0 with a broken price).
 - **Publish** the Product (status = published, not hidden, not private) only when it's ready.
 
+### 3b. De-duplicate & clean up instructors
+The site currently receives **duplicate and placeholder instructor records** — e.g. **"Meet Test"
+appears multiple times** (one with a photo/bio, the rest empty) and there is an **"Ankit Jhaveri"**
+record with no role/bio/photo. Duplicates and empty profiles look unprofessional on the site.
+- **Find duplicate instructors** (same or near-same name, or the same person entered twice).
+- **Keep ONE canonical profile per real person** — the most complete one (name, role, bio, avatar) —
+  and **reassign every course** from the duplicate(s) to that canonical instructor.
+- **Delete the empty/duplicate instructor records** once no course points at them (an instructor with
+  no assigned course disappears from the site anyway, but remove the junk records to keep it tidy).
+- **Rename test/placeholder instructors** (e.g. "Meet Test") to the real person's name, or delete them
+  if they aren't a real instructor. Confirm with me before deleting anyone you're unsure about.
+- Every remaining instructor should have a **real name, role/title, short bio, and a headshot** —
+  the site pulls all of these automatically. (Default/blank Thinkific avatars are shown as initials,
+  so upload a real photo where you want one.)
+
 ### 4. Fix the enrollment flow (this is currently broken — highest priority)
 Test and make the following work **in a fresh incognito window as a brand-new student** (NOT as
 the school owner — the owner already "owns" everything and is not a valid test):
