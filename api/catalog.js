@@ -124,7 +124,10 @@ async function buildCatalog(KEY, SUB) {
   const liveCourseIds = new Set(); // course ids whose product is published & shoppable
   const bundleProducts = [];       // products that represent a learning-path bundle
   // A product is "live" (shown publicly) only when published and not hidden/private.
-  const isLive = (p) => p.status !== 'draft' && !p.hidden && !p.private;
+  // Draft AND archived products must never appear (archiving is how staff retire a course).
+  const NOT_LIVE = new Set(['draft', 'archived', 'unpublished', 'inactive']);
+  const isLive = (p) => !NOT_LIVE.has(String(p.status || '').toLowerCase())
+    && !p.hidden && !p.private && p.archived !== true;
   for (const p of products) {
     const type = String(p.productable_type || '').toLowerCase();
     if (type === 'course') {
