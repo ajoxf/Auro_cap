@@ -89,10 +89,23 @@ module.exports = async function handler(req, res) {
         tkAll(KEY, SUB, 'products').catch(() => []),
       ]);
       const prod = prods.find(p => String(p.productable_type || '').toLowerCase() === 'course') || prods[0];
+      // Compact view of EVERY course + product with any status/archive-ish field, so we can
+      // see exactly how Thinkific marks an archived item (course-level vs product-level).
+      const courses = crs.map(c => ({
+        id: c.id, name: c.name, slug: c.slug,
+        status: c.status, archived: c.archived, is_archived: c.is_archived,
+        published: c.published, hidden: c.hidden,
+      }));
+      const products = prods.map(p => ({
+        id: p.id, name: p.name, type: p.productable_type, productable_id: p.productable_id,
+        status: p.status, archived: p.archived, hidden: p.hidden, private: p.private,
+        published: p.published, price: p.price,
+      }));
       return res.status(200).json({
+        counts: { courses: crs.length, products: prods.length },
         sampleCourseKeys: crs[0] ? Object.keys(crs[0]) : [],
-        sampleProduct: prod || null,
         sampleProductKeys: prod ? Object.keys(prod) : [],
+        courses, products,
       });
     }
     const data = await buildCatalog(KEY, SUB);
