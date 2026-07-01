@@ -651,7 +651,12 @@ applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is 
 function initHeroVideo(id){
   const video = document.getElementById(id);
   if (!video) return;
-  const tryPlay = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
+  const RATE = 2;                                   // play at 2× speed
+  const setRate = () => { try { video.playbackRate = RATE; } catch (_) {} };
+  setRate();
+  video.addEventListener('loadedmetadata', setRate);   // re-apply (rate resets on load)
+  video.addEventListener('play', setRate);
+  const tryPlay = () => { setRate(); const p = video.play(); if (p && p.catch) p.catch(() => {}); };
   if (video.readyState >= 2) tryPlay();
   else video.addEventListener('canplay', tryPlay, { once:true });
   // Pause when scrolled out of view, resume when back — keeps the page light.
