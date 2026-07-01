@@ -161,7 +161,13 @@ async function buildCatalog(KEY, SUB) {
     return mapBundle(p, i, members);
   }));
 
-  const outInstr = instructors.map((t, i) => mapInstructor(t, i, SUB));
+  // Only surface instructors who still teach at least one LIVE course. When a
+  // course is archived/unpublished it drops out of outCourses above; an instructor
+  // left with no live courses is hidden from the site too (homepage + their page).
+  const liveInstrNames = new Set(outCourses.map(c => c.instr).filter(Boolean));
+  const outInstr = instructors
+    .filter(t => liveInstrNames.has(fullName(t)))
+    .map((t, i) => mapInstructor(t, i, SUB));
 
   return { courses: outCourses, instructors: outInstr, bundles: outPaths, logos: CONFIG.logos };
 }
