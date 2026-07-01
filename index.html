@@ -58,11 +58,10 @@
   }
   [id]{ scroll-margin-top:84px; }
 
-  /* ============ TOP HERO — split: copy left, scrubbing video card right ============ */
-  /* #cine-track height is set by JS = how far you scroll to play the clip. */
+  /* ============ TOP HERO — split: copy left, autoplay video card right ============ */
   #cine-track { position:relative; width:100%; }
   #intro { background:#ffffff; }
-  #cine-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; display:flex; align-items:center; }
+  #cine-stage { position:relative; width:100%; background:#ffffff; display:flex; align-items:center; padding:24px 0 44px; }
   #cine-inner { width:100%; max-width:1340px; margin:0 auto; padding:64px clamp(20px,5vw,64px) 0; display:grid; grid-template-columns:0.92fr 1.5fr; gap:clamp(28px,4vw,56px); align-items:center; }
   #cine-copy { text-align:left; min-width:0; }
   #cine-copy h1 { margin:0; font-family:'Newsreader',serif; font-weight:500; font-size:clamp(36px,5vw,70px); line-height:1.03; letter-spacing:-.015em; color:#1a241c; }
@@ -79,11 +78,10 @@
     #cine-card { aspect-ratio:16/11; }
   }
 
-  /* ============ SECOND SCROLL HERO (Trader clip — clean split: copy left, video card right) ============ */
-  /* plain white section (same as the page) with the video in a crisp rounded card —
-     no grey field, no gradient, no feather. The card scrubs with scroll. */
+  /* ============ SECOND VIDEO BAND (Trader clip — clean split: copy left, video card right) ============ */
+  /* plain white section with the video in a crisp rounded card, autoplaying + looping. */
   #cine2-track { position:relative; width:100%; }
-  #cine2-stage { position:sticky; top:0; width:100%; height:100vh; height:100svh; overflow:hidden; background:#ffffff; display:flex; align-items:center; }
+  #cine2-stage { position:relative; width:100%; background:#ffffff; display:flex; align-items:center; padding:56px 0; }
   #cine2-inner { width:100%; max-width:1360px; margin:0 auto; padding:0 clamp(20px,5vw,64px); display:grid; grid-template-columns:0.92fr 1.6fr; gap:clamp(28px,4vw,56px); align-items:center; }
   #cine2-copy { text-align:left; min-width:0; }
   #cine2-card { margin:0; min-width:0; }
@@ -145,7 +143,7 @@
 
   <div id="top"></div>
 
-  <!-- ============ TOP HERO — split: copy left, scroll-scrubbed video card right ============ -->
+  <!-- ============ TOP HERO — split: copy left, autoplay video card right ============ -->
   <div id="intro">
     <div id="cine-track">
       <div id="cine-stage">
@@ -159,7 +157,7 @@
             </div>
           </div>
           <figure id="cine-card">
-            <video id="cine-src" src="assets/bloomberg-scrub.mp4" poster="assets/bloomberg-poster.jpg" muted playsinline preload="auto"></video>
+            <video id="cine-src" src="assets/bloomberg-scrub.mp4" poster="assets/bloomberg-poster.jpg" autoplay muted loop playsinline preload="auto"></video>
           </figure>
         </div>
       </div>
@@ -188,7 +186,7 @@
     <div id="courses-grid" class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;"></div>
   </section>
 
-  <!-- ============ SECOND SCROLL-DRIVEN CINEMATIC BAND (Trader clip scrubbed by scroll) ============ -->
+  <!-- ============ SECOND VIDEO BAND (Trader clip — autoplay/loop) ============ -->
   <div id="cine2-track">
     <div id="cine2-stage">
       <div id="cine2-inner">
@@ -198,7 +196,7 @@
           <p>Every Meridian course is built from real time on the desk — the same screens, the same calls, the same pressure. Markets, taught by the people who traded them.</p>
         </div>
         <figure id="cine2-card">
-          <video id="cine2-src" src="assets/trader-scrub.mp4" poster="assets/trader-poster.jpg" muted playsinline preload="metadata"></video>
+          <video id="cine2-src" src="assets/trader-scrub.mp4" poster="assets/trader-poster.jpg" autoplay muted loop playsinline preload="auto"></video>
         </figure>
       </div>
     </div>
@@ -645,59 +643,26 @@ applyMeta({
 applyCatalog();   // live-sync from Thinkific when THINKIFIC.catalogEndpoint is set
 </script>
 
-<!-- ============ SCROLL-DRIVEN HERO ENGINE (plain-video scrubbers) ============ -->
+<!-- ============ HERO VIDEOS (standard autoplay/loop) ============ -->
 <script>
-/* Scroll-scrub config (shared by both hero bands). */
-const SCRUB_SCREENS = 3;     // viewport-heights of scrolling to play the whole clip.
-const SMOOTHING     = 0.085; // lerp factor — lower = smoother / heavier.
-
-/* Scrub a plain <video> (object-fit:cover inside its rounded card) by driving
-   currentTime from the band's scroll position. Reverses on scroll-up for free.
-   No WebGL — reliable on every device. */
-function initVideoScrub(cfg){
-  const video   = document.getElementById(cfg.video);
-  const trackEl = document.getElementById(cfg.track);
-  if (!video || !trackEl) return;
-  let duration = 0, targetT = 0, currentT = 0, pendingSeek = false, started = false;
-
-  function layoutTrack(){ trackEl.style.height = ((SCRUB_SCREENS + 1) * window.innerHeight) + 'px'; }
-  function progress(){
-    const rect = trackEl.getBoundingClientRect();
-    const max = trackEl.offsetHeight - window.innerHeight;
-    if (max <= 0) return 0;
-    return Math.min(1, Math.max(0, -rect.top / max));
+/* Plain autoplaying, looping, muted videos in their rounded cards. Reliable on every
+   device (no scroll-scrubbing / seeking). Autoplay+muted starts them; we just nudge
+   play() in case a browser deferred it, and pause off-screen clips to save CPU. */
+function initHeroVideo(id){
+  const video = document.getElementById(id);
+  if (!video) return;
+  const tryPlay = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
+  if (video.readyState >= 2) tryPlay();
+  else video.addEventListener('canplay', tryPlay, { once:true });
+  // Pause when scrolled out of view, resume when back — keeps the page light.
+  if ('IntersectionObserver' in window){
+    new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) tryPlay(); else video.pause(); });
+    }, { threshold:0.15 }).observe(video);
   }
-  function tick(){
-    const p = progress();
-    targetT = p * duration;
-    currentT += (targetT - currentT) * SMOOTHING;       // scroll up lowers target ⇒ reverse, for free
-    if (duration > 0 && Math.abs(video.currentTime - currentT) > 0.001 && !pendingSeek){
-      pendingSeek = true;
-      video.currentTime = Math.min(duration - 0.001, Math.max(0, currentT));
-    }
-    requestAnimationFrame(tick);
-  }
-  video.addEventListener('seeked', () => { pendingSeek = false; });
-
-  function start(){
-    if (started) return; started = true;
-    duration = video.duration || 0;
-    layoutTrack();
-    window.addEventListener('resize', layoutTrack);
-    requestAnimationFrame(tick);
-  }
-  // If the clip can't load, leave its poster frame and collapse the track to one screen.
-  const failSafe = setTimeout(() => { if (!started) trackEl.style.height = '100svh'; }, 6000);
-  video.addEventListener('error', () => { clearTimeout(failSafe); trackEl.style.height = '100svh'; });
-  if (video.readyState >= 1){ clearTimeout(failSafe); start(); }
-  else video.addEventListener('loadedmetadata', () => { clearTimeout(failSafe); start(); }, { once:true });
-  video.load();
 }
-
-// Top hero — split: copy left, scrubbing video card on the right.
-initVideoScrub({ video:'cine-src', track:'cine-track' });
-// Mid-page band (Trader) — same split-card scrubber.
-initVideoScrub({ video:'cine2-src', track:'cine2-track' });
+initHeroVideo('cine-src');   // top hero
+initHeroVideo('cine2-src');  // mid-page band
 </script>
 </body>
 </html>
