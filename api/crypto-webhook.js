@@ -1,13 +1,18 @@
 /* ============================================================================
-   api/crypto-webhook.js  —  Cregis → us, on payment status change
+   api/crypto-webhook.js  —  Cregis payment callback → Thinkific fulfilment
    ----------------------------------------------------------------------------
-   When Cregis confirms payment, we (idempotently):
-     1. find-or-create the Thinkific student by email,
-     2. enroll them in the course (or every course in the bundle),
-     3. send a welcome/set-password email + a receipt (auto-PDF — see sendReceipt).
+   On a confirmed/paid Cregis callback we (idempotently):
+     • verify the callback signature (same md5 scheme as create-order),
+     • recover the order metadata (Upstash if configured, else the base64 passthrough),
+     • fulfil per kind:
+         'course'   → find-or-create user, POST /enrollments { course_id, user_id }
+         'bundle'   → enroll the user into every member course of the bundle
+         'coaching' → live_event: NO course enrollment; record the booking + email the
+                      buyer next steps (scheduling happens outside Thinkific).
+     • mark the order processed so repeat callbacks are no-ops.
 
-   Env vars: THINKIFIC_API_KEY, THINKIFIC_SUBDOMAIN, CREGIS_API_SECRET,
-   UPSTASH_REDIS_REST_URL/TOKEN (for enroll-once), plus email/PDF provider creds.
+   Env: THINKIFIC_API_KEY, THINKIFIC_SUBDOMAIN, CREGIS_API_SECRET,
+        UPSTASH_REDIS_REST_URL/TOKEN (optional), RESEND_API_KEY + RECEIPT_FROM (optional email).
    ============================================================================ */
 const TK_BASE = 'https://api.thinkific.com/api/public/v1';
 
@@ -20,58 +25,71 @@ module.exports = async function handler(req, res) {
     const raw = await readRaw(req);
     const body = safeJson(raw) || {};
 
-    // --- Verify the callback is really from Cregis (reject spoofed enrollments) ---
-    if (!verifyCregisSignature(req, raw)) return res.status(401).json({ error: 'Bad signature' });
+    // 1) Verify the callback really came from Cregis (reject spoofed enrollments).
+    if (!verifyCregisCallback(body)) return res.status(401).json({ error: 'Bad signature' });
 
-    // --- Normalize the event (adjust field names to Cregis's payload) ---
-    const status = String(body.status || body.trade_status || (body.data && body.data.status) || '').toLowerCase();
-    const orderId = String(body.out_trade_no || (body.data && body.data.out_trade_no) || '');
-    const meta = body.metadata || (body.data && body.data.metadata) || {};
-    const paid = ['paid', 'success', 'completed', 'confirmed', 'finished'].includes(status);
+    // 2) Normalise the event.
+    const status = String(body.status || body.order_status || body.trade_status
+                        || (body.data && (body.data.status || body.data.order_status)) || '').toLowerCase();
+    const orderId = String(body.order_id || body.out_trade_no
+                        || (body.data && (body.data.order_id || body.data.out_trade_no)) || '');
+    const paid = ['paid', 'success', 'completed', 'confirmed', 'finished', 'settled', 'paid_over'].includes(status);
     if (!orderId) return res.status(400).json({ error: 'No order id' });
     if (!paid) return res.status(200).json({ ok: true, ignored: status }); // not-yet-paid callbacks
 
-    // --- Enroll-once guard ---
+    // 3) Enroll-once guard.
     if (await kvGet(`processed:${orderId}`)) return res.status(200).json({ ok: true, duplicate: true });
 
+    // 4) Recover metadata: prefer the store, else the base64 passthrough echoed by Cregis.
+    const attach = body.attach || (body.data && body.data.attach) || '';
+    const meta = (await kvGet(`order:${orderId}`)) || decodeMeta(attach) || {};
     const email = String(meta.email || '').trim();
     const name = String(meta.name || '').trim();
     const kind = String(meta.kind || 'course').toLowerCase();
-    const id = String(meta.id || '');
-    if (!email || !id) return res.status(400).json({ error: 'Missing email/id in metadata' });
+    if (!email) return res.status(400).json({ error: 'Missing email in order metadata' });
 
-    // --- Find or create the student ---
-    const user = await findOrCreateUser(KEY, SUB, email, name);
+    // 5) Fulfil.
+    if (kind === 'coaching') {
+      // live_event — NOT a course enrollment. Record the paid booking + next steps.
+      await sendEmail(email, name, 'Your 1:1 coaching session is booked',
+        `Hi ${name || 'there'},\n\nThank you — your payment is confirmed and your 1:1 coaching session is booked. ` +
+        `We'll be in touch shortly to arrange a time that suits you.\n\n— Meridian Finance Academy`);
+    } else {
+      const user = await findOrCreateUser(KEY, SUB, email, name);
+      const courseIds = kind === 'bundle'
+        ? await bundleCourseIds(KEY, SUB, meta.productableId)
+        : [meta.productableId];
+      for (const cid of courseIds) if (cid) await enroll(KEY, SUB, cid, user.id);
+    }
 
-    // --- Enroll: one course, or every course in the bundle ---
-    const courseIds = kind === 'bundle'
-      ? await bundleCourseIds(KEY, SUB, id)
-      : [id];
-    for (const cid of courseIds) await enroll(KEY, SUB, cid, user.id);
-
-    await kvSet(`processed:${orderId}`, { at: Date.now(), userId: user.id, courseIds });
-    await sendReceipt({ email, name, orderId, courseIds }); // auto-PDF receipt (see TODO)
-
-    return res.status(200).json({ ok: true, enrolled: courseIds.length });
+    await kvSet(`processed:${orderId}`, { at: Date.now(), kind });
+    await sendReceipt({ email, name, orderId, kind, amount: meta.amount });
+    return res.status(200).json({ ok: true, kind });
   } catch (e) {
-    // 500 → Cregis will retry; our enroll-once guard makes retries safe.
+    // 500 → Cregis retries; our enroll-once guard + Thinkific's 422-on-dupe make retries safe.
     return res.status(500).json({ error: String((e && e.message) || e) });
   }
 };
 
-/* ---- Cregis signature verification (ISOLATED — fill from Cregis docs) ------ */
-function verifyCregisSignature(req, rawBody) {
-  // TODO(Cregis): implement their exact scheme, e.g. HMAC-SHA256(rawBody, CREGIS_API_SECRET)
-  // compared to a header like `X-Cregis-Signature`. Return true only on match.
-  // Until implemented, refuse to process (fail closed) so no one can spoof enrollments.
-  const sig = req.headers['x-cregis-signature'] || req.headers['x-signature'];
+/* ---- Cregis callback signature (same md5 scheme as create-order) ----------- */
+function verifyCregisCallback(body) {
   const secret = process.env.CREGIS_API_SECRET;
-  if (!secret || !sig) return false;
-  try {
-    const crypto = require('crypto');
-    const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
-    return timingSafeEqual(expected, String(sig));
-  } catch (_) { return false; }
+  const sign = body.sign || (body.data && body.data.sign);
+  if (!secret || !sign) return false;
+  const expected = cregisSign(body, secret);
+  return timingSafeEqual(String(sign).toLowerCase(), expected);
+}
+function cregisSign(params, secret) {
+  const crypto = require('crypto');
+  const keys = Object.keys(params)
+    .filter(k => k !== 'sign' && params[k] !== '' && params[k] != null)
+    .sort();
+  let s = String(secret || '');
+  for (const k of keys) {
+    const v = params[k];
+    s += k + (typeof v === 'object' ? JSON.stringify(v) : String(v));
+  }
+  return crypto.createHash('md5').update(s, 'utf8').digest('hex').toLowerCase();
 }
 function timingSafeEqual(a, b) {
   if (a.length !== b.length) return false;
@@ -95,8 +113,7 @@ async function findOrCreateUser(KEY, SUB, email, name) {
       first_name: first || 'Student',
       last_name: rest.join(' ') || '-',
       email,
-      // No password → student sets one via Thinkific's welcome / password-set email.
-      send_welcome_email: true,
+      send_welcome_email: true,   // Thinkific emails them a set-password / welcome link
     }),
   });
   if (!r.ok) throw new Error(`Thinkific create user → HTTP ${r.status} · ${await r.text()}`);
@@ -111,20 +128,32 @@ async function enroll(KEY, SUB, courseId, userId) {
   if (!r.ok && r.status !== 422) throw new Error(`Thinkific enroll → HTTP ${r.status} · ${await r.text()}`);
 }
 async function bundleCourseIds(KEY, SUB, bundleId) {
+  if (!bundleId) return [];
   const r = await tkFetch(KEY, SUB, `${TK_BASE}/bundles/${encodeURIComponent(bundleId)}/courses?limit=250`);
   if (!r.ok) throw new Error(`Thinkific bundle courses → HTTP ${r.status}`);
   const d = await r.json();
   return (d.items || []).map(c => c.id);
 }
 
-/* ---- Receipt (auto-PDF) — ISOLATED, fill in with your email/PDF provider --- */
-async function sendReceipt({ email, name, orderId, courseIds }) {
-  // TODO: generate a PDF receipt (e.g. pdfkit / an HTML→PDF service) and email it via
-  // an ESP (Resend/SendGrid/Postmark). Needs a provider API key in env. Best-effort:
-  // never throw here — a receipt failure must NOT undo a completed enrollment.
+/* ---- Email (Resend, optional) + receipt ----------------------------------- */
+async function sendEmail(to, name, subject, text) {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return; // ESP not configured → skip (best effort; never blocks fulfilment)
+  const from = process.env.RECEIPT_FROM || 'Meridian Finance Academy <no-reply@meridianfinance.academy>';
   try {
-    // placeholder no-op until the email/PDF provider is chosen & keyed.
-    return;
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from, to, subject, text }),
+    });
+  } catch (_) { /* best effort */ }
+}
+async function sendReceipt({ email, name, orderId, kind, amount }) {
+  // Never throw — a receipt failure must NOT undo a completed enrollment.
+  try {
+    await sendEmail(email, name, 'Your Meridian receipt',
+      `Hi ${name || 'there'},\n\nThanks for your purchase (${kind}). Order ${orderId}` +
+      `${amount ? ` — $${amount}` : ''}.\n\n— Meridian Finance Academy`);
   } catch (_) { /* swallow */ }
 }
 
@@ -142,7 +171,7 @@ async function kvGet(key) {
   try {
     const r = await fetch(`${url}/get/${encodeURIComponent(key)}`, { headers: { Authorization: `Bearer ${tok}` } });
     const d = await r.json();
-    return d && d.result ? safeJson(d.result) || d.result : null;
+    return d && d.result ? (safeJson(d.result) || d.result) : null;
   } catch (_) { return null; }
 }
 async function kvSet(key, val) {
@@ -151,6 +180,13 @@ async function kvSet(key, val) {
   try {
     await fetch(`${url}/set/${encodeURIComponent(key)}`, { method: 'POST', headers: { Authorization: `Bearer ${tok}` }, body: JSON.stringify(val) });
   } catch (_) { /* best effort */ }
+}
+function decodeMeta(s) {
+  if (!s) return null;
+  try {
+    const b64 = String(s).replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+  } catch (_) { return null; }
 }
 function readRaw(req) {
   return new Promise((resolve, reject) => {
