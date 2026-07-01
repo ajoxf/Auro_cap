@@ -96,11 +96,23 @@ module.exports = async function handler(req, res) {
         status: c.status, archived: c.archived, is_archived: c.is_archived,
         published: c.published, hidden: c.hidden,
       }));
-      const products = prods.map(p => ({
-        id: p.id, name: p.name, type: p.productable_type, productable_id: p.productable_id,
-        status: p.status, archived: p.archived, hidden: p.hidden, private: p.private,
-        published: p.published, price: p.price,
-      }));
+      const base = `https://${SUB}.thinkific.com`;
+      const products = prods.map(p => {
+        const prices = Array.isArray(p.product_prices) ? p.product_prices : [];
+        const primary = prices.find(x => x.is_primary) || prices[0] || null;
+        return {
+          id: p.id, name: p.name, type: p.productable_type, productable_id: p.productable_id,
+          status: p.status, hidden: p.hidden, private: p.private, price: p.price,
+          // The exact deep-link our Enroll button builds, so we can see if it's valid:
+          enrollUrl: primary && primary.id
+            ? `${base}/enroll/${p.productable_id}?price_id=${primary.id}`
+            : `${base}/courses/${p.slug} (no price_id — falls back to landing)`,
+          product_prices: prices.map(x => ({
+            id: x.id, price: x.price, is_primary: x.is_primary, is_free: x.price == 0 || x.price === '0.0',
+            payment_type: x.payment_type,
+          })),
+        };
+      });
       return res.status(200).json({
         counts: { courses: crs.length, products: prods.length },
         sampleCourseKeys: crs[0] ? Object.keys(crs[0]) : [],
