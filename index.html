@@ -429,14 +429,30 @@ function renderFilters(){
 
 // Home shows the FEATURED set (curated in Thinkific); full list lives on courses.html.
 function renderCourses(){
+  const total = MERIDIAN_DATA.courses.length;
+  const grid = $('courses-grid'); if (!grid) return;
+  const va = $('view-all');
+  if (!total){                       // no live courses (e.g. all archived) → friendly placeholder
+    grid.innerHTML = `<div style="grid-column:1/-1; border:1px dashed #d9d7cd; border-radius:16px; padding:52px 24px; text-align:center; background:#fcfbf8;">
+      <div class="kicker">CATALOG</div>
+      <div class="serif" style="font-size:24px; color:#1a241c; margin:10px 0 6px;">New courses coming soon</div>
+      <div style="font-size:14px; color:#8a92a0;">We're preparing the next set of courses — check back shortly.</div>
+    </div>`;
+    if (va) va.style.display = 'none';
+    return;
+  }
+  if (va){ va.style.display = ''; va.textContent = `View all ${total} courses →`; }
   const list = featuredCourses(MERIDIAN_DATA.courses, 6);
-  $('courses-grid').innerHTML = list.map(courseCardHtml).join('');
-  const va = $('view-all'); if (va) va.textContent = `View all ${MERIDIAN_DATA.courses.length} courses →`;
+  grid.innerHTML = list.map(courseCardHtml).join('');
 }
 
 function renderInstructors(){
   const grid = $('instructors-grid');
   if (!grid) return;                 // faculty section retired for now — safe no-op
+  const section = document.getElementById('instructors');
+  // No live instructors (e.g. their only courses were archived) → hide the faculty section.
+  if (!MERIDIAN_DATA.instructors.length){ if (section) section.style.display = 'none'; return; }
+  if (section) section.style.display = '';
   grid.innerHTML = MERIDIAN_DATA.instructors.map(t => `
     <div class="card-hover" style="background:#fff; border:1px solid #e4e2d9; border-radius:18px; overflow:hidden;">
       <div style="position:relative; height:272px; background:#152419;">

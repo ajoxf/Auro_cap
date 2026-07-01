@@ -319,8 +319,11 @@ async function fetchCatalog(){
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const d = await res.json();
     const out = {};
-    if (Array.isArray(d.courses)     && d.courses.length)     out.courses     = d.courses.map(normalizeCourse);
-    if (Array.isArray(d.instructors) && d.instructors.length) out.instructors = d.instructors.map(normalizeInstructor);
+    // A successful live response is authoritative: honour its arrays even when EMPTY
+    // (e.g. every course archived in Thinkific) so the site shows a real empty state
+    // instead of silently falling back to the built-in demo courses/instructors.
+    if (Array.isArray(d.courses))     out.courses     = d.courses.map(normalizeCourse);
+    if (Array.isArray(d.instructors)) out.instructors = d.instructors.map(normalizeInstructor);
     // Learning paths = bundles. If the live feed returns a bundles array (even empty),
     // honour it — an empty array means "no real bundles", so the paths section hides
     // rather than falling back to demo paths that link to non-existent Thinkific bundles.

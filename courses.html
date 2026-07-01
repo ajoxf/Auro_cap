@@ -86,10 +86,14 @@
       url: pageUrl('courses.html', '') });
 
     function boot(){ renderFilters(); renderGrid(); }
-    boot();
+    // When live-syncing, show a loading note instead of flashing demo courses.
+    const LIVE = !!THINKIFIC.catalogEndpoint;
+    if (LIVE){ document.getElementById('grid').innerHTML = '<p style="color:#8a92a0;">Loading courses…</p>'; }
+    else { boot(); }
     (async function(){
       const data = await fetchCatalog();
-      if (data && data.courses){ COURSES = data.courses; boot(); }
+      if (data && data.courses){ COURSES = data.courses; }  // live feed (authoritative, even if empty)
+      boot();                                               // render live; falls back to demo if live failed
     })();
   </script>
 </body>
