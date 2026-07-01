@@ -115,8 +115,11 @@ async function buildCatalog(KEY, SUB) {
 
   // /products carries the PRICE (the /courses payload has none) and tells us which
   // items are bundles. There is no /bundles list endpoint — bundles are products.
-  let products = [];
-  try { products = await tkAll(KEY, SUB, 'products'); } catch (_) { /* products optional */ }
+  let products = [], productsOk = false;
+  // productsOk distinguishes "fetch succeeded (even if empty)" from "fetch failed".
+  // We only fall back to showing ALL courses when the fetch FAILED; a successful but
+  // empty feed (e.g. every product archived) must yield an empty catalog, not all courses.
+  try { products = await tkAll(KEY, SUB, 'products'); productsOk = true; } catch (_) { /* products optional */ }
 
   const priceByCourse = {};        // course id → price (number)
   const priceIdByCourse = {};      // course id → price_id (for direct checkout deep-link)
@@ -151,7 +154,7 @@ async function buildCatalog(KEY, SUB) {
   // Only show courses whose product is published & shoppable (draft/hidden/private are
   // excluded). If the products feed is unavailable, fall back to showing all courses.
   const outCourses = courses
-    .filter(c => products.length ? liveCourseIds.has(String(c.id)) : true)
+    .filter(c => productsOk ? liveCourseIds.has(String(c.id)) : true)
     .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
