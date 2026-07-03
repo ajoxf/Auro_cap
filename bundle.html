@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Learning Path — Meridian Finance Academy</title>
+<title>Learning Path — Meridian Academy</title>
 <meta name="description" content="A complete Meridian learning path — several courses, one track, one price.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,7 +53,7 @@
   <footer style="border-top:1px solid #e4e2d9; padding:34px 44px; background:#ffffff;">
     <div style="max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
       <span class="serif" style="font-weight:600; font-size:18px;">Meridian</span>
-      <span class="mono" style="font-size:13px; color:#9aa0ab;">© Meridian Finance Academy</span>
+      <span class="mono" style="font-size:13px; color:#9aa0ab;">© Meridian Academy</span>
     </div>
   </footer>
 
@@ -96,7 +96,7 @@
       const url = pageUrl('bundle.html', 'slug=' + encodeURIComponent(p.slug));
       applyMeta({ title: p.name + ' — Meridian Learning Path', description: desc, url });
       setJsonLd({ '@context':'https://schema.org', '@type':'Course', name:p.name, description:desc,
-        provider:{ '@type':'Organization', name:'Meridian Finance Academy', sameAs:siteBase() },
+        provider:{ '@type':'Organization', name:'Meridian Academy', sameAs:siteBase() },
         offers:{ '@type':'Offer', price:p.price, priceCurrency:'USD', url:bundleUrl(p) } });
 
       app.innerHTML = `

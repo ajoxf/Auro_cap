@@ -47,8 +47,8 @@ const CONFIG = {
   // appear on the site within this window. 600 = 10 min (≤ ~144 Thinkific hits/day).
   cacheSeconds: 600,
   // Institutions marquee (instructor firms aren't structured data in Thinkific).
-  logos: ['Bloomberg','Goldman Sachs','BlackRock','Morgan Stanley','J.P. Morgan',
-          'Fidelity','Two Sigma','Citadel','Barclays','UBS'],
+  logos: ['Bloomberg','Goldman Sachs','McKinsey & Company','J.P. Morgan','BCG',
+          'BlackRock','Bain & Company','Morgan Stanley','Deloitte','PwC'],
   // Card accent palette (assigned automatically, so the team needn't pick colors).
   accents: ['#8a6d1f','#b8923c','#b08d3c','#cdab57','#9a7b2e'],
 };
