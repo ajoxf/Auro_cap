@@ -151,6 +151,7 @@ async function buildCatalog(KEY, SUB) {
   const priceIdByCourse = {};      // course id → price_id (for direct checkout deep-link)
   const createdByCourse = {};      // course id → created_at (for the "New" badge)
   const productIdByCourse = {};    // course id -> Thinkific PRODUCT id (needed by /enroll)
+  const kwByCourse = {};           // course id -> the PRODUCT's SEO keywords (merged with course's)
   const liveCourseIds = new Set(); // course ids whose product is published & shoppable
   const bundleProducts = [];       // products that represent a learning-path bundle
   // A product is "live" (shown publicly) only when published and not hidden/private.
@@ -168,6 +169,7 @@ async function buildCatalog(KEY, SUB) {
       if (pp && pp.id) priceIdByCourse[p.productable_id] = pp.id;
       if (p.created_at) createdByCourse[p.productable_id] = p.created_at;
       productIdByCourse[p.productable_id] = p.id;
+      if (p.keywords) kwByCourse[p.productable_id] = p.keywords;   // tokens set on the product's SEO
       if (isLive(p)) liveCourseIds.add(String(p.productable_id));
     } else if (type === 'bundle' && isLive(p)) {
       bundleProducts.push(p);
@@ -183,7 +185,7 @@ async function buildCatalog(KEY, SUB) {
   // excluded). If the products feed is unavailable, fall back to showing all courses.
   const outCourses = courses
     .filter(c => productsOk ? liveCourseIds.has(String(c.id)) : true)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse, productIdByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse, productIdByCourse, kwByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -240,8 +242,10 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse, productIdByCourse) {
-  const kw = String(c.keywords || '');
+function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse, productIdByCourse, kwByCourse) {
+  // Read tokens (cat:, level:, hours:, tag:, featured-N) from EITHER the course SEO keywords
+  // OR the product SEO keywords, so it works wherever the team types them in Thinkific.
+  const kw = [String(c.keywords || ''), String((kwByCourse && kwByCourse[c.id]) || '')].filter(Boolean).join(', ');
   const fm = /featured(?:-(\d+))?/i.exec(kw);
   const rawPrice = (priceByCourse && priceByCourse[c.id] != null) ? priceByCourse[c.id] : c.price;
   const mods = (modulesByCourse && modulesByCourse[c.id]) || [];
