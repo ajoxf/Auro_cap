@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Course — Meridian Finance Academy</title>
-<meta name="description" content="Meridian Finance course detail — enroll now.">
+<title>Course — Meridian Academy</title>
+<meta name="description" content="Meridian course detail — enroll now.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -53,7 +53,7 @@
   <footer style="border-top:1px solid #e4e2d9; padding:34px 44px; background:#ffffff;">
     <div style="max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
       <span class="serif" style="font-weight:600; font-size:18px;">Meridian</span>
-      <span class="mono" style="font-size:13px; color:#9aa0ab;">© Meridian Finance Academy</span>
+      <span class="mono" style="font-size:13px; color:#9aa0ab;">© Meridian Academy</span>
     </div>
   </footer>
 
@@ -106,10 +106,10 @@
     function render(c, instructors){
       const desc = (c.description || `Enroll in ${c.title} — taught by ${c.instr}. Lifetime access, datasets and a verified certificate.`).slice(0, 158);
       const url = pageUrl('course.html', 'slug=' + encodeURIComponent(c.slug || c.thinkificSlug));
-      applyMeta({ title: c.title + ' — Meridian Finance Academy', description: desc, url, type: 'website' });
+      applyMeta({ title: c.title + ' — Meridian Academy', description: desc, url, type: 'website' });
       setJsonLd({
         '@context':'https://schema.org', '@type':'Course', name:c.title, description:desc,
-        provider:{ '@type':'Organization', name:'Meridian Finance Academy', sameAs:siteBase() },
+        provider:{ '@type':'Organization', name:'Meridian Academy', sameAs:siteBase() },
         offers:{ '@type':'Offer', price:c.price, priceCurrency:'USD', url:courseUrl(c) },
       });
       const instr = (instructors || []).find(t => t.name === c.instr);
@@ -132,7 +132,7 @@
               ${c.level ? `<span class="chip">${esc(c.level)}</span>` : ''}
               ${c.rating ? `<span class="chip" style="color:#b08d3c;">★ ${esc(c.rating)}</span>` : ''}
             </div>
-            <p style="font-size:17px; line-height:1.65; color:#3a424f; margin:0 0 34px; max-width:60ch;">${esc(c.description || 'A professional finance course taught by industry practitioners. Enroll to get lifetime access, datasets and a verified certificate.')}</p>
+            <p style="font-size:17px; line-height:1.65; color:#3a424f; margin:0 0 34px; max-width:60ch;">${esc(c.description || 'A professional course taught by industry practitioners. Enroll to get lifetime access, datasets and a verified certificate.')}</p>
 
             <h2 style="font-size:26px; margin:0 0 16px;">What you'll cover</h2>
             <div id="curriculum">${modulesHtml}</div>

@@ -227,12 +227,12 @@ const MERIDIAN_DATA = {
   ],
 
   // Marquee of institutions instructors have worked at (brand wordmarks).
-  logos: ['Bloomberg','Goldman Sachs','BlackRock','Morgan Stanley','J.P. Morgan','Fidelity','Two Sigma','Citadel','Barclays','UBS'],
+  logos: ['Bloomberg','Goldman Sachs','McKinsey & Company','J.P. Morgan','BCG','BlackRock','Bain & Company','Morgan Stanley','Deloitte','PwC'],
 
   faqs: [
     { q:'Can I buy just one course?', a:'Yes — that’s how Meridian works by default. Tick any courses you want, build a custom bundle, and check out. Or open a single course and enroll directly. No subscription required.' },
-    { q:'Do I need a finance background?', a:'No. Courses are tiered from Beginner to Advanced, and every instructor builds from first principles.' },
-    { q:'Are the certificates recognized?', a:'You earn a verified certificate for every completed course, shareable to LinkedIn. Many learners use them to support CFA, FMVA and promotion cases.' },
+    { q:'Do I need a specific background?', a:'No. Courses span finance, consulting and business and are tiered from Beginner to Advanced, and every instructor builds from first principles.' },
+    { q:'Are the certificates recognized?', a:'You earn a verified certificate for every completed course, shareable to LinkedIn. Many learners use them to support professional credentials, applications and promotion cases.' },
     { q:'Do you offer team or university pricing?', a:'Yes. See the For Organizations section for corporate seat licensing, academic pricing, and fully custom programs.' },
     { q:'What if a course isn’t right for me?', a:'Every purchase is backed by a 30-day money-back guarantee — no questions asked.' },
   ],
