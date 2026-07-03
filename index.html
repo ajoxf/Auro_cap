@@ -183,6 +183,7 @@
       </div>
       <a href="courses.html" id="view-all" class="btn-ghost" style="white-space:nowrap;">View all courses →</a>
     </div>
+    <div id="cat-nav" style="display:none; gap:8px; flex-wrap:wrap; margin-bottom:24px;"></div>
     <div id="courses-grid" class="grid-3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px;"></div>
   </section>
 
@@ -602,7 +603,19 @@ function subscribe(){
   $('newsletter').innerHTML = `<div style="display:inline-flex; align-items:center; gap:10px; padding:15px 28px; border-radius:10px; background:rgba(138,109,31,.1); border:1px solid rgba(138,109,31,.35); color:#8a6d1f; font-weight:700;">✓ You're in. Check your inbox.</div>`;
 }
 
-function renderData(){ renderPaths(); renderFilters(); renderCourses(); renderInstructors(); renderLogos(); }
+// "Browse by category" chips (Finance, Consulting, …) built from the live course
+// categories (the cat: keyword in Thinkific). Each links to the filtered catalog.
+function renderCategoryNav(){
+  const el = $('cat-nav'); if (!el) return;
+  const cats = [...new Set((MERIDIAN_DATA.courses || []).map(c => c.cat).filter(Boolean))]
+    .filter(c => c && c !== 'Courses');           // ignore the generic default
+  if (cats.length < 2){ el.style.display = 'none'; el.innerHTML = ''; return; }  // need real categories
+  el.style.display = 'flex';
+  const chip = (label, href) => `<a href="${href}" style="text-decoration:none; padding:9px 16px; border-radius:999px; border:1px solid #d9d7cd; background:#fff; color:#4a5260; font-size:13px; font-weight:600;">${esc(label)}</a>`;
+  el.innerHTML = chip('All courses', 'courses.html') +
+    cats.map(c => chip(c, 'courses.html?cat=' + encodeURIComponent(c))).join('');
+}
+function renderData(){ renderPaths(); renderFilters(); renderCategoryNav(); renderCourses(); renderInstructors(); renderLogos(); }
 async function applyCatalog(){
   const data = await fetchCatalog();   // from meridian.js; null when no endpoint / on failure
   if (data){

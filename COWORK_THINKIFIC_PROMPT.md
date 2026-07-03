@@ -52,7 +52,11 @@ conventions so everything flows through automatically with **no code changes**:
 - **Marketing polish via the course Keywords box** (Course → Settings → SEO → **Keywords**).
   These optional tokens are how the site controls layout — use them, don't hard-code anything:
   - `featured-1` → feature on the home page in position 1 (`featured-2`, `-3`… for order)
-  - `cat:Technical` → catalog category / filter chip
+  - `cat:Finance` → catalog category / filter chip (drives the "Browse by category" chips on
+    the home page AND the filter chips on the full catalog page). **Give every course a `cat:`**
+    and use a **small, consistent set** of names so courses group cleanly, e.g.
+    `cat:Finance`, `cat:Consulting`, `cat:Strategy`, `cat:Business`, `cat:Data & Analytics`.
+    Use the exact same spelling/casing each time (the categories are grouped by literal text).
   - `level:Intermediate` → level badge
   - `hours:8.5` → shows "8.5 hrs"
   - `tag:Bestseller` → corner ribbon
