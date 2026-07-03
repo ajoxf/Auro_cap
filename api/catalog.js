@@ -44,8 +44,9 @@ const CONFIG = {
   // Lock this to your site origin in production, e.g. 'https://ajoxf.github.io'.
   allowOrigin: '*',
   // CDN-cache the assembled catalog this long (seconds). Team edits in Thinkific
-  // appear on the site within this window. 600 = 10 min (≤ ~144 Thinkific hits/day).
-  cacheSeconds: 600,
+  // appear on the site within this window. 120 = 2 min (still well within Thinkific
+  // rate limits). Raise back toward 600 once the catalog settles for fewer API hits.
+  cacheSeconds: 120,
   // Institutions marquee (instructor firms aren't structured data in Thinkific).
   logos: ['Bloomberg','Goldman Sachs','McKinsey & Company','J.P. Morgan','BCG',
           'BlackRock','Bain & Company','Morgan Stanley','Deloitte','PwC'],
