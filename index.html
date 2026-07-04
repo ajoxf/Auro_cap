@@ -604,7 +604,7 @@ function renderCategoryNav(){
   const el = $('cat-nav'); if (!el) return;
   const cats = [...new Set((MERIDIAN_DATA.courses || []).map(c => c.cat).filter(Boolean))]
     .filter(c => c && c !== 'Courses');           // ignore the generic default
-  if (cats.length < 2){ el.style.display = 'none'; el.innerHTML = ''; return; }  // need real categories
+  if (!cats.length){ el.style.display = 'none'; el.innerHTML = ''; return; }  // no tagged categories yet → hide
   el.style.display = 'flex';
   const chip = (label, href) => `<a href="${href}" style="text-decoration:none; padding:9px 16px; border-radius:999px; border:1px solid #d9d7cd; background:#fff; color:#4a5260; font-size:13px; font-weight:600;">${esc(label)}</a>`;
   el.innerHTML = chip('All courses', 'courses.html') +
