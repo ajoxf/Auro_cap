@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
 
-const base  = (process.argv[2] || 'https://ajoxf.github.io/Auro_cap').replace(/\/$/, '');
+const base  = (process.argv[2] || 'https://fincoursa.com').replace(/\/$/, '');
 const feed  = process.argv[3] || '';   // optional live proxy URL
 
 // Load meridian.js in a sandbox (no browser) and capture its data + helpers.
