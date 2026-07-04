@@ -152,7 +152,7 @@ function cryptoCollectDetails(){
         <input id="cc-email" type="email" placeholder="Email address" style="width:100%; margin-bottom:18px; padding:12px 14px; border:1px solid #d9d7cd; border-radius:10px; font-size:14px;">
         <div style="display:flex; gap:10px; justify-content:flex-end;">
           <button id="cc-cancel" style="cursor:pointer; padding:11px 18px; border-radius:10px; border:1px solid #d9d7cd; background:#fff; font-size:14px; font-weight:600;">Cancel</button>
-          <button id="cc-go" style="cursor:pointer; padding:11px 20px; border-radius:10px; border:none; background:#8a6d1f; color:#fff; font-size:14px; font-weight:700;">Continue →</button>
+          <button id="cc-go" style="cursor:pointer; padding:11px 20px; border-radius:10px; border:none; background:linear-gradient(180deg,#e2c073 0%,#c19a3f 45%,#a67f2c 100%); color:#241a06; font-size:14px; font-weight:700;">Continue →</button>
         </div>
       </div>`;
     document.body.appendChild(ov);
