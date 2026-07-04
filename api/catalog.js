@@ -113,6 +113,7 @@ module.exports = async function handler(req, res) {
           })),
         };
       });
+      res.setHeader('Cache-Control', 'no-store, max-age=0');   // always fresh — diagnostics
       return res.status(200).json({
         counts: { courses: crs.length, products: prods.length },
         sampleCourseKeys: crs[0] ? Object.keys(crs[0]) : [],
