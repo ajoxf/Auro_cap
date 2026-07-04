@@ -229,7 +229,7 @@ const MERIDIAN_DATA = {
   logos: ['Bloomberg','Goldman Sachs','McKinsey & Company','J.P. Morgan','BCG','BlackRock','Bain & Company','Morgan Stanley','Deloitte','PwC'],
 
   faqs: [
-    { q:'Can I buy just one course?', a:'Yes — that’s how Fincoursa works by default. Tick any courses you want, build a custom bundle, and check out. Or open a single course and enroll directly. No subscription required.' },
+    { q:'Can I buy just one course?', a:'Yes — that’s how FinCoursa works by default. Tick any courses you want, build a custom bundle, and check out. Or open a single course and enroll directly. No subscription required.' },
     { q:'Do I need a specific background?', a:'No. Courses span finance, consulting and business and are tiered from Beginner to Advanced, and every instructor builds from first principles.' },
     { q:'Are the certificates recognized?', a:'You earn a verified certificate for every completed course, shareable to LinkedIn. Many learners use them to support professional credentials, applications and promotion cases.' },
     { q:'Do you offer team or university pricing?', a:'Yes. See the For Organizations section for corporate seat licensing, academic pricing, and fully custom programs.' },
@@ -301,7 +301,7 @@ function applyMeta({ title, description, url, image, type='website' }){
   setMeta('property','og:description', description || '');
   setMeta('property','og:url', url);
   setMeta('property','og:image', img);
-  setMeta('property','og:site_name', 'Fincoursa Academy');
+  setMeta('property','og:site_name', 'FinCoursa Academy');
   setMeta('name','twitter:card', 'summary_large_image');
   setMeta('name','twitter:title', title || '');
   setMeta('name','twitter:description', description || '');
