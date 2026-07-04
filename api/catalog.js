@@ -85,9 +85,10 @@ module.exports = async function handler(req, res) {
     // ?probe=1 → raw field samples (your own catalog data, not secrets) to confirm the
     // price_id field name for direct checkout. Remove once mapping is verified.
     if (req.query && req.query.probe) {
-      const [crs, prods] = await Promise.all([
+      const [crs, prods, colls] = await Promise.all([
         tkAll(KEY, SUB, 'courses').catch(() => []),
         tkAll(KEY, SUB, 'products').catch(() => []),
+        tkAll(KEY, SUB, 'collections').catch(() => []),
       ]);
       const prod = prods.find(p => String(p.productable_type || '').toLowerCase() === 'course') || prods[0];
       // Compact view of EVERY course + product with any status/archive-ish field, so we can
@@ -103,6 +104,7 @@ module.exports = async function handler(req, res) {
         return {
           id: p.id, name: p.name, type: p.productable_type, productable_id: p.productable_id,
           status: p.status, hidden: p.hidden, private: p.private, price: p.price, keywords: p.keywords,
+          collection_ids: p.collection_ids,   // ← Collection membership drives category
           // The exact deep-link our Enroll button builds, so we can see if it's valid:
           enrollUrl: primary && primary.id
             ? `${base}/enroll/${p.id}?price_id=${primary.id}`
@@ -113,12 +115,13 @@ module.exports = async function handler(req, res) {
           })),
         };
       });
+      const collectionsOut = colls.map(cl => ({ id: cl.id, name: cl.name || cl.title, product_ids: cl.product_ids }));
       res.setHeader('Cache-Control', 'no-store, max-age=0');   // always fresh — diagnostics
       return res.status(200).json({
-        counts: { courses: crs.length, products: prods.length },
+        counts: { courses: crs.length, products: prods.length, collections: colls.length },
         sampleCourseKeys: crs[0] ? Object.keys(crs[0]) : [],
         sampleProductKeys: prod ? Object.keys(prod) : [],
-        courses, products,
+        collections: collectionsOut, courses, products,
       });
     }
     const data = await buildCatalog(KEY, SUB);
@@ -147,11 +150,22 @@ async function buildCatalog(KEY, SUB) {
   // empty feed (e.g. every product archived) must yield an empty catalog, not all courses.
   try { products = await tkAll(KEY, SUB, 'products'); productsOk = true; } catch (_) { /* products optional */ }
 
+  // Collections = Thinkific's native "group your courses" feature; we use each course's
+  // collection as its CATEGORY (drives the site's category chips/filters). Best-effort.
+  let collections = [];
+  try { collections = await tkAll(KEY, SUB, 'collections'); } catch (_) { /* collections optional */ }
+  const collNameById = {};
+  collections.forEach(cl => { if (cl && cl.id != null) collNameById[cl.id] = cl.name || cl.title || ''; });
+  // Also honour the reverse link (a collection listing its product_ids) → product id → name.
+  const collNameByProductId = {};
+  collections.forEach(cl => (cl.product_ids || []).forEach(pid => { collNameByProductId[pid] = cl.name || cl.title || ''; }));
+
   const priceByCourse = {};        // course id → price (number)
   const priceIdByCourse = {};      // course id → price_id (for direct checkout deep-link)
   const createdByCourse = {};      // course id → created_at (for the "New" badge)
   const productIdByCourse = {};    // course id -> Thinkific PRODUCT id (needed by /enroll)
   const kwByCourse = {};           // course id -> the PRODUCT's SEO keywords (merged with course's)
+  const catByCourse = {};          // course id -> category name (from its Thinkific Collection)
   const liveCourseIds = new Set(); // course ids whose product is published & shoppable
   const bundleProducts = [];       // products that represent a learning-path bundle
   // A product is "live" (shown publicly) only when published and not hidden/private.
@@ -170,6 +184,10 @@ async function buildCatalog(KEY, SUB) {
       if (p.created_at) createdByCourse[p.productable_id] = p.created_at;
       productIdByCourse[p.productable_id] = p.id;
       if (p.keywords) kwByCourse[p.productable_id] = p.keywords;   // tokens set on the product's SEO
+      // Category from the product's Collection membership (either link direction).
+      const cids = Array.isArray(p.collection_ids) ? p.collection_ids : [];
+      const collName = (cids.length && collNameById[cids[0]]) || collNameByProductId[p.id] || '';
+      if (collName) catByCourse[p.productable_id] = collName;
       if (isLive(p)) liveCourseIds.add(String(p.productable_id));
     } else if (type === 'bundle' && isLive(p)) {
       bundleProducts.push(p);
@@ -185,7 +203,7 @@ async function buildCatalog(KEY, SUB) {
   // excluded). If the products feed is unavailable, fall back to showing all courses.
   const outCourses = courses
     .filter(c => productsOk ? liveCourseIds.has(String(c.id)) : true)
-    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse, productIdByCourse, kwByCourse));
+    .map((c, i) => mapCourse(c, i, instrName, priceByCourse, null, priceIdByCourse, createdByCourse, productIdByCourse, kwByCourse, catByCourse));
 
   // Each bundle product = one learning path; pull its member courses (best-effort).
   const outPaths = await Promise.all(bundleProducts.map(async (p, i) => {
@@ -242,7 +260,7 @@ async function tkAll(KEY, SUB, resource) {
 }
 
 /* ---- field mappers (raw Thinkific → site shape) ---- */
-function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse, productIdByCourse, kwByCourse) {
+function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCourse, createdByCourse, productIdByCourse, kwByCourse, catByCourse) {
   // Read tokens (cat:, level:, hours:, tag:, featured-N) from EITHER the course SEO keywords
   // OR the product SEO keywords, so it works wherever the team types them in Thinkific.
   const kw = [String(c.keywords || ''), String((kwByCourse && kwByCourse[c.id]) || '')].filter(Boolean).join(', ');
@@ -257,7 +275,7 @@ function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCou
     title: c.name,
     slug: c.slug,
     thinkificSlug: c.slug,
-    cat: token(kw, 'cat') || 'Courses',
+    cat: token(kw, 'cat') || (catByCourse && catByCourse[c.id]) || 'Courses',   // cat: keyword wins; else Collection name
     instr: instrName[c.user_id] || instrName[c.instructor_id] || '',
     price: priceOf({ price: rawPrice }),
     priceId: (priceIdByCourse && priceIdByCourse[c.id]) || '',   // for direct-checkout deep-link
