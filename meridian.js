@@ -338,6 +338,7 @@ function normalizeCourse(c, i){
     slug,
     thinkificSlug: c.thinkificSlug || c.slug || '',
     thinkificCourseId: c.thinkificCourseId || c.id || '',
+    courseId: c.courseId || c.id || '',    // real course id (for curriculum lazy-load)
     priceId: c.priceId || c.price_id || '',
     enrollUrl: c.enrollUrl || '',
     image: c.image || '',

@@ -252,6 +252,7 @@ function mapCourse(c, i, instrName, priceByCourse, modulesByCourse, priceIdByCou
   const lessonTotal = mods.reduce((a, m) => a + (Number(m.count) || 0), 0);
   return {
     id: c.id,
+    courseId: c.id,   // real Thinkific COURSE id — used to lazy-load curriculum (chapters)
     thinkificCourseId: (productIdByCourse && productIdByCourse[c.id]) || c.id,   // PRODUCT id for /enroll
     title: c.name,
     slug: c.slug,
