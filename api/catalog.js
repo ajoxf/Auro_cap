@@ -94,8 +94,7 @@ module.exports = async function handler(req, res) {
       // see exactly how Thinkific marks an archived item (course-level vs product-level).
       const courses = crs.map(c => ({
         id: c.id, name: c.name, slug: c.slug,
-        status: c.status, archived: c.archived, is_archived: c.is_archived,
-        published: c.published, hidden: c.hidden,
+        keywords: c.keywords,   // ← the cat:/level:/hours: tokens live here (course SEO)
       }));
       const base = `https://${SUB}.thinkific.com`;
       const products = prods.map(p => {
@@ -103,7 +102,7 @@ module.exports = async function handler(req, res) {
         const primary = prices.find(x => x.is_primary) || prices[0] || null;
         return {
           id: p.id, name: p.name, type: p.productable_type, productable_id: p.productable_id,
-          status: p.status, hidden: p.hidden, private: p.private, price: p.price,
+          status: p.status, hidden: p.hidden, private: p.private, price: p.price, keywords: p.keywords,
           // The exact deep-link our Enroll button builds, so we can see if it's valid:
           enrollUrl: primary && primary.id
             ? `${base}/enroll/${p.id}?price_id=${primary.id}`
