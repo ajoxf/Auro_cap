@@ -92,8 +92,9 @@
 
     // Curriculum isn't in the bulk catalog (kept fast); fetch it on demand for this course.
     function loadCurriculum(c){
-      if (!THINKIFIC.catalogEndpoint || !c.thinkificCourseId) return;
-      fetch(THINKIFIC.catalogEndpoint + '?course=' + encodeURIComponent(c.thinkificCourseId), { headers:{ 'Accept':'application/json' } })
+      const cid = c.courseId || c.id;   // real COURSE id (thinkificCourseId is the PRODUCT id)
+      if (!THINKIFIC.catalogEndpoint || !cid) return;
+      fetch(THINKIFIC.catalogEndpoint + '?course=' + encodeURIComponent(cid), { headers:{ 'Accept':'application/json' } })
         .then(r => r.json())
         .then(d => {
           if (d && Array.isArray(d.modules) && d.modules.length){
