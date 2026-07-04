@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Course — Meridian Academy</title>
-<meta name="description" content="Meridian course detail — enroll now.">
+<title>Course — Fincoursa Academy</title>
+<meta name="description" content="Fincoursa course detail — enroll now.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -36,8 +36,8 @@
 <body>
   <nav>
     <a href="index.html" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
-      <span style="width:26px; height:26px; border-radius:7px; background:#8a6d1f; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">M</span>
-      <span class="serif" style="font-weight:600; font-size:22px;">Meridian</span>
+      <span style="width:26px; height:26px; border-radius:7px; background:#8a6d1f; display:flex; align-items:center; justify-content:center; font-family:'Newsreader',serif; font-weight:600; font-size:16px; color:#fff;">F</span>
+      <span class="serif" style="font-weight:600; font-size:22px;">Fincoursa</span>
     </a>
     <div style="display:flex; gap:14px; align-items:center;">
       <a href="index.html#courses" style="text-decoration:none; color:#4a5260; font-size:14px; font-weight:500;">All courses</a>
@@ -52,8 +52,8 @@
 
   <footer style="border-top:1px solid #e4e2d9; padding:34px 44px; background:#ffffff;">
     <div style="max-width:1080px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-      <span class="serif" style="font-weight:600; font-size:18px;">Meridian</span>
-      <span class="mono" style="font-size:13px; color:#9aa0ab;">© Meridian Academy</span>
+      <span class="serif" style="font-weight:600; font-size:18px;">Fincoursa</span>
+      <span class="mono" style="font-size:13px; color:#9aa0ab;">© Fincoursa Academy</span>
     </div>
   </footer>
 
@@ -107,10 +107,10 @@
     function render(c, instructors){
       const desc = (c.description || `Enroll in ${c.title} — taught by ${c.instr}. Lifetime access, datasets and a verified certificate.`).slice(0, 158);
       const url = pageUrl('course.html', 'slug=' + encodeURIComponent(c.slug || c.thinkificSlug));
-      applyMeta({ title: c.title + ' — Meridian Academy', description: desc, url, type: 'website' });
+      applyMeta({ title: c.title + ' — Fincoursa Academy', description: desc, url, type: 'website' });
       setJsonLd({
         '@context':'https://schema.org', '@type':'Course', name:c.title, description:desc,
-        provider:{ '@type':'Organization', name:'Meridian Academy', sameAs:siteBase() },
+        provider:{ '@type':'Organization', name:'Fincoursa Academy', sameAs:siteBase() },
         offers:{ '@type':'Offer', price:c.price, priceCurrency:'USD', url:courseUrl(c) },
       });
       const instr = (instructors || []).find(t => t.name === c.instr);
