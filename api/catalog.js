@@ -184,9 +184,13 @@ async function buildCatalog(KEY, SUB) {
       if (p.created_at) createdByCourse[p.productable_id] = p.created_at;
       productIdByCourse[p.productable_id] = p.id;
       if (p.keywords) kwByCourse[p.productable_id] = p.keywords;   // tokens set on the product's SEO
-      // Category from the product's Collection membership (either link direction).
+      // Category from the product's Collection membership — SKIP Thinkific's default
+      // "All Products" catch-all; use the first real collection (either link direction).
+      const realColl = (name) => name && String(name).trim().toLowerCase() !== 'all products';
       const cids = Array.isArray(p.collection_ids) ? p.collection_ids : [];
-      const collName = (cids.length && collNameById[cids[0]]) || collNameByProductId[p.id] || '';
+      let collName = '';
+      for (const cid of cids) { const nm = collNameById[cid]; if (realColl(nm)) { collName = nm; break; } }
+      if (!collName && realColl(collNameByProductId[p.id])) collName = collNameByProductId[p.id];
       if (collName) catByCourse[p.productable_id] = collName;
       if (isLive(p)) liveCourseIds.add(String(p.productable_id));
     } else if (type === 'bundle' && isLive(p)) {
