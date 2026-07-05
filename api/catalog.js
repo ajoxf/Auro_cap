@@ -127,8 +127,10 @@ module.exports = async function handler(req, res) {
     const data = await buildCatalog(KEY, SUB);
     // Vercel's CDN serves this cached copy for cacheSeconds, then revalidates in the
     // background — so Thinkific is hit ~once per window no matter the traffic.
+    // max-age=0 → browsers always revalidate (no stale client cache); s-maxage → Vercel's CDN
+    // still caches for cacheSeconds so Thinkific is hit ~once per window regardless of traffic.
     res.setHeader('Cache-Control',
-      `public, s-maxage=${CONFIG.cacheSeconds}, stale-while-revalidate=${CONFIG.cacheSeconds * 2}`);
+      `public, max-age=0, s-maxage=${CONFIG.cacheSeconds}, stale-while-revalidate=${CONFIG.cacheSeconds * 2}`);
     return res.status(200).json(data);
   } catch (e) {
     return res.status(502).json({ error: String((e && e.message) || e) });
